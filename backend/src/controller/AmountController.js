@@ -8,9 +8,27 @@ class AmountController{
         res.status(200).send(res_obj)
     }
 
-    static verifyPayment = async(req,res)=>{
-        const res_obj = await AmountService.verifyPayment(req.body,req.params.txn_id)
-        res.redirect(res_obj.url)
+    // Verify Razorpay payment and update balance.
+    // If the request expects JSON (e.g., our Axios immediate-verification call), respond with JSON.
+    // Otherwise, keep the existing redirect behaviour so that the normal Razorpay callback flow still works.
+    static verifyPayment = async (req, res) => {
+        try {
+            const res_obj = await AmountService.verifyPayment(req.body, req.params.txn_id);
+
+            // Detect XHR / fetch / JSON requests via the Accept header or the X-Requested-With header
+            const wantsJson = (req.get("Accept") || "").includes("application/json") || req.xhr;
+
+            if (wantsJson) {
+                // Return plain JSON so the frontend can parse it without being redirected
+                return res.status(200).json({ success: true, ...res_obj });
+            }
+
+            // Fallback to the original behaviour (useful when Razorpay performs a POST redirect in the browser)
+            return res.redirect(res_obj.url);
+        } catch (error) {
+            console.error("Payment verification controller error:", error);
+            return res.status(500).json({ success: false, error: error.message || "Payment verification failed" });
+        }
     }
     
     static getAllTransactions = async(req,res)=>{

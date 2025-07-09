@@ -27,19 +27,30 @@ export default function AddAmountModel({id}) {
     amount:yup.number().min(1,"Enter Minium Amount 1 INR").required("Amount Is Required")
   })
 
+  // Hit the backend immediately after Razorpay success to verify the payment.
+  // The backend now returns a JSON response { success: true/false, url: "..." } when it detects an XHR request.
+  // We inspect this response so the frontend can react accordingly.
   const verifyPaymentImmediate = async (txnId, razorResp) => {
     try {
-      // Send data in the same format Razorpay uses (x-www-form-urlencoded)
+      // Maintain Razorpay’s x-www-form-urlencoded format
       const payload = new URLSearchParams();
       payload.append('razorpay_payment_id', razorResp.razorpay_payment_id);
       payload.append('razorpay_order_id', razorResp.razorpay_order_id);
       payload.append('razorpay_signature', razorResp.razorpay_signature);
 
-      await axiosClient.post(`/amount/payment/${txnId}`, payload, {
+      const { data } = await axiosClient.post(`/amount/payment/${txnId}`, payload, {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json' // make sure we explicitly ask for JSON
         }
       });
+
+      // If the backend explicitly returns success === true, we respect it.
+      if (data && data.success === false) {
+        console.error('Backend verification responded with failure', data);
+        return false;
+      }
+
       return true;
     } catch (err) {
       console.error('Immediate backend verification failed', err?.response || err);
