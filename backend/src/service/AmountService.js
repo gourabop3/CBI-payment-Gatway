@@ -4,6 +4,7 @@ const { UserModel } = require("../models/User.model");
 const ApiError = require("../utils/ApiError");
 const { NewRazorpay } = require("../utils/Razarpay");
 const crypto = require("crypto")
+const mongoose = require("mongoose")
 class AmountService{
 
     static async addMoney(body,user){
@@ -30,6 +31,20 @@ class AmountService{
     }
 
     static async verifyPayment(body,txn_id){
+        console.log("================ VERIFY PAYMENT =================");
+        console.log("Incoming txn_id:", txn_id);
+        console.log("Incoming body:", JSON.stringify(body, null, 2));
+
+        // Validate txn_id presence and format (24-hex Mongo ObjectId)
+        if(!txn_id){
+            console.log("No transaction ID supplied in params");
+            return { url:`${process.env.FRONTEND_URI}/transactions?error=Transaction id missing` }
+        }
+
+        if(!mongoose.Types.ObjectId.isValid(txn_id)){
+            console.log("Invalid transaction ID format:", txn_id);
+            return { url:`${process.env.FRONTEND_URI}/transactions?error=Invalid transaction id` }
+        }
         try {
             console.log("=== Payment Verification Started ===");
             console.log("Transaction ID:", txn_id);
@@ -111,11 +126,7 @@ class AmountService{
                 console.log("Signature mismatch – fetching payment details from Razorpay to double-check...");
                 try {
                     const paymentDetails = await NewRazorpay.payments.fetch(razorpay_payment_id);
-                    console.log("Fetched payment details from Razorpay:", {
-                        status: paymentDetails.status,
-                        order_id: paymentDetails.order_id,
-                        captured: paymentDetails.status === 'captured'
-                    });
+                    console.log("Fetched payment details from Razorpay (full):", JSON.stringify(paymentDetails, null, 2));
 
                     if (paymentDetails && paymentDetails.status === 'captured' && paymentDetails.order_id === razorpay_order_id) {
                         console.log("Payment confirmed via Razorpay API despite signature mismatch. Proceeding with success flow.");
@@ -240,7 +251,7 @@ class AmountService{
                 });
 
                 console.log("Payment verification completed successfully");
-                console.log("=== Payment Verification Ended ===");
+                console.log("=============== END VERIFY PAYMENT ===============");
 
                 // Redirect to transactions page with success message
                 return {
