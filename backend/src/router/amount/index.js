@@ -13,6 +13,9 @@ router.post('/add-account',AuthMiddleware,AmountValidation.addAccount,Validation
 router.post('/payment/:txn_id',AmountController.verifyPayment)
 router.get('/transactions',AuthMiddleware,AmountController.getAllTransactions)
 
+// New endpoint for checking transaction status
+router.get('/status/:txn_id', AuthMiddleware, AmountController.checkTransactionStatus)
+
 // Debug endpoints for troubleshooting
 router.get('/debug/transaction/:txn_id', AuthMiddleware, AmountController.debugTransaction)
 router.get('/debug/account/:account_id', AuthMiddleware, AmountController.debugAccount)
