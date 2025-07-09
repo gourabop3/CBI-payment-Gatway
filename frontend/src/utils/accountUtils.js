@@ -10,23 +10,32 @@
  * @returns {string} - Formatted account number
  */
 export const generateAccountNumber = (userId, accountId, accountType = 'savings') => {
-  if (!userId || !accountId) return '00123';
+  /*
+    Scheme (12 digits):
+      1-2   => account-type prefix  (00 savings, 01 current, ...)
+      3-8   => numeric hash of userId  (6 digits)
+      9-12  => numeric hash of accountId (4 digits)
 
-  // 2-digit prefix based on account type (00 default)
-  const prefixes = {
-    savings: '00',
-    current: '01',
-    salary: '02',
-    student: '03',
-    senior: '04',
+    That gives 1 000 000 × 10 000 = 10¹⁰ possibilities per prefix – practically collision-free.
+  */
+
+  if (!userId || !accountId) return '000000000000';
+
+  // 2-digit prefix per account type
+  const prefixes = { savings:'00', current:'01', salary:'02', student:'03', senior:'04' };
+  const prefix = prefixes[accountType?.toLowerCase?.()] || '00';
+
+  // Simple numeric hash helpers (deterministic, 0-999999 / 0-9999)
+  const numericHash = (str, mod) => {
+    let h = 0;
+    for (let i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) % mod;
+    return h;
   };
-  const prefix = prefixes[accountType.toLowerCase()] || '00';
 
-  // Unique 5-digit suffix: take last 5 hex digits of accountId, convert to decimal, pad
-  const raw = parseInt(accountId.slice(-5), 16); // number between 0-1,048,575
-  const suffix = `${raw}`.padStart(5, '0');
+  const userPart    = `${numericHash(userId, 1_000_000)}`.padStart(6,'0'); // 6 digits
+  const accountPart = `${numericHash(accountId,     10_000)}`.padStart(4,'0'); // 4 digits
 
-  return `${prefix}${suffix}`; // Total 7 digits
+  return `${prefix}${userPart}${accountPart}`; // 12 digits total
 };
 
 /**
@@ -46,8 +55,8 @@ export const generateIFSCCode = (branchCode = '001234') => {
 export const formatAccountNumber = (accountNumber) => {
   if (!accountNumber) return '';
   
-  // Group into 3-digit chunks for readability (e.g. 00 12345 ⇒ 00 123 45)
-  return accountNumber.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
+  // Group into 4-digit chunks: 0000 0000 0000
+  return accountNumber.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
 };
 
 /**
