@@ -103,11 +103,31 @@ class AmountService{
             console.log("Received signature:", razorpay_signature);
             console.log("=============================");
 
-            const isValid = expected_signature === razorpay_signature;
+            let isValid = expected_signature === razorpay_signature;
             console.log("Signature validation result:", isValid);
 
+            // Fallback: If signature mismatch, re-confirm with Razorpay API directly (handles rare encoding issues)
             if(!isValid){
-                console.log("Payment signature verification FAILED");
+                console.log("Signature mismatch – fetching payment details from Razorpay to double-check...");
+                try {
+                    const paymentDetails = await NewRazorpay.payments.fetch(razorpay_payment_id);
+                    console.log("Fetched payment details from Razorpay:", {
+                        status: paymentDetails.status,
+                        order_id: paymentDetails.order_id,
+                        captured: paymentDetails.status === 'captured'
+                    });
+
+                    if (paymentDetails && paymentDetails.status === 'captured' && paymentDetails.order_id === razorpay_order_id) {
+                        console.log("Payment confirmed via Razorpay API despite signature mismatch. Proceeding with success flow.");
+                        isValid = true;
+                    }
+                } catch (apiErr) {
+                    console.error("Error fetching payment from Razorpay: ", apiErr);
+                }
+            }
+
+            if(!isValid){
+                console.log("Payment verification ultimately FAILED after API check");
                 // Mark transaction as failed
                 await TransactionModel.findByIdAndUpdate(txn_id, {
                     isSuccess: false,
