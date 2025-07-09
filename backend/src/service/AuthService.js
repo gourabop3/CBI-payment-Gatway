@@ -222,11 +222,23 @@ class AuthService{
     }
 
     static async UpdateUserDetails(user,body){
+        // Enforce cooldown: user can update profile only once every 30 days
+        const profile = await ProfileModel.findOne({user});
+        if(!profile){
+            throw new ApiError(404,"Profile not found");
+        }
+
+        const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+        if(profile.lastProfileUpdate && (Date.now() - new Date(profile.lastProfileUpdate).getTime()) < THIRTY_DAYS){
+            throw new ApiError(400,"Profile can only be updated once every 30 days. Please try later or contact support.");
+        }
+
         await ProfileModel.findOneAndUpdate({
             user
         },{
           bio:body.bio,
           mobile_no:body.mobile_no,
+          lastProfileUpdate:new Date()
           
         })
         await UserModel.findByIdAndUpdate(user,{

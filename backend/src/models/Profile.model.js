@@ -32,6 +32,10 @@ const schema = new mongoose.Schema({
         type:String,
         enum:['not_submitted','pending','verified','rejected'],
         default:'not_submitted'
+    },
+    lastProfileUpdate:{
+        type:Date,
+        default:null
     }
 },{
     timestamps:true

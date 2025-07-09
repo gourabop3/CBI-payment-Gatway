@@ -22,6 +22,10 @@ const schema = new mongoose.Schema({
         required:true,
         enum:['saving','current'],
         default:'saving'
+    },
+    isActive:{
+        type:Boolean,
+        default:true
     }
 },{
     timestamps:true
