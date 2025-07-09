@@ -52,6 +52,25 @@ class AmountService{
 
             const {razorpay_order_id, razorpay_payment_id, razorpay_signature} = body;
 
+            // Basic validation on Razorpay IDs (must start with expected prefixes)
+            const isValidPaymentId = typeof razorpay_payment_id === 'string' && razorpay_payment_id.startsWith('pay_');
+            const isValidOrderId   = typeof razorpay_order_id === 'string' && razorpay_order_id.startsWith('order_');
+
+            console.log("Validating Razorpay IDs:", { isValidPaymentId, isValidOrderId, razorpay_payment_id, razorpay_order_id });
+
+            if(!isValidPaymentId || !isValidOrderId){
+                console.log("Invalid Razorpay payment/order id format");
+                await TransactionModel.findByIdAndUpdate(txn_id, {
+                    isSuccess: false,
+                    razorpayOrderId: razorpay_order_id || '',
+                    razorpayPaymentId: razorpay_payment_id || '',
+                    remark: 'Payment Failed - Invalid Razorpay IDs'
+                });
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Invalid Razorpay IDs`
+                }
+            }
+
             // Check if all required fields are present
             if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
                 console.log("Missing required fields in payment verification");
@@ -90,6 +109,11 @@ class AmountService{
                 type: transaction.type,
                 remark: transaction.remark
             });
+
+            // Amount validation (must be > 0)
+            if(transaction.amount <= 0){
+                console.log("Invalid transaction amount (<=0)");
+            }
 
             if (transaction.isSuccess) {
                 console.log("Transaction already processed successfully:", txn_id);
@@ -189,24 +213,22 @@ class AmountService{
             // Use transaction to ensure atomicity - Update both account balance and transaction status together
             try {
                 console.log("Starting balance update process...");
-                
+
+                // Log pre-update balance
+                console.log("Balance before update:", { accountId: account._id, balance: account.amount });
+
                 // Update account balance
                 const updatedAccount = await AccountModel.findByIdAndUpdate(
                     account._id,
                     { amount: newBalance },
-                    { new: true } // Return updated document
+                    { new: true }
                 );
 
                 if (!updatedAccount) {
                     throw new Error("Failed to update account balance - no document returned");
                 }
 
-                console.log("Account balance updated successfully:", {
-                    accountId: updatedAccount._id,
-                    oldBalance: oldBalance,
-                    newBalance: updatedAccount.amount,
-                    difference: updatedAccount.amount - oldBalance
-                });
+                console.log("Balance after update:", { accountId: updatedAccount._id, balance: updatedAccount.amount });
 
                 // Verify the balance was actually updated
                 if (updatedAccount.amount !== newBalance) {
