@@ -92,8 +92,16 @@ class AmountService{
                 .update(body_data)
                 .digest("hex");
 
+            // Extra debugging information for signature mismatch issues
+            console.log("=== Signature Debug Info ===");
+            console.log("RAZORPAY_KEY_ID (backend):", process.env.RAZORPAY_KEY_ID);
+            // For security, only log last 4 chars of secret
+            if (process.env.RAZORPAY_KEY_SECRET) {
+                console.log("RAZORPAY_KEY_SECRET (last 4 chars):", process.env.RAZORPAY_KEY_SECRET.slice(-4));
+            }
             console.log("Expected signature:", expected_signature);
             console.log("Received signature:", razorpay_signature);
+            console.log("=============================");
 
             const isValid = expected_signature === razorpay_signature;
             console.log("Signature validation result:", isValid);
