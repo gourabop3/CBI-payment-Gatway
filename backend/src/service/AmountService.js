@@ -52,9 +52,12 @@ class AmountService{
 
             const {razorpay_order_id, razorpay_payment_id, razorpay_signature} = body;
 
-            // Basic validation on Razorpay IDs (must start with expected prefixes)
-            const isValidPaymentId = typeof razorpay_payment_id === 'string' && razorpay_payment_id.startsWith('pay_');
-            const isValidOrderId   = typeof razorpay_order_id === 'string' && razorpay_order_id.startsWith('order_');
+            // Strict Razorpay ID format validation using regex (prefix + 14-char alphanumeric)
+            const paymentIdRegex = /^pay_[A-Za-z0-9]{14}$/;
+            const orderIdRegex   = /^order_[A-Za-z0-9]{14}$/;
+
+            const isValidPaymentId = paymentIdRegex.test(razorpay_payment_id || "");
+            const isValidOrderId   = orderIdRegex.test(razorpay_order_id || "");
 
             console.log("Validating Razorpay IDs:", { isValidPaymentId, isValidOrderId, razorpay_payment_id, razorpay_order_id });
 
@@ -161,6 +164,40 @@ class AmountService{
                 }
             }
 
+            // Fetch payment details from Razorpay to validate amount & status (not only on signature mismatch)
+            let paymentDetails;
+            try {
+                paymentDetails = await NewRazorpay.payments.fetch(razorpay_payment_id);
+                console.log("Fetched payment details from Razorpay (full):", JSON.stringify(paymentDetails, null, 2));
+
+                // Additional validations
+                if (paymentDetails.status !== 'captured') {
+                    throw new Error(`Payment status is '${paymentDetails.status}', expected 'captured'`);
+                }
+                if (paymentDetails.order_id !== razorpay_order_id) {
+                    throw new Error(`Order ID mismatch between payment (${paymentDetails.order_id}) and provided data (${razorpay_order_id})`);
+                }
+
+                // Validate amount: Razorpay amount is in paise
+                const paymentAmountINR = paymentDetails.amount / 100;
+                if (paymentAmountINR !== transaction.amount) {
+                    throw new Error(`Amount mismatch: Razorpay reported ₹${paymentAmountINR} but transaction expects ₹${transaction.amount}`);
+                }
+
+            } catch (paymentValidationErr) {
+                console.error("Payment validation failed:", paymentValidationErr.message);
+                await TransactionModel.findByIdAndUpdate(txn_id, {
+                    isSuccess: false,
+                    razorpayOrderId: razorpay_order_id,
+                    razorpayPaymentId: razorpay_payment_id,
+                    razorpaySignature: razorpay_signature,
+                    remark: 'Payment Failed - ' + paymentValidationErr.message
+                });
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Payment validation failed`
+                }
+            }
+
             if(!isValid){
                 console.log("Payment verification ultimately FAILED after API check");
                 // Mark transaction as failed
@@ -214,8 +251,8 @@ class AmountService{
             try {
                 console.log("Starting balance update process...");
 
-                // Log pre-update balance
-                console.log("Balance before update:", { accountId: account._id, balance: account.amount });
+                // Log pre-update balance in INR
+                console.log(`Balance before update: Account ${account._id} => ₹${account.amount}`);
 
                 // Update account balance
                 const updatedAccount = await AccountModel.findByIdAndUpdate(
@@ -228,7 +265,7 @@ class AmountService{
                     throw new Error("Failed to update account balance - no document returned");
                 }
 
-                console.log("Balance after update:", { accountId: updatedAccount._id, balance: updatedAccount.amount });
+                console.log(`Balance after update:  Account ${updatedAccount._id} => ₹${updatedAccount.amount}`);
 
                 // Verify the balance was actually updated
                 if (updatedAccount.amount !== newBalance) {
