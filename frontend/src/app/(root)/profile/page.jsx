@@ -173,14 +173,12 @@ updateImageAvatar()
                   <h1 className="font-bold text-2xl lg:text-4xl text-start">Verification </h1>
                 </div>
                   
-                <div className="w-full py-2 text-xl flex flex-col gap-y-4 ">
-                    {user && user.isEmailVerified ?<>
-                     <img src="https://thumbs.dreamstime.com/b/verified-vector-stamp-isolated-white-background-41827520.jpg" alt="" className='text-center w-[340px] h-[340px] object-cover mx-auto' />
-                      
-                    </>: <>
-                     <img src="https://static.lenskart.com/media/desktop/img/email_not_verified.png" alt="" className='text-center w-[340px] h-[340px] object-cover mx-auto' />
-                     <VerifiedEMailModel/> 
-                   </>}
+                <div className="w-full py-2 text-xl flex flex-col items-center gap-y-4 ">
+                    {user && user.isEmailVerified ? (
+                      <p className="text-green-600 font-semibold">Your email is verified ✔</p>
+                    ) : (
+                      <VerifiedEMailModel/>
+                    )}
                 </div>
 
 
