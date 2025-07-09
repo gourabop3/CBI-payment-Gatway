@@ -58,9 +58,9 @@ class AmountService{
 
             const {razorpay_order_id, razorpay_payment_id, razorpay_signature} = body;
 
-            // Strict Razorpay ID format validation using regex (prefix + 14-char alphanumeric)
-            const paymentIdRegex = /^pay_[A-Za-z0-9]{14}$/;
-            const orderIdRegex   = /^order_[A-Za-z0-9]{14}$/;
+            // Razorpay IDs: prefix + variable-length alphanumeric (docs show 14+ chars, but safer to allow >7)
+            const paymentIdRegex = /^pay_[A-Za-z0-9]{7,}$/;
+            const orderIdRegex   = /^order_[A-Za-z0-9]{7,}$/;
 
             const isValidPaymentId = paymentIdRegex.test(razorpay_payment_id || "");
             const isValidOrderId   = orderIdRegex.test(razorpay_order_id || "");
@@ -184,10 +184,11 @@ class AmountService{
                     throw new Error(`Order ID mismatch between payment (${paymentDetails.order_id}) and provided data (${razorpay_order_id})`);
                 }
 
-                // Validate amount: Razorpay amount is in paise
-                const paymentAmountINR = paymentDetails.amount / 100;
-                if (paymentAmountINR !== transaction.amount) {
-                    throw new Error(`Amount mismatch: Razorpay reported ₹${paymentAmountINR} but transaction expects ₹${transaction.amount}`);
+                // Validate amount precisely using paise to avoid floating errors
+                const paymentAmountPaise = paymentDetails.amount;            // already in paise
+                const txnAmountPaise     = Math.round(transaction.amount * 100);
+                if (paymentAmountPaise !== txnAmountPaise) {
+                    throw new Error(`Amount mismatch: Razorpay reported ₹${paymentAmountPaise/100} but transaction expects ₹${transaction.amount}`);
                 }
 
             } catch (paymentValidationErr) {
