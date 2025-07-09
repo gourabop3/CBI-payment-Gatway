@@ -27,6 +27,25 @@ export default function AddAmountModel({id}) {
     amount:yup.number().min(1,"Enter Minium Amount 1 INR").required("Amount Is Required")
   })
 
+  // Function to manually verify payment with backend
+  const verifyPaymentManually = async (paymentData, txnId) => {
+    try {
+      console.log("Manually verifying payment with backend...", paymentData);
+      
+      const verificationResponse = await axiosClient.post(`/amount/payment/${txnId}`, {
+        razorpay_order_id: paymentData.razorpay_order_id,
+        razorpay_payment_id: paymentData.razorpay_payment_id,
+        razorpay_signature: paymentData.razorpay_signature
+      });
+      
+      console.log("Manual verification response:", verificationResponse);
+      return true;
+    } catch (error) {
+      console.error("Manual verification failed:", error);
+      throw error;
+    }
+  };
+
   // Function to poll transaction status
   const pollTransactionStatus = async (txnId, maxAttempts = 30, interval = 2000) => {
     let attempts = 0;
@@ -109,23 +128,34 @@ export default function AddAmountModel({id}) {
       order_id: data.order_id,
       
       // Enhanced payment handlers
-      handler: function (response) {
-        console.log("Payment successful:", response);
-        toast.success("Payment completed successfully! Verifying with backend...");
+      handler: async function (response) {
+        console.log("Payment successful from Razorpay:", response);
+        toast.success("Payment completed! Verifying with backend...");
         
         // Close the modal immediately
         closeModal();
         
-        // Start polling for transaction status
-        setTimeout(async () => {
+        try {
+          // First, manually verify the payment
+          await verifyPaymentManually(response, data.txn_id);
+          
+          // Small delay to ensure backend processing completes
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Then start polling for confirmation
           const verified = await pollTransactionStatus(data.txn_id);
           if (!verified) {
             console.log("Polling completed but verification status unclear");
+            // Try one final profile refresh
+            await fetchUserProfile();
+            toast.info("Payment processed. If balance doesn't reflect, please refresh the page.");
           }
+        } catch (error) {
+          console.error("Error in payment verification process:", error);
+          toast.error("Payment successful but verification failed. Please check transactions or contact support.");
+        } finally {
           setLoading(false);
-        }, 1000); // Small delay to allow backend processing to start
-        
-        // The callback_url will handle the actual verification
+        }
       },
       
       "modal": {
@@ -243,7 +273,9 @@ export default function AddAmountModel({id}) {
                          type="text" className='w-full py-2 outline-none border-none  rounded' placeholder='Enter Amount (in inr) '/>
                           </div>
                           <div className="mb-3 flex w-full justify-end">
-                            <button disabled={values.amount<1 ||loading} className="px-5 flex items-center gap-x-2 w-full bg-rose-600 hover:bg-rose-700 text-white py-2 disabled:bg-rose-500 justify-center rounded"><span>Pay</span> <SiRazorpay/> </button>
+                            <button disabled={values.amount<1 ||loading} className="px-5 flex items-center gap-x-2 w-full bg-rose-600 hover:bg-rose-700 text-white py-2 disabled:bg-rose-500 justify-center rounded">
+                              {loading ? 'Processing...' : 'Pay'} <SiRazorpay/> 
+                            </button>
                           </div>
                         </form>
 
