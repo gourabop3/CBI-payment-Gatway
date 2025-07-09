@@ -31,6 +31,9 @@ const Navbar = () => {
                 </li>
               {user ?<>
                 <li>
+                    <Link href={'/kyc'}>KYC</Link>
+                </li>
+                <li>
                     <button onClick={LogoutHandler} className='bg-rose-700 text-white px-4 py-1 cursor-pointer font-medium rounded'>Logout</button>
                 </li>
               </>:  <li>
