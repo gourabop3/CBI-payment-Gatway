@@ -234,41 +234,82 @@ class AuthService{
     }
 
     static async SendEmailOTP(user){
+        try {
+            const userd = await UserModel.findById(user)
+            if(!userd){
+                throw new ApiError(404,"User Not Found")
+            }
 
-        const userd = await UserModel.findById(user)
-        if(!userd){
-            throw new ApiError(404,"User Not Exist")
-            return
+            // Check if environment variables are configured
+            if (!process.env.EMAIL_VERIFIED_HASH) {
+                throw new ApiError(500, "Email verification not configured properly")
+            }
+
+            const otp = random(100000,999999)
+            const jwt_token  = jwt.sign({userID:userd._id},process.env.EMAIL_VERIFIED_HASH+otp,{
+                expiresIn:'10m'
+            })
+            
+            await NodeMailerService.SendVerificationEmail(userd.name,otp,userd.email)
+
+            return {
+                token:jwt_token,
+                msg: "Verification email sent successfully"
+            }
+        } catch (error) {
+            console.error("Error sending email OTP:", error);
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new ApiError(500, "Failed to send verification email")
         }
-
-        const otp = random(100000,999999)
-        const jwt_token  = jwt.sign({userID:userd._id},process.env.EMAIL_VERIFIED_HASH+otp,{
-            expiresIn:'10m'
-        })
-        await NodeMailerService.SendVerificationEmail(userd.name,otp,userd.email)
-
-        return {
-            token:jwt_token
-        }
-        
-
-
     }
 
     static async VerifyEmailOTP(user,body){
+        try {
+            const {token, otp} = body;
+            
+            if (!token || !otp) {
+                throw new ApiError(400, "Token and OTP are required")
+            }
 
-        const token = await body.token
-         const payload=  jwt.verify(token,process.env.EMAIL_VERIFIED_HASH+body.otp)
- 
-         const profile =await ProfileModel.findOneAndUpdate({
-            user:payload.userID
-         },{
-            isEmailVerified:true
-         })
-         return {
-            "msg":"Email Verified Success :)"
-         }
+            if (!process.env.EMAIL_VERIFIED_HASH) {
+                throw new ApiError(500, "Email verification not configured properly")
+            }
 
+            const payload = jwt.verify(token, process.env.EMAIL_VERIFIED_HASH + otp)
+            
+            if (!payload.userID) {
+                throw new ApiError(400, "Invalid token")
+            }
+
+            const profile = await ProfileModel.findOneAndUpdate({
+                user: payload.userID
+            }, {
+                isEmailVerified: true
+            })
+
+            if (!profile) {
+                throw new ApiError(404, "User profile not found")
+            }
+
+            return {
+                "msg": "Email verified successfully!"
+            }
+        } catch (error) {
+            console.error("Error verifying email OTP:", error);
+            
+            if (error.name === 'JsonWebTokenError') {
+                throw new ApiError(400, "Invalid or expired OTP")
+            }
+            if (error.name === 'TokenExpiredError') {
+                throw new ApiError(400, "OTP has expired. Please request a new one")
+            }
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new ApiError(500, "Email verification failed")
+        }
     }
 }
 
