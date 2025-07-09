@@ -1,9 +1,31 @@
 const nodemailer = require("nodemailer");
 
+// Validate required SMTP environment variables
+const requiredVars = [
+  "EMAIL_SMTP_HOST",
+  "EMAIL_SMTP_PORT",
+  "EMAIL_SMTP_USERNAME",
+  "EMAIL_SMTP_PASSWORD",
+  "EMAIL_SMTP_FROM",
+];
+
+const missing = requiredVars.filter((v) => !process.env[v]);
+if (missing.length) {
+  console.error("❌ Missing SMTP environment variables:", missing.join(", "));
+  throw new Error("SMTP configuration incomplete – see backend/src/utils/NodeMail.js");
+}
+
+const smtpPort = Number(process.env.EMAIL_SMTP_PORT);
+
+// Use secure mode automatically for port 465 unless overridden
+const useSecure = process.env.EMAIL_SMTP_SECURE
+  ? process.env.EMAIL_SMTP_SECURE === "true"
+  : smtpPort === 465;
+
 const transporter = nodemailer.createTransport({
-  host:process.env.EMAIL_SMTP_HOST,
-  port: process.env.EMAIL_SMTP_PORT,
-  secure: false, // true for 465, false for other ports
+  host: process.env.EMAIL_SMTP_HOST,
+  port: smtpPort,
+  secure: useSecure, // true for 465 (SSL), false for 587 (STARTTLS)
   auth: {
     user: process.env.EMAIL_SMTP_USERNAME,
     pass: process.env.EMAIL_SMTP_PASSWORD,
