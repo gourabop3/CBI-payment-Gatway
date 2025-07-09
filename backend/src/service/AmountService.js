@@ -4,6 +4,7 @@ const { UserModel } = require("../models/User.model");
 const ApiError = require("../utils/ApiError");
 const { NewRazorpay } = require("../utils/Razarpay");
 const crypto = require("crypto")
+const mongoose = require("mongoose")
 class AmountService{
 
     static async addMoney(body,user){
@@ -30,12 +31,48 @@ class AmountService{
     }
 
     static async verifyPayment(body,txn_id){
+        console.log("================ VERIFY PAYMENT =================");
+        console.log("Incoming txn_id:", txn_id);
+        console.log("Incoming body:", JSON.stringify(body, null, 2));
+
+        // Validate txn_id presence and format (24-hex Mongo ObjectId)
+        if(!txn_id){
+            console.log("No transaction ID supplied in params");
+            return { url:`${process.env.FRONTEND_URI}/transactions?error=Transaction id missing` }
+        }
+
+        if(!mongoose.Types.ObjectId.isValid(txn_id)){
+            console.log("Invalid transaction ID format:", txn_id);
+            return { url:`${process.env.FRONTEND_URI}/transactions?error=Invalid transaction id` }
+        }
         try {
             console.log("=== Payment Verification Started ===");
             console.log("Transaction ID:", txn_id);
             console.log("Request Body:", body);
 
             const {razorpay_order_id, razorpay_payment_id, razorpay_signature} = body;
+
+            // Strict Razorpay ID format validation using regex (prefix + 14-char alphanumeric)
+            const paymentIdRegex = /^pay_[A-Za-z0-9]{14}$/;
+            const orderIdRegex   = /^order_[A-Za-z0-9]{14}$/;
+
+            const isValidPaymentId = paymentIdRegex.test(razorpay_payment_id || "");
+            const isValidOrderId   = orderIdRegex.test(razorpay_order_id || "");
+
+            console.log("Validating Razorpay IDs:", { isValidPaymentId, isValidOrderId, razorpay_payment_id, razorpay_order_id });
+
+            if(!isValidPaymentId || !isValidOrderId){
+                console.log("Invalid Razorpay payment/order id format");
+                await TransactionModel.findByIdAndUpdate(txn_id, {
+                    isSuccess: false,
+                    razorpayOrderId: razorpay_order_id || '',
+                    razorpayPaymentId: razorpay_payment_id || '',
+                    remark: 'Payment Failed - Invalid Razorpay IDs'
+                });
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Invalid Razorpay IDs`
+                }
+            }
 
             // Check if all required fields are present
             if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -76,6 +113,11 @@ class AmountService{
                 remark: transaction.remark
             });
 
+            // Amount validation (must be > 0)
+            if(transaction.amount <= 0){
+                console.log("Invalid transaction amount (<=0)");
+            }
+
             if (transaction.isSuccess) {
                 console.log("Transaction already processed successfully:", txn_id);
                 return {
@@ -103,11 +145,61 @@ class AmountService{
             console.log("Received signature:", razorpay_signature);
             console.log("=============================");
 
-            const isValid = expected_signature === razorpay_signature;
+            let isValid = expected_signature === razorpay_signature;
             console.log("Signature validation result:", isValid);
 
+            // Fallback: If signature mismatch, re-confirm with Razorpay API directly (handles rare encoding issues)
             if(!isValid){
-                console.log("Payment signature verification FAILED");
+                console.log("Signature mismatch – fetching payment details from Razorpay to double-check...");
+                try {
+                    const paymentDetails = await NewRazorpay.payments.fetch(razorpay_payment_id);
+                    console.log("Fetched payment details from Razorpay (full):", JSON.stringify(paymentDetails, null, 2));
+
+                    if (paymentDetails && paymentDetails.status === 'captured' && paymentDetails.order_id === razorpay_order_id) {
+                        console.log("Payment confirmed via Razorpay API despite signature mismatch. Proceeding with success flow.");
+                        isValid = true;
+                    }
+                } catch (apiErr) {
+                    console.error("Error fetching payment from Razorpay: ", apiErr);
+                }
+            }
+
+            // Fetch payment details from Razorpay to validate amount & status (not only on signature mismatch)
+            let paymentDetails;
+            try {
+                paymentDetails = await NewRazorpay.payments.fetch(razorpay_payment_id);
+                console.log("Fetched payment details from Razorpay (full):", JSON.stringify(paymentDetails, null, 2));
+
+                // Additional validations
+                if (paymentDetails.status !== 'captured') {
+                    throw new Error(`Payment status is '${paymentDetails.status}', expected 'captured'`);
+                }
+                if (paymentDetails.order_id !== razorpay_order_id) {
+                    throw new Error(`Order ID mismatch between payment (${paymentDetails.order_id}) and provided data (${razorpay_order_id})`);
+                }
+
+                // Validate amount: Razorpay amount is in paise
+                const paymentAmountINR = paymentDetails.amount / 100;
+                if (paymentAmountINR !== transaction.amount) {
+                    throw new Error(`Amount mismatch: Razorpay reported ₹${paymentAmountINR} but transaction expects ₹${transaction.amount}`);
+                }
+
+            } catch (paymentValidationErr) {
+                console.error("Payment validation failed:", paymentValidationErr.message);
+                await TransactionModel.findByIdAndUpdate(txn_id, {
+                    isSuccess: false,
+                    razorpayOrderId: razorpay_order_id,
+                    razorpayPaymentId: razorpay_payment_id,
+                    razorpaySignature: razorpay_signature,
+                    remark: 'Payment Failed - ' + paymentValidationErr.message
+                });
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Payment validation failed`
+                }
+            }
+
+            if(!isValid){
+                console.log("Payment verification ultimately FAILED after API check");
                 // Mark transaction as failed
                 await TransactionModel.findByIdAndUpdate(txn_id, {
                     isSuccess: false,
@@ -158,24 +250,22 @@ class AmountService{
             // Use transaction to ensure atomicity - Update both account balance and transaction status together
             try {
                 console.log("Starting balance update process...");
-                
+
+                // Log pre-update balance in INR
+                console.log(`Balance before update: Account ${account._id} => ₹${account.amount}`);
+
                 // Update account balance
                 const updatedAccount = await AccountModel.findByIdAndUpdate(
                     account._id,
                     { amount: newBalance },
-                    { new: true } // Return updated document
+                    { new: true }
                 );
 
                 if (!updatedAccount) {
                     throw new Error("Failed to update account balance - no document returned");
                 }
 
-                console.log("Account balance updated successfully:", {
-                    accountId: updatedAccount._id,
-                    oldBalance: oldBalance,
-                    newBalance: updatedAccount.amount,
-                    difference: updatedAccount.amount - oldBalance
-                });
+                console.log(`Balance after update:  Account ${updatedAccount._id} => ₹${updatedAccount.amount}`);
 
                 // Verify the balance was actually updated
                 if (updatedAccount.amount !== newBalance) {
@@ -220,7 +310,7 @@ class AmountService{
                 });
 
                 console.log("Payment verification completed successfully");
-                console.log("=== Payment Verification Ended ===");
+                console.log("=============== END VERIFY PAYMENT ===============");
 
                 // Redirect to transactions page with success message
                 return {
