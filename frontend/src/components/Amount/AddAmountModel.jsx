@@ -114,15 +114,28 @@ export default function AddAmountModel({id}) {
         toast.success("Payment completed successfully! Verifying with backend...");
 
         try {
-          // --- Immediate backend verification (fix balance update issue) ---
-          await axiosClient.post(`/amount/payment/${data.txn_id}`, {
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id:  response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature,
-          });
+          // Immediate backend verification request to update balance right away
+          await axiosClient.post(
+            `/amount/payment/${data.txn_id}`,
+            {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id:  response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            },
+            {
+              headers: {
+                // Pass auth token if present so backend can associate with user (optional)
+                Authorization: 'Bearer ' + localStorage.getItem('token') ?? '',
+              },
+            }
+          );
+          toast.success('Payment verified with backend!');
         } catch (verificationErr) {
-          console.error("Immediate backend verification failed", verificationErr);
-          toast.warn("We couldn't verify the payment immediately. We'll keep trying in the background.");
+          console.error('Immediate backend verification failed', verificationErr);
+          toast.error(
+            verificationErr.response?.data?.error ||
+              'Immediate verification failed, we\'ll retry in the background.'
+          );
           // We will still fall back to polling below.
         }
 
