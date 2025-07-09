@@ -23,8 +23,24 @@ class AmountController{
         res.status(201).send(res_obj)
     }
 
-    
-    
+    // Debug methods for troubleshooting
+    static debugTransaction = async(req,res)=>{
+        try {
+            const res_obj = await AmountService.debugTransaction(req.params.txn_id, req.user)
+            res.status(200).send(res_obj)
+        } catch (error) {
+            res.status(500).send({error: error.message})
+        }
+    }
+
+    static debugAccount = async(req,res)=>{
+        try {
+            const res_obj = await AmountService.debugAccount(req.params.account_id, req.user)
+            res.status(200).send(res_obj)
+        } catch (error) {
+            res.status(500).send({error: error.message})
+        }
+    }
 }
 
 module.exports = AmountController

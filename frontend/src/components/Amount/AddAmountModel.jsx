@@ -55,19 +55,33 @@ export default function AddAmountModel({id}) {
       // Enhanced payment handlers
       handler: function (response) {
         console.log("Payment successful:", response);
-        toast.success("Payment completed successfully!");
+        toast.success("Payment completed successfully! Verifying and updating balance...");
         
-        // Refresh user profile to update account balance
+        // Close the modal immediately
+        closeModal();
+        
+        // Wait longer for backend processing and refresh multiple times to ensure balance update
         setTimeout(async () => {
           try {
+            console.log("First balance refresh attempt...");
             await fetchUserProfile();
-            closeModal(); // Close the modal after successful payment
             toast.success("Account balance updated!");
           } catch (error) {
-            console.error("Error refreshing profile:", error);
-            toast.warning("Payment successful but balance may take time to reflect");
+            console.error("Error refreshing profile (first attempt):", error);
+            
+            // Retry after another delay
+            setTimeout(async () => {
+              try {
+                console.log("Second balance refresh attempt...");
+                await fetchUserProfile();
+                toast.success("Account balance updated!");
+              } catch (retryError) {
+                console.error("Error refreshing profile (second attempt):", retryError);
+                toast.warning("Payment successful but balance may take time to reflect. Please refresh the page.");
+              }
+            }, 3000);
           }
-        }, 1000);
+        }, 2000);
         
         // The callback_url will handle the actual verification
       },
