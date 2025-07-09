@@ -9,6 +9,7 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const [stats, setStats] = useState(null);
   const [pending, setPending] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -30,6 +31,12 @@ export default function AdminDashboardPage() {
           headers: { Authorization: 'Bearer ' + token },
         });
         setPending(await kycRes.data);
+
+        // fetch users
+        const userRes = await axiosClient.get('/admin/users', {
+          headers: { Authorization: 'Bearer ' + token },
+        });
+        setUsers(await userRes.data);
       } catch (error) {
         toast.error('Session expired, please login again');
         localStorage.removeItem('admin_token');
@@ -92,6 +99,38 @@ export default function AdminDashboardPage() {
           </table>
         </div>
       )}
+
+      {/* Users table */}
+      <h2 className="text-2xl font-bold my-6">Users</h2>
+      {users.length === 0 ? <p>No users.</p> : (
+        <div className="overflow-x-auto bg-white shadow rounded mb-6">
+          <table className="min-w-full text-sm text-left">
+            <thead className="border-b">
+              <tr>
+                <th className="px-4 py-2">Name</th>
+                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Active</th>
+                <th className="px-4 py-2">Joined</th>
+                <th className="px-4 py-2">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(u => (
+                <tr key={u._id} className="border-b">
+                  <td className="px-4 py-2">{u.name}</td>
+                  <td className="px-4 py-2">{u.email}</td>
+                  <td className="px-4 py-2">{u.isActive ? 'Yes' : 'No'}</td>
+                  <td className="px-4 py-2">{new Date(u.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-2 space-x-2">
+                    <button onClick={() => toggleActivation(u)} className="px-3 py-1 bg-indigo-600 text-white rounded">{u.isActive ? 'Deactivate' : 'Activate'}</button>
+                    <button onClick={() => editProfile(u)} className="px-3 py-1 bg-amber-600 text-white rounded">Edit</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
@@ -121,4 +160,30 @@ function handleReject(id) {
       window.location.reload();
     })
     .catch((err) => toast.error(err.response?.data?.msg || err.message));
+}
+
+function toggleActivation(user) {
+  const token = localStorage.getItem('admin_token');
+  axiosClient.post(`/admin/user/${user._id}/activation`, { state: !user.isActive }, { headers: { Authorization: 'Bearer ' + token } })
+    .then(() => {
+      toast.success('Status changed');
+      window.location.reload();
+    })
+    .catch(err => toast.error(err.response?.data?.msg || err.message));
+}
+
+function editProfile(user) {
+  const name = prompt('Name', user.name);
+  if (name === null) return;
+  const email = prompt('Email', user.email);
+  if (email === null) return;
+  const mobile = prompt('Mobile (leave blank to keep)', '');
+  const bio = prompt('Bio (leave blank to keep)', '');
+  const token = localStorage.getItem('admin_token');
+  axiosClient.post(`/admin/user/${user._id}/update-profile`, { name, email, mobile_no: mobile, bio }, { headers: { Authorization: 'Bearer ' + token } })
+    .then(() => {
+      toast.success('Profile updated');
+      window.location.reload();
+    })
+    .catch(err => toast.error(err.response?.data?.msg || err.message));
 }
