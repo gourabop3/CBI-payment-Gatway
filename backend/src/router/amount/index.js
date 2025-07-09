@@ -19,5 +19,10 @@ router.get('/status/:txn_id', AuthMiddleware, AmountController.checkTransactionS
 // Debug endpoints for troubleshooting
 router.get('/debug/transaction/:txn_id', AuthMiddleware, AmountController.debugTransaction)
 router.get('/debug/account/:account_id', AuthMiddleware, AmountController.debugAccount)
+router.get('/debug/verification/:txn_id', (req,res)=>{
+    const { get } = require('../../utils/PaymentDebug')
+    const logs = get(req.params.txn_id)
+    res.send({txn_id:req.params.txn_id, logs})
+})
 
 module.exports = router

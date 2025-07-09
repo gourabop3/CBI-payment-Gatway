@@ -5,6 +5,7 @@ const ApiError = require("../utils/ApiError");
 const { NewRazorpay } = require("../utils/Razarpay");
 const crypto = require("crypto")
 const mongoose = require("mongoose")
+const PaymentDebug = require("../utils/PaymentDebug")
 class AmountService{
 
     static async addMoney(body,user){
@@ -38,7 +39,9 @@ class AmountService{
 
     static async verifyPayment(body,txn_id){
         console.log("================ VERIFY PAYMENT =================");
+        PaymentDebug.append(txn_id, "================ VERIFY PAYMENT =================")
         console.log("Incoming txn_id:", txn_id);
+        PaymentDebug.append(txn_id, `Incoming txn_id: ${txn_id}`)
         console.log("Incoming body:", JSON.stringify(body, null, 2));
 
         // Validate txn_id presence and format (24-hex Mongo ObjectId)
@@ -52,9 +55,13 @@ class AmountService{
             return { url:`${process.env.FRONTEND_URI}/transactions?error=Invalid transaction id` }
         }
         try {
-            console.log("=== Payment Verification Started ===");
-            console.log("Transaction ID:", txn_id);
-            console.log("Request Body:", body);
+            const log = (...args)=>{
+                console.log(...args);
+                PaymentDebug.append(txn_id, args.map(a=>typeof a==='object'?JSON.stringify(a):a).join(' '));
+            }
+            log("=== Payment Verification Started ===");
+            log("Transaction ID:", txn_id);
+            log("Request Body:", body);
 
             const {razorpay_order_id, razorpay_payment_id, razorpay_signature} = body;
 
