@@ -56,6 +56,29 @@ class AmountService{
                 }
             }
 
+            // Verify transaction exists first (before signature verification)
+            const transaction = await TransactionModel.findById(txn_id);
+            if (!transaction) {
+                console.log("Transaction not found:", txn_id);
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Transaction not found`
+                }
+            }
+
+            console.log("Transaction found:", {
+                id: transaction._id,
+                account: transaction.account,
+                amount: transaction.amount,
+                isSuccess: transaction.isSuccess
+            });
+
+            if (transaction.isSuccess) {
+                console.log("Transaction already processed:", txn_id);
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?success=Transaction already completed`
+                }
+            }
+
             // Verify the payment signature
             const body_data = razorpay_order_id + "|" + razorpay_payment_id;
             console.log("Body data for verification:", body_data);
@@ -87,32 +110,7 @@ class AmountService{
                 }
             }
 
-            // Verify transaction exists and is pending
-            const transaction = await TransactionModel.findById(txn_id);
-            if (!transaction) {
-                console.log("Transaction not found:", txn_id);
-                return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Transaction not found`
-                }
-            }
-
-            if (transaction.isSuccess) {
-                console.log("Transaction already processed:", txn_id);
-                return {
-                    url:`${process.env.FRONTEND_URI}/transactions?success=Transaction already completed`
-                }
-            }
-
-            // Update transaction as successful
-            await TransactionModel.findByIdAndUpdate(txn_id,{
-                isSuccess:true,
-                razorpayOrderId:razorpay_order_id,
-                razorpayPaymentId:razorpay_payment_id,
-                razorpaySignature:razorpay_signature,
-                remark:'Payment Credit - Success'
-            });
-
-            // Update account balance
+            // Verify account exists before updating
             const account = await AccountModel.findById(transaction.account);
             if (!account) {
                 console.log("Account not found:", transaction.account);
@@ -121,15 +119,63 @@ class AmountService{
                 }
             }
 
-            await AccountModel.findByIdAndUpdate(account._id,{
-                amount: account.amount + transaction.amount
+            console.log("Account found:", {
+                id: account._id,
+                currentAmount: account.amount,
+                transactionAmount: transaction.amount
             });
 
+            // Calculate new balance
+            const newBalance = account.amount + transaction.amount;
+            console.log("Updating account balance from", account.amount, "to", newBalance);
+
+            // Update account balance and transaction in a single operation for consistency
+            const updatedAccount = await AccountModel.findByIdAndUpdate(
+                account._id,
+                { amount: newBalance },
+                { new: true } // Return updated document
+            );
+
+            if (!updatedAccount) {
+                console.log("Failed to update account balance");
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Failed to update account balance`
+                }
+            }
+
+            console.log("Account balance updated successfully:", {
+                accountId: updatedAccount._id,
+                oldBalance: account.amount,
+                newBalance: updatedAccount.amount
+            });
+
+            // Update transaction as successful
+            const updatedTransaction = await TransactionModel.findByIdAndUpdate(
+                txn_id,
+                {
+                    isSuccess: true,
+                    razorpayOrderId: razorpay_order_id,
+                    razorpayPaymentId: razorpay_payment_id,
+                    razorpaySignature: razorpay_signature,
+                    remark: 'Payment Credit - Success'
+                },
+                { new: true }
+            );
+
+            if (!updatedTransaction) {
+                console.log("Failed to update transaction");
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Failed to update transaction`
+                }
+            }
+
+            console.log("Transaction updated successfully:", updatedTransaction._id);
             console.log("Payment verification completed successfully");
             console.log("=== Payment Verification Ended ===");
 
+            // Redirect to transactions page with success message
             return {
-                url:`${process.env.FRONTEND_URI}/transactions?success=Payment successful`
+                url:`${process.env.FRONTEND_URI}/transactions?success=Payment successful! Amount ₹${transaction.amount} has been added to your account.`
             }
         } catch (error) {
             console.error("Error in payment verification:", error);
@@ -138,14 +184,14 @@ class AmountService{
             try {
                 await TransactionModel.findByIdAndUpdate(txn_id, {
                     isSuccess: false,
-                    remark: 'Payment Failed - System Error'
+                    remark: 'Payment Failed - System Error: ' + error.message
                 });
             } catch (updateError) {
                 console.error("Error updating transaction on failure:", updateError);
             }
 
             return {
-                url:`${process.env.FRONTEND_URI}/transactions?error=Payment processing error`
+                url:`${process.env.FRONTEND_URI}/transactions?error=Payment processing failed. Please contact support.`
             }
         }
     }
