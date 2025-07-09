@@ -27,6 +27,11 @@ const schema = new mongoose.Schema({
              image_uri:faker.image.avatar(),
             public_id:''
         }
+    },
+    kyc_status:{
+        type:String,
+        enum:['not_submitted','pending','verified','rejected'],
+        default:'not_submitted'
     }
 },{
     timestamps:true
