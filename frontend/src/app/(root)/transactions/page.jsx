@@ -10,10 +10,9 @@ import CustomLoader from '@/components/reuseable/CustomLoader';
 
 const Transactions = () => {
   const [transaction, setTransaction] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // default true to delay table rendering
 
   const fetchAllTransaction = async () => {
-    setLoading(true);
     try {
       const response = await axiosClient.get('/amount/transactions', {
         headers: {
@@ -53,26 +52,30 @@ const Transactions = () => {
             </tr>
           </thead>
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="py-10 text-center">
-                  <CustomLoader />
-                </td>
-              </tr>
-            ) : transaction && transaction.length > 0 ? (
-              transaction.map((cur, i) => (
-                <TableCard key={i} id={i} data={cur} />
-              ))
-            ) : (
-              <tr>
-                <td colSpan={5} className="py-6 text-center text-gray-500">
-                  No transactions found.
-                </td>
-              </tr>
-            )}
-          </tbody>
+          {/* Do not render tbody at all while loading */}
+          {!loading && (
+            <tbody>
+              {transaction.length > 0 ? (
+                transaction.map((cur, i) => (
+                  <TableCard key={i} id={i} data={cur} />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-6 text-center text-gray-500">
+                    No transactions found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          )}
         </table>
+
+        {/* Render loader outside the table */}
+        {loading && (
+          <div className="flex justify-center items-center py-10">
+            <CustomLoader />
+          </div>
+        )}
       </div>
     </div>
   );
