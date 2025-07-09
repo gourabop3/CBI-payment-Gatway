@@ -29,22 +29,20 @@ export default function AddAmountModel({id}) {
 
   const verifyPaymentImmediate = async (txnId, razorResp) => {
     try {
-      await axiosClient.post(
-        `/amount/payment/${txnId}`,
-        {
-          razorpay_payment_id: razorResp.razorpay_payment_id,
-          razorpay_order_id: razorResp.razorpay_order_id,
-          razorpay_signature: razorResp.razorpay_signature,
-        },
-        {
-          headers: {
-            Authorization: 'Bearer ' + (localStorage.getItem('token') || ''),
-          },
+      // Send data in the same format Razorpay uses (x-www-form-urlencoded)
+      const payload = new URLSearchParams();
+      payload.append('razorpay_payment_id', razorResp.razorpay_payment_id);
+      payload.append('razorpay_order_id', razorResp.razorpay_order_id);
+      payload.append('razorpay_signature', razorResp.razorpay_signature);
+
+      await axiosClient.post(`/amount/payment/${txnId}`, payload, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
-      );
+      });
       return true;
     } catch (err) {
-      console.error('Immediate backend verification failed', err);
+      console.error('Immediate backend verification failed', err?.response || err);
       return false;
     }
   };
