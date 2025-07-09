@@ -19,15 +19,10 @@ class AmountController{
             const wantsJson = (req.get("Accept") || "").includes("application/json") || req.xhr;
 
             if (wantsJson) {
-<<<<<<< HEAD
-                // Return plain JSON so the frontend can parse it without being redirected
-                return res.status(200).json({ success: true, ...res_obj });
-=======
                 // Determine if the service signalled an error via the redirect URL
                 const hasError = typeof res_obj.url === "string" && res_obj.url.includes("?error=");
 
                 return res.status(hasError ? 400 : 200).json({ success: !hasError, ...res_obj });
->>>>>>> cursor/fix-payment-status-update-issue-5b63
             }
 
             // Fallback to the original behaviour (useful when Razorpay performs a POST redirect in the browser)

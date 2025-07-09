@@ -38,24 +38,15 @@ export default function AddAmountModel({id}) {
       payload.append('razorpay_order_id', razorResp.razorpay_order_id);
       payload.append('razorpay_signature', razorResp.razorpay_signature);
 
-<<<<<<< HEAD
-      const { data } = await axiosClient.post(`/amount/payment/${txnId}`, payload, {
-=======
       const { data, status } = await axiosClient.post(`/amount/payment/${txnId}`, payload, {
->>>>>>> cursor/fix-payment-status-update-issue-5b63
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Accept: 'application/json' // make sure we explicitly ask for JSON
         }
       });
 
-<<<<<<< HEAD
-      // If the backend explicitly returns success === true, we respect it.
-      if (data && data.success === false) {
-=======
       // Treat any non-2xx status or explicit success false as failure
       if (status >= 400 || (data && data.success === false)) {
->>>>>>> cursor/fix-payment-status-update-issue-5b63
         console.error('Backend verification responded with failure', data);
         return false;
       }
