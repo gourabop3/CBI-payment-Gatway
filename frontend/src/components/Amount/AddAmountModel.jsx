@@ -41,9 +41,6 @@ export default function AddAmountModel({id}) {
      })
      const data = await response.data 
 
-
-     
-
      const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
       amount: (values.amount*100).toString(),
@@ -54,6 +51,21 @@ export default function AddAmountModel({id}) {
       "image": "/logo.svg",
       // image: { logo },
       order_id: data.order_id,
+      
+      // Enhanced payment handlers
+      handler: function (response) {
+        console.log("Payment successful:", response);
+        toast.success("Payment completed successfully!");
+        // The callback_url will handle the actual verification
+      },
+      
+      "modal": {
+        "ondismiss": function(){
+          console.log("Payment modal dismissed");
+          toast.info("Payment cancelled");
+          setLoading(false);
+        }
+      },
   
       prefill: {
           name: user?.name,
@@ -63,20 +75,31 @@ export default function AddAmountModel({id}) {
       theme: {  
           color: "#61dafb",
       },
+      
+      // Error handling
+      "error": function(error) {
+        console.error("Payment error:", error);
+        toast.error("Payment failed: " + error.description);
+        setLoading(false);
+      }
   };
 
-
- 
-
-
   const paymentObject = new window.Razorpay(options);
+  
+  // Handle payment object events
+  paymentObject.on('payment.failed', function (response){
+    console.error("Payment failed:", response.error);
+    toast.error("Payment failed: " + response.error.description);
+    setLoading(false);
+  });
+
   paymentObject.open();
 
      
       // resetForm()
     } catch (error) {
       console.log(error.message)
-      toast.error(error.response.data.msg || error.message)
+      toast.error(error.response?.data?.msg || error.message)
     }finally{
       setLoading(false)
     }

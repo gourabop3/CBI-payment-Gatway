@@ -33,47 +33,121 @@ class AmountService{
     }
 
     static async verifyPayment(body,txn_id){
+        try {
+            console.log("=== Payment Verification Started ===");
+            console.log("Transaction ID:", txn_id);
+            console.log("Request Body:", body);
 
-        const {razorpay_order_id ,razorpay_payment_id ,razorpay_signature} =body
+            const {razorpay_order_id, razorpay_payment_id, razorpay_signature} = body;
 
+            // Check if all required fields are present
+            if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+                console.log("Missing required fields in payment verification");
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Missing payment data`
+                }
+            }
 
-        const body_data = razorpay_order_id + "|" + razorpay_payment_id;
+            // Check if RAZORPAY_KEY_SECRET is configured
+            if (!process.env.RAZORPAY_KEY_SECRET) {
+                console.error("RAZORPAY_KEY_SECRET is not configured!");
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Payment configuration error`
+                }
+            }
 
+            // Verify the payment signature
+            const body_data = razorpay_order_id + "|" + razorpay_payment_id;
+            console.log("Body data for verification:", body_data);
 
-        const expect = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
-        .update(body_data)
-        .digest("hex");
+            const expected_signature = crypto
+                .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+                .update(body_data)
+                .digest("hex");
 
-        const isValid = expect === razorpay_signature;
-        if(!isValid){
+            console.log("Expected signature:", expected_signature);
+            console.log("Received signature:", razorpay_signature);
+
+            const isValid = expected_signature === razorpay_signature;
+            console.log("Signature validation result:", isValid);
+
+            if(!isValid){
+                console.log("Payment signature verification failed");
+                // Mark transaction as failed
+                await TransactionModel.findByIdAndUpdate(txn_id, {
+                    isSuccess: false,
+                    razorpayOrderId: razorpay_order_id,
+                    razorpayPaymentId: razorpay_payment_id,
+                    razorpaySignature: razorpay_signature,
+                    remark: 'Payment Failed - Invalid Signature'
+                });
+                
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Payment verification failed`
+                }
+            }
+
+            // Verify transaction exists and is pending
+            const transaction = await TransactionModel.findById(txn_id);
+            if (!transaction) {
+                console.log("Transaction not found:", txn_id);
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Transaction not found`
+                }
+            }
+
+            if (transaction.isSuccess) {
+                console.log("Transaction already processed:", txn_id);
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?success=Transaction already completed`
+                }
+            }
+
+            // Update transaction as successful
+            await TransactionModel.findByIdAndUpdate(txn_id,{
+                isSuccess:true,
+                razorpayOrderId:razorpay_order_id,
+                razorpayPaymentId:razorpay_payment_id,
+                razorpaySignature:razorpay_signature,
+                remark:'Payment Credit - Success'
+            });
+
+            // Update account balance
+            const account = await AccountModel.findById(transaction.account);
+            if (!account) {
+                console.log("Account not found:", transaction.account);
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Account not found`
+                }
+            }
+
+            await AccountModel.findByIdAndUpdate(account._id,{
+                amount: account.amount + transaction.amount
+            });
+
+            console.log("Payment verification completed successfully");
+            console.log("=== Payment Verification Ended ===");
+
             return {
-                url:`${process.env.FRONTEND_URI}/transactions?error=Transaction Failed`
+                url:`${process.env.FRONTEND_URI}/transactions?success=Payment successful`
+            }
+        } catch (error) {
+            console.error("Error in payment verification:", error);
+            
+            // Mark transaction as failed in case of error
+            try {
+                await TransactionModel.findByIdAndUpdate(txn_id, {
+                    isSuccess: false,
+                    remark: 'Payment Failed - System Error'
+                });
+            } catch (updateError) {
+                console.error("Error updating transaction on failure:", updateError);
+            }
+
+            return {
+                url:`${process.env.FRONTEND_URI}/transactions?error=Payment processing error`
             }
         }
-
-
-        // update transaction and add amount in to account
-
-       const transaction= await TransactionModel.findByIdAndUpdate(txn_id,{
-            isSuccess:true,
-            razorpayOrderId:razorpay_order_id,
-            razorpayPaymentId:razorpay_payment_id,
-            razorpaySignature:razorpay_signature,
-             remark:'Payment Credit '
-        })
-
-
-     const account=    await AccountModel.findById(transaction.account)
-
-        await AccountModel.findByIdAndUpdate(account._id,{
-            amount:account.amount+transaction.amount
-        })
-
-        return {
-            url:`${process.env.FRONTEND_URI}/transactions?success=Transaction Success`
-        }
- 
     }
 
     static async getAllTransactions(user){
