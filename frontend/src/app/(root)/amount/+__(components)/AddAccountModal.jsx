@@ -40,13 +40,27 @@ export default function AddAccountModal() {
         })
         const data = await response.data 
 
-        await fetchUserProfile()
-        toast.success(data.msg)
-        resetForm()
+        // Close modal first to prevent multiple submissions
         closeModal()
+        resetForm()
+        
+        // Show success message
+        toast.success(data.msg)
+        
+        // Small delay to ensure backend processing is complete
+        setTimeout(async () => {
+            try {
+                await fetchUserProfile()
+                toast.success("Account details updated successfully!")
+            } catch (refreshError) {
+                console.error("Error refreshing profile:", refreshError)
+                toast.warning("Account created but please refresh the page to see updates")
+            }
+        }, 500)
 
     } catch (error) {
-        toast.error(error.response.data.msg || error.message)
+        console.error("Account creation error:", error)
+        toast.error(error.response?.data?.msg || error.message || "Failed to create account")
     }finally{
         setLoading(false)
     }

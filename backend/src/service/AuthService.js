@@ -88,7 +88,7 @@ class AuthService{
         const profile_obj ={}
 
         const account = await  AccountModel.find({user})
-        .select("_id amount")
+        .select("_id amount ac_type")
 
          const profileData = await ProfileModel.findOne({
                 user
@@ -116,10 +116,11 @@ class AuthService{
             profile_obj['image'] = profileData.image.image_uri
              }
 
-        if(!account){
+        if(!account || account.length === 0){
           const ac=  await AccountModel.create({
                 user,
-                amount:0
+                amount:0,
+                ac_type: 'saving' // Default to saving account
             }) 
 
            
@@ -137,11 +138,14 @@ class AuthService{
 
             profile_obj['account_no'] = [{
                 _id:ac._id,
-                amount:ac.amount
+                amount:ac.amount,
+                ac_type:ac.ac_type
             }]  
 
+        } else {
+            profile_obj['account_no'] = account
         }
-        profile_obj['account_no'] = account
+        
         profile_obj['fd_amount'] = 0
         // profile_obj['amount'] = account.amount
         // for fd

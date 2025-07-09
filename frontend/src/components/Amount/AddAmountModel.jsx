@@ -15,7 +15,7 @@ import * as yup from 'yup'
 
 export default function AddAmountModel({id}) {
 
-  const {user} = useMainContext()
+  const {user, fetchUserProfile} = useMainContext()
 
   let [isOpen, setIsOpen] = useState(false)
   const [loading,setLoading]  = useState(false)
@@ -56,6 +56,19 @@ export default function AddAmountModel({id}) {
       handler: function (response) {
         console.log("Payment successful:", response);
         toast.success("Payment completed successfully!");
+        
+        // Refresh user profile to update account balance
+        setTimeout(async () => {
+          try {
+            await fetchUserProfile();
+            closeModal(); // Close the modal after successful payment
+            toast.success("Account balance updated!");
+          } catch (error) {
+            console.error("Error refreshing profile:", error);
+            toast.warning("Payment successful but balance may take time to reflect");
+          }
+        }, 1000);
+        
         // The callback_url will handle the actual verification
       },
       
