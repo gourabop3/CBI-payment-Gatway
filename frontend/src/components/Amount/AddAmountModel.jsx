@@ -27,6 +27,62 @@ export default function AddAmountModel({id}) {
     amount:yup.number().min(1,"Enter Minium Amount 1 INR").required("Amount Is Required")
   })
 
+  // Function to poll transaction status
+  const pollTransactionStatus = async (txnId, maxAttempts = 30, interval = 2000) => {
+    let attempts = 0;
+    
+    while (attempts < maxAttempts) {
+      try {
+        console.log(`Polling attempt ${attempts + 1}/${maxAttempts} for transaction ${txnId}`);
+        
+        const response = await axiosClient.get(`/amount/status/${txnId}`, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem("token")
+          }
+        });
+        
+        const transactionData = response.data;
+        console.log('Transaction status:', transactionData);
+        
+        if (transactionData.status === 'completed') {
+          console.log('Transaction verified successfully!');
+          toast.success("Payment verified! Updating balance...");
+          
+          // Now fetch updated profile
+          await fetchUserProfile();
+          toast.success("Account balance updated successfully!");
+          return true;
+        }
+        
+        // Check if transaction failed
+        if (transactionData.status === 'failed') {
+          console.log('Transaction failed');
+          toast.error("Payment verification failed. Please contact support.");
+          return false;
+        }
+        
+        // Transaction still pending, continue polling
+        attempts++;
+        if (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, interval));
+        }
+        
+      } catch (error) {
+        console.error(`Polling attempt ${attempts + 1} failed:`, error);
+        attempts++;
+        
+        if (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, interval));
+        }
+      }
+    }
+    
+    // Max attempts reached
+    console.log('Max polling attempts reached');
+    toast.warning("Payment successful but balance verification is taking longer than expected. Please refresh the page or check transactions.");
+    return false;
+  };
+
   const onSubmitHandler =async (values,{resetForm})=>{
 
     try {
@@ -55,33 +111,19 @@ export default function AddAmountModel({id}) {
       // Enhanced payment handlers
       handler: function (response) {
         console.log("Payment successful:", response);
-        toast.success("Payment completed successfully! Verifying and updating balance...");
+        toast.success("Payment completed successfully! Verifying with backend...");
         
         // Close the modal immediately
         closeModal();
         
-        // Wait longer for backend processing and refresh multiple times to ensure balance update
+        // Start polling for transaction status
         setTimeout(async () => {
-          try {
-            console.log("First balance refresh attempt...");
-            await fetchUserProfile();
-            toast.success("Account balance updated!");
-          } catch (error) {
-            console.error("Error refreshing profile (first attempt):", error);
-            
-            // Retry after another delay
-            setTimeout(async () => {
-              try {
-                console.log("Second balance refresh attempt...");
-                await fetchUserProfile();
-                toast.success("Account balance updated!");
-              } catch (retryError) {
-                console.error("Error refreshing profile (second attempt):", retryError);
-                toast.warning("Payment successful but balance may take time to reflect. Please refresh the page.");
-              }
-            }, 3000);
+          const verified = await pollTransactionStatus(data.txn_id);
+          if (!verified) {
+            console.log("Polling completed but verification status unclear");
           }
-        }, 2000);
+          setLoading(false);
+        }, 1000); // Small delay to allow backend processing to start
         
         // The callback_url will handle the actual verification
       },

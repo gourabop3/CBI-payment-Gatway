@@ -334,6 +334,58 @@ class AmountService{
         };
     }
 
+    // New method specifically for checking transaction status
+    static async checkTransactionStatus(txn_id, user) {
+        console.log("=== Check Transaction Status ===");
+        console.log("Transaction ID:", txn_id);
+        console.log("User ID:", user);
+
+        const transaction = await TransactionModel.findById(txn_id);
+        if (!transaction) {
+            throw new ApiError(404, "Transaction not found");
+        }
+
+        // Verify the transaction belongs to the user
+        if (transaction.user.toString() !== user.toString()) {
+            throw new ApiError(403, "Unauthorized access to transaction");
+        }
+
+        console.log("Transaction status check:", {
+            id: transaction._id,
+            isSuccess: transaction.isSuccess,
+            amount: transaction.amount,
+            type: transaction.type,
+            remark: transaction.remark,
+            razorpayPaymentId: transaction.razorpayPaymentId,
+            createdAt: transaction.createdAt,
+            updatedAt: transaction.updatedAt
+        });
+
+        // Get related account info
+        const account = await AccountModel.findById(transaction.account);
+        
+        return {
+            transaction: {
+                id: transaction._id,
+                isSuccess: transaction.isSuccess,
+                amount: transaction.amount,
+                type: transaction.type,
+                remark: transaction.remark,
+                razorpayPaymentId: transaction.razorpayPaymentId,
+                razorpayOrderId: transaction.razorpayOrderId,
+                createdAt: transaction.createdAt,
+                updatedAt: transaction.updatedAt
+            },
+            account: account ? {
+                id: account._id,
+                balance: account.amount,
+                type: account.ac_type
+            } : null,
+            status: transaction.isSuccess === true ? 'completed' : 
+                   transaction.isSuccess === false ? 'failed' : 'pending'
+        };
+    }
+
     static async debugAccount(account_id, user) {
         console.log("=== Debug Account ===");
         console.log("Account ID:", account_id);

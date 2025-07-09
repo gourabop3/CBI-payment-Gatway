@@ -33,6 +33,16 @@ class AmountController{
         }
     }
 
+    // New method for checking transaction status
+    static checkTransactionStatus = async(req,res)=>{
+        try {
+            const res_obj = await AmountService.checkTransactionStatus(req.params.txn_id, req.user)
+            res.status(200).send(res_obj)
+        } catch (error) {
+            res.status(500).send({error: error.message})
+        }
+    }
+
     static debugAccount = async(req,res)=>{
         try {
             const res_obj = await AmountService.debugAccount(req.params.account_id, req.user)
