@@ -118,11 +118,12 @@ export default function AddAmountModel({id}) {
           // even if Razorpay cannot reach our server via callback_url (network/cors issues).
           await axiosClient.post(`/amount/payment/${data.txn_id}`, {
             razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
+            razorpay_order_id:  response.razorpay_order_id,
             razorpay_signature: response.razorpay_signature,
           });
         } catch (verificationErr) {
           console.error("Immediate backend verification failed", verificationErr);
+          toast.warn("We couldn't verify the payment immediately. We'll keep trying in the background.");
           // We will still fall back to polling below.
         }
 
