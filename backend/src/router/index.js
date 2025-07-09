@@ -23,6 +23,9 @@ const routes =[{
 },{
     path:'/admin',
     route:require('./admin')
+},{
+    path:'/kyc',
+    route:require('./kyc')
 }]
 
 routes.forEach((cur)=>{

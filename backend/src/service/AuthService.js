@@ -105,6 +105,7 @@ class AuthService{
             profile_obj['bio'] = profile.bio
             profile_obj['isEmailVerified'] = profile.isEmailVerified
             profile_obj['image'] = profile.image.image_uri
+            profile_obj['kyc_status'] = profile.kyc_status
 
 
 
@@ -114,6 +115,7 @@ class AuthService{
             profile_obj['bio'] = profileData.bio
             profile_obj['isEmailVerified'] = profileData.isEmailVerified
             profile_obj['image'] = profileData.image.image_uri
+            profile_obj['kyc_status'] = profileData.kyc_status
              }
 
         if(!account || account.length === 0){
