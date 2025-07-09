@@ -8,12 +8,12 @@ class AmountService{
 
     static async addMoney(body,user){
  
-
       const transaction=  await TransactionModel.create({
             account:body.account_no,
             user:user,
             amount:parseInt(body.amount),
-            type:'credit'
+            type:'credit',
+            remark:'Payment Initiated - Waiting for Confirmation'
         })
 
         const options = {
@@ -22,9 +22,6 @@ class AmountService{
             receipt: transaction._id
         };
         const order = await NewRazorpay.orders.create(options)
-
-
-
 
         return {
            order_id:order.id,
@@ -114,6 +111,11 @@ class AmountService{
             const account = await AccountModel.findById(transaction.account);
             if (!account) {
                 console.log("Account not found:", transaction.account);
+                // Mark transaction as failed
+                await TransactionModel.findByIdAndUpdate(txn_id, {
+                    isSuccess: false,
+                    remark: 'Payment Failed - Account not found'
+                });
                 return {
                     url:`${process.env.FRONTEND_URI}/transactions?error=Account not found`
                 }
@@ -129,54 +131,67 @@ class AmountService{
             const newBalance = account.amount + transaction.amount;
             console.log("Updating account balance from", account.amount, "to", newBalance);
 
-            // Update account balance and transaction in a single operation for consistency
-            const updatedAccount = await AccountModel.findByIdAndUpdate(
-                account._id,
-                { amount: newBalance },
-                { new: true } // Return updated document
-            );
+            // Use transaction to ensure atomicity - Update both account balance and transaction status together
+            try {
+                // Update account balance
+                const updatedAccount = await AccountModel.findByIdAndUpdate(
+                    account._id,
+                    { amount: newBalance },
+                    { new: true } // Return updated document
+                );
 
-            if (!updatedAccount) {
-                console.log("Failed to update account balance");
+                if (!updatedAccount) {
+                    throw new Error("Failed to update account balance");
+                }
+
+                console.log("Account balance updated successfully:", {
+                    accountId: updatedAccount._id,
+                    oldBalance: account.amount,
+                    newBalance: updatedAccount.amount
+                });
+
+                // Update transaction as successful
+                const updatedTransaction = await TransactionModel.findByIdAndUpdate(
+                    txn_id,
+                    {
+                        isSuccess: true,
+                        razorpayOrderId: razorpay_order_id,
+                        razorpayPaymentId: razorpay_payment_id,
+                        razorpaySignature: razorpay_signature,
+                        remark: `Payment Successful - ₹${transaction.amount} credited to account`
+                    },
+                    { new: true }
+                );
+
+                if (!updatedTransaction) {
+                    // Rollback account balance if transaction update fails
+                    await AccountModel.findByIdAndUpdate(account._id, { amount: account.amount });
+                    throw new Error("Failed to update transaction status");
+                }
+
+                console.log("Transaction updated successfully:", updatedTransaction._id);
+                console.log("Payment verification completed successfully");
+                console.log("=== Payment Verification Ended ===");
+
+                // Redirect to transactions page with success message
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Failed to update account balance`
+                    url:`${process.env.FRONTEND_URI}/transactions?success=Payment successful! Amount ₹${transaction.amount} has been added to your account.`
+                }
+
+            } catch (updateError) {
+                console.error("Error during balance/transaction update:", updateError);
+                
+                // Mark transaction as failed
+                await TransactionModel.findByIdAndUpdate(txn_id, {
+                    isSuccess: false,
+                    remark: 'Payment Failed - Update error: ' + updateError.message
+                });
+
+                return {
+                    url:`${process.env.FRONTEND_URI}/transactions?error=Failed to update account balance. Please contact support.`
                 }
             }
 
-            console.log("Account balance updated successfully:", {
-                accountId: updatedAccount._id,
-                oldBalance: account.amount,
-                newBalance: updatedAccount.amount
-            });
-
-            // Update transaction as successful
-            const updatedTransaction = await TransactionModel.findByIdAndUpdate(
-                txn_id,
-                {
-                    isSuccess: true,
-                    razorpayOrderId: razorpay_order_id,
-                    razorpayPaymentId: razorpay_payment_id,
-                    razorpaySignature: razorpay_signature,
-                    remark: 'Payment Credit - Success'
-                },
-                { new: true }
-            );
-
-            if (!updatedTransaction) {
-                console.log("Failed to update transaction");
-                return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Failed to update transaction`
-                }
-            }
-
-            console.log("Transaction updated successfully:", updatedTransaction._id);
-            console.log("Payment verification completed successfully");
-            console.log("=== Payment Verification Ended ===");
-
-            // Redirect to transactions page with success message
-            return {
-                url:`${process.env.FRONTEND_URI}/transactions?success=Payment successful! Amount ₹${transaction.amount} has been added to your account.`
-            }
         } catch (error) {
             console.error("Error in payment verification:", error);
             
@@ -202,8 +217,6 @@ class AmountService{
         .select("type remark createdAt amount isSuccess")
 
         return all_transaction
-
-
     }
 
     static async addNewAccount(user,body){
@@ -222,7 +235,7 @@ class AmountService{
         await TransactionModel.create({
             account:ac._id,
             amount:0,
-            remark:'New Account Opening',
+            remark:'New Account Opening - Welcome!',
             type:'credit',
             user:user,
             isSuccess:true
@@ -231,9 +244,7 @@ class AmountService{
         return {
             msg:"Account Created :)"
         }
-
     }
-
 }
 
 module.exports = AmountService
