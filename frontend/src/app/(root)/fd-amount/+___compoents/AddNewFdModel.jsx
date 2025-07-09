@@ -8,6 +8,7 @@ import { Fragment, useState } from 'react'
 import { LiaPlusSolid } from "react-icons/lia";
 import { toast } from 'react-toastify';
 import { RiCloseLargeLine } from "react-icons/ri";
+import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
 
 import * as yup from 'yup'
 export default function AddNewFdModel({isUpdate,setIsUpdate}) {
@@ -139,12 +140,19 @@ export default function AddNewFdModel({isUpdate,setIsUpdate}) {
                 <Field  as="select" name='account' id='account' className='w-full bg-transparent border border-rose-500 rounded-md py-3 px-4 outline-none'   >
                  {
                   user && user.account_no && user.account_no.length>0 ? <>
-                  <option value="">Select</option>
+                  <option value="">Select Account</option>
                    { user.account_no.map((cur,i)=>{
-                    return <option key={i} className='' value={cur._id}>{`${cur._id} - ₹${cur.amount}`}</option>
+                    const accountNumber = generateAccountNumber(user._id, cur._id, cur.ac_type);
+                    const formattedAccountNumber = formatAccountNumber(accountNumber);
+                    const accountType = getAccountTypeDisplayName(cur.ac_type);
+                    return (
+                      <option key={i} className='' value={cur._id}>
+                        {`${formattedAccountNumber} - ${accountType} - ₹${cur.amount}`}
+                      </option>
+                    );
                   })}
                   </>:
-                  <option value="">No Account Have</option>
+                  <option value="">No Account Available</option>
                  }
                 </Field>
                 <ErrorMessage className='text-red-500' component={'p'} name='account' />
