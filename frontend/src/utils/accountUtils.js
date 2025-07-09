@@ -10,25 +10,23 @@
  * @returns {string} - Formatted account number
  */
 export const generateAccountNumber = (userId, accountId, accountType = 'savings') => {
-  if (!userId || !accountId) return "001234567890123456";
-  
-  // Create a consistent account number using user and account data
-  const userHash = userId.slice(-4);
-  const accountHash = accountId.slice(-4);
-  
-  // Different branch codes for different account types
-  const branchCodes = {
-    'savings': '0012',
-    'current': '0013', 
-    'salary': '0014',
-    'student': '0015',
-    'senior': '0016'
+  if (!userId || !accountId) return '00123';
+
+  // 2-digit prefix based on account type (00 default)
+  const prefixes = {
+    savings: '00',
+    current: '01',
+    salary: '02',
+    student: '03',
+    senior: '04',
   };
-  
-  const branchCode = branchCodes[accountType.toLowerCase()] || '0012';
-  const checkDigit = "34"; // Check digits
-  
-  return `${branchCode}${userHash}${accountHash}${checkDigit}`;
+  const prefix = prefixes[accountType.toLowerCase()] || '00';
+
+  // Unique 5-digit suffix: take last 5 hex digits of accountId, convert to decimal, pad
+  const raw = parseInt(accountId.slice(-5), 16); // number between 0-1,048,575
+  const suffix = `${raw}`.padStart(5, '0');
+
+  return `${prefix}${suffix}`; // Total 7 digits
 };
 
 /**
@@ -48,8 +46,8 @@ export const generateIFSCCode = (branchCode = '001234') => {
 export const formatAccountNumber = (accountNumber) => {
   if (!accountNumber) return '';
   
-  // Format as XXXX XXXX XXXX XXXX
-  return accountNumber.replace(/(.{4})/g, '$1 ').trim();
+  // Group into 3-digit chunks for readability (e.g. 00 12345 ⇒ 00 123 45)
+  return accountNumber.replace(/(\d{3})(?=\d)/g, '$1 ').trim();
 };
 
 /**
