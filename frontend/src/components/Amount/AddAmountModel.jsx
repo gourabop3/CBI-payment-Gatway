@@ -27,6 +27,28 @@ export default function AddAmountModel({id}) {
     amount:yup.number().min(1,"Enter Minium Amount 1 INR").required("Amount Is Required")
   })
 
+  const verifyPaymentImmediate = async (txnId, razorResp) => {
+    try {
+      await axiosClient.post(
+        `/amount/payment/${txnId}`,
+        {
+          razorpay_payment_id: razorResp.razorpay_payment_id,
+          razorpay_order_id: razorResp.razorpay_order_id,
+          razorpay_signature: razorResp.razorpay_signature,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + (localStorage.getItem('token') || ''),
+          },
+        }
+      );
+      return true;
+    } catch (err) {
+      console.error('Immediate backend verification failed', err);
+      return false;
+    }
+  };
+
   // Function to poll transaction status
   const pollTransactionStatus = async (txnId, maxAttempts = 30, interval = 2000) => {
     let attempts = 0;
@@ -114,29 +136,17 @@ export default function AddAmountModel({id}) {
         toast.success("Payment completed successfully! Verifying with backend...");
 
         try {
-          // Immediate backend verification request to update balance right away
-          await axiosClient.post(
-            `/amount/payment/${data.txn_id}`,
-            {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id:  response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            },
-            {
-              headers: {
-                // Pass auth token if present so backend can associate with user (optional)
-                Authorization: 'Bearer ' + localStorage.getItem('token') ?? '',
-              },
-            }
-          );
-          toast.success('Payment verified with backend!');
+          const immediateOk = await verifyPaymentImmediate(data.txn_id, response);
+          if (immediateOk) {
+            toast.success('Payment verified with backend!');
+            // Refresh balance instantly
+            await fetchUserProfile();
+          } else {
+            toast.warn('Immediate verification failed, retrying in background.');
+          }
         } catch (verificationErr) {
-          console.error('Immediate backend verification failed', verificationErr);
-          toast.error(
-            verificationErr.response?.data?.error ||
-              'Immediate verification failed, we\'ll retry in the background.'
-          );
-          // We will still fall back to polling below.
+          console.error('Unexpected error during immediate verification', verificationErr);
+          toast.error('Unexpected error verifying payment. We\'ll keep retrying.');
         }
 
         // Close the modal immediately
