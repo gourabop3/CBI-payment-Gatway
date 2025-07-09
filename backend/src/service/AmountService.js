@@ -41,7 +41,7 @@ class AmountService{
 
 
         const expect = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SCREATE || "")
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
         .update(body_data)
         .digest("hex");
 
