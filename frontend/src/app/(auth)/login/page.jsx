@@ -87,6 +87,7 @@ const router = useRouter()
 </div>
 <div className="mb-3">
 <p className='text-end font-medium'>Don't Have An Account ? <Link href={'/register'} className='text-red-600 '>Register</Link> </p>
+<p className='text-end font-medium'>Admin? <Link href={'/admin-login'} className='text-red-600 '>Login here</Link></p>
 </div>
 </Form>
           </Formik>

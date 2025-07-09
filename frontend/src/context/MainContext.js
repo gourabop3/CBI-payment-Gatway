@@ -66,8 +66,9 @@ export const MainContextProvider = ({children})=>{
     const LogoutHandler = ()=>{
         localStorage.removeItem("token")
         setUser(null)
-        router.push("/login")
         toast.success("Logout Success")
+        // Use hard navigation to clear any lingering state that may cause client-side exceptions
+        window.location.href = "/login";
     }
 
 
