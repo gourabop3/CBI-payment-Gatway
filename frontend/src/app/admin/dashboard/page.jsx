@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { axiosClient } from '@/utils/AxiosClient';
 import { toast } from 'react-toastify';
+import Link from 'next/link';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -38,13 +39,21 @@ export default function AdminDashboardPage() {
     fetchStats();
   }, []);
 
+  const adminLogout = () => {
+    localStorage.removeItem('admin_token');
+    window.location.href = '/admin-login';
+  };
+
   if (!stats) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <button onClick={adminLogout} className="bg-rose-600 text-white px-4 py-1 rounded">Logout</button>
+      </div>
       <div className="bg-white p-4 rounded shadow">
         <p className="text-xl">{stats.msg}</p>
         <p className="text-lg mt-2">User count: {stats.userCount}</p>

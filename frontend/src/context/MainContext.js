@@ -65,6 +65,7 @@ export const MainContextProvider = ({children})=>{
     }
     const LogoutHandler = ()=>{
         localStorage.removeItem("token")
+        localStorage.removeItem("admin_token")
         setUser(null)
         toast.success("Logout Success")
         // Use hard navigation to clear any lingering state that may cause client-side exceptions
