@@ -114,8 +114,7 @@ export default function AddAmountModel({id}) {
         toast.success("Payment completed successfully! Verifying with backend...");
 
         try {
-          // Trigger backend verification immediately to ensure the balance is updated
-          // even if Razorpay cannot reach our server via callback_url (network/cors issues).
+          // --- Immediate backend verification (fix balance update issue) ---
           await axiosClient.post(`/amount/payment/${data.txn_id}`, {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id:  response.razorpay_order_id,
