@@ -45,21 +45,11 @@ const Transactions = () => {
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-6 py-3 capitalize">
-                Txn ID
-              </th>
-              <th scope="col" className="px-6 py-3 capitalize">
-                Type
-              </th>
-              <th scope="col" className="px-6 py-3 capitalize">
-                Amount
-              </th>
-              <th scope="col" className="px-6 py-3 capitalize">
-                Date
-              </th>
-              <th scope="col" className="px-6 py-3 capitalize hidden lg:block">
-                Remark
-              </th>
+              <th className="px-6 py-3 capitalize">Txn ID</th>
+              <th className="px-6 py-3 capitalize">Type</th>
+              <th className="px-6 py-3 capitalize">Amount</th>
+              <th className="px-6 py-3 capitalize">Date</th>
+              <th className="px-6 py-3 capitalize hidden lg:table-cell">Remark</th>
             </tr>
           </thead>
 
