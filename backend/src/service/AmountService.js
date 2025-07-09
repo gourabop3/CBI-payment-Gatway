@@ -326,6 +326,20 @@ class AmountService{
                 console.log("Payment verification completed successfully");
                 console.log("=============== END VERIFY PAYMENT ===============");
 
+                // Send confirmation email
+                try {
+                    const { UserModel } = require("../models/User.model");
+                    const NodeMailerService = require("../utils/NodeMail");
+                    const userDoc = await UserModel.findById(account.user).select("name email");
+                    if(userDoc){
+                        // Simple account number (last 6 chars)
+                        const accNumDisplay = account._id.toString().slice(-6);
+                        await NodeMailerService.SendDepositEmail(userDoc.name,userDoc.email,transaction.amount,accNumDisplay);
+                    }
+                } catch(emailErr){
+                    console.error("Failed to send deposit email",emailErr);
+                }
+
                 // Redirect to transactions page with success message
                 return {
                     url:`${process.env.FRONTEND_URI}/transactions?success=Payment successful! Amount ₹${transaction.amount} has been added to your account.`

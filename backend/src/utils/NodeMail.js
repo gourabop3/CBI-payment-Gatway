@@ -69,6 +69,27 @@ class NodeMailerService{
     }
   }
 
+  static SendDepositEmail = async(name,email,amount,accountNumber)=>{
+    try{
+      await transporter.sendMail({
+        from: '"CBI BANK" '+process.env.EMAIL_SMTP_FROM,
+        to: email,
+        subject: 'Deposit Confirmation - CBI Bank',
+        html:`<div style="font-family:Arial, sans-serif; max-width:600px; margin:0 auto; padding:20px; border:1px solid #ddd; border-radius:10px;">
+        <h2 style="color:#16a34a; text-align:center;">Deposit Successful</h2>
+        <p>Hi <strong>${name}</strong>,</p>
+        <p>We're pleased to inform you that an amount of <strong>₹${amount}</strong> has been successfully credited to your account <strong>${accountNumber}</strong>.</p>
+        <p>If you did not initiate this deposit, please contact our support team immediately.</p>
+        <hr style="margin:20px 0; border:none; border-top:1px solid #e5e7eb;">
+        <p style="color:#6b7280; font-size:12px; text-align:center;">This is an automated email from CBI Bank. Please do not reply.</p>
+        </div>`
+      });
+      console.log('Deposit confirmation email sent to',email);
+    }catch(err){
+      console.error('Failed sending deposit email',err);
+    }
+  }
+
 }
 
 module.exports =NodeMailerService
