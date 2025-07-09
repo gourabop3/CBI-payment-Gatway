@@ -39,7 +39,7 @@ const Schema = new mongoose.Schema({
     },
     remark:{
         type:String,
-        default:'Transaction Init'
+        default:'Payment Processing'
     }
 },{
     timestamps:true

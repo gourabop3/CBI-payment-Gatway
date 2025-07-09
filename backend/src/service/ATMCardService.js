@@ -84,7 +84,7 @@ class ATMCardService{
                 user:user,
                 isSuccess:false,
                 amount:amount_req,
-                remark:`Entered Invalid PIN`
+                remark:`ATM Withdrawal Failed - Invalid PIN entered`
             })
             throw new ApiError(401,"Invalid PIN")
         }

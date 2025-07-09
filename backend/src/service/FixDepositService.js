@@ -48,7 +48,7 @@ class FixDepositService{
             isSuccess:true,
             type:'fix_deposit',
             user:user,
-            remark:`Fund Deposit ₹${body.amount}`
+            remark:`Fixed Deposit Created - ₹${body.amount} deposited for ${body.apply_for} months`
         })
 
         // amount katna hain
@@ -127,7 +127,7 @@ const totalClaimAmount = foundFD.amount + totalamount
     isSuccess:true,
     type:'fix_deposit',
     user:user,
-    remark:`Fund Claimed ₹${totalClaimAmount}`
+    remark:`Fixed Deposit Claimed - ₹${foundFD.amount} principal + ₹${totalamount.toFixed(2)} interest (${kitne_din} days)`
 })
 
 
