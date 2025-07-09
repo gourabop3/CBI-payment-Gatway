@@ -9,6 +9,7 @@ import { Fragment, useState } from 'react'
 import { FaPlus } from 'react-icons/fa';
 import { IoClose } from "react-icons/io5";
 import { toast } from 'react-toastify';
+import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
 import * as yup from 'yup'
 
 export default function AddNewCardDialog() {
@@ -126,12 +127,19 @@ export default function AddNewCardDialog() {
                                       <Field name="account" id="account" as="select" className="w-full py-2 border border-rose-500 rounded outline-none px-2">
                                       {
                   user && user.account_no && user.account_no.length>0 ? <>
-                  <option value="">Select</option>
+                  <option value="">Select Account</option>
                    { user.account_no.map((cur,i)=>{
-                    return <option key={i} className='' value={cur._id}>{`${cur._id} - ₹${cur.amount}`}</option>
+                    const accountNumber = generateAccountNumber(user._id, cur._id, cur.ac_type);
+                    const formattedAccountNumber = formatAccountNumber(accountNumber);
+                    const accountType = getAccountTypeDisplayName(cur.ac_type);
+                    return (
+                      <option key={i} className='' value={cur._id}>
+                        {`${formattedAccountNumber} - ${accountType} - ₹${cur.amount}`}
+                      </option>
+                    );
                   })}
                   </>:
-                  <option value="">No Account Have</option>
+                  <option value="">No Account Available</option>
                  }
 
                                       </Field>   

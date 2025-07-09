@@ -10,6 +10,7 @@ import { useMainContext } from "@/context/MainContext";
 import { FaEye,FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
 import { toast } from 'react-toastify';
+import { generateAccountNumber, generateIFSCCode, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
 
 const HomePage=()=>{
 
@@ -82,30 +83,19 @@ const DashboardCard = ({data})=>{
 const BankingDetailsCard = ({ user }) => {
   const [showDetails, setShowDetails] = useState(false);
   
-  // Generate realistic bank account numbers based on user data
-  const generateAccountNumber = (userId, accountId) => {
-    if (!userId || !accountId) return "1234567890123456";
-    
-    // Create a consistent account number using user and account data
-    const userHash = userId.slice(-4);
-    const accountHash = accountId.slice(-4);
-    const branchCode = "0012"; // CBI branch code
-    const checkDigit = "34"; // Check digits
-    
-    return `${branchCode}${userHash}${accountHash}${checkDigit}`;
-  };
-
-  const generateIFSCCode = () => {
-    return "CBIN0001234"; // Standard CBI IFSC format
-  };
+  // Use the utility functions for consistent account number generation
+  const primaryAccount = user?.account_no?.[0];
+  const accountNumber = primaryAccount ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : "001234567890123456";
+  const formattedAccountNumber = formatAccountNumber(accountNumber);
   
   const bankingInfo = {
-    accountNumber: user?.account_no?.[0] ? generateAccountNumber(user._id, user.account_no[0]._id) : "001234567890123456",
+    accountNumber: accountNumber,
+    formattedAccountNumber: formattedAccountNumber,
     ifscCode: generateIFSCCode(),
     branchName: "Central Bank of India - Main Branch",
     branchCode: "001234",
     username: user?.name || "User",
-    accountType: user?.ac_type || "Savings"
+    accountType: primaryAccount ? getAccountTypeDisplayName(primaryAccount.ac_type) : "Savings Account"
   };
 
   const copyToClipboard = (text, label) => {
@@ -158,7 +148,7 @@ const BankingDetailsCard = ({ user }) => {
               <span className="font-semibold text-gray-700">Account Number</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-lg font-mono text-gray-800">{bankingInfo.accountNumber}</span>
+              <span className="text-lg font-mono text-gray-800">{bankingInfo.formattedAccountNumber}</span>
               <button
                 onClick={() => copyToClipboard(bankingInfo.accountNumber, 'Account Number')}
                 className="text-gray-500 hover:text-gray-700"
@@ -166,7 +156,7 @@ const BankingDetailsCard = ({ user }) => {
                 <MdContentCopy />
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">{bankingInfo.accountType} Account</p>
+            <p className="text-xs text-gray-500 mt-1">{bankingInfo.accountType}</p>
           </div>
 
           {/* IFSC Code */}
