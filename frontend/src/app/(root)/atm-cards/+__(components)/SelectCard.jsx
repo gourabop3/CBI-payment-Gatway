@@ -1,4 +1,3 @@
-
 "use client";
 import { Fragment, useEffect, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
@@ -6,6 +5,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { RiExpandUpDownLine as ChevronUpDownIcon } from "react-icons/ri";
 import { FaCheck as CheckIcon } from "react-icons/fa6";
 import { useMainContext } from '@/context/MainContext';
+import { generateAccountNumber, formatAccountNumber } from '@/utils/accountUtils';
  
 
 export default function SelectCard() {
@@ -21,11 +21,24 @@ if(selected){
 
 
   console.log(atm)
+
+  // Helper to get formatted account number for an ATM record
+  const getFormattedAccountNumber = (atmItem)=>{
+    if(!user) return atmItem.account;
+    const accountObj = user?.account_no?.find(acc=>acc._id === atmItem.account);
+    if(!accountObj) return atmItem.account;
+    const accNum = generateAccountNumber(user._id, accountObj._id, accountObj.ac_type);
+    return formatAccountNumber(accNum);
+  }
+
+  const selectedAtm = user?.atms?.find(a=>a._id===selected);
+  const selectedLabel = selectedAtm ? getFormattedAccountNumber(selectedAtm) : selected;
+
   return ( 
       <Listbox value={selected} onChange={setSelected}>
         <div className="relative mt-1">
           <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
-            <span className="block truncate">{selected}</span>
+            <span className="block truncate">{selectedLabel}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon
                 className="h-5 w-5 text-gray-400"
@@ -57,7 +70,7 @@ if(selected){
                           selected ? 'font-medium' : 'font-normal'
                         }`}
                       >
-                       {` ${atm?._id} - ${atm?.card_type}`}
+                       {` ${getFormattedAccountNumber(atm)} - ${atm?.card_type}`}
                       </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-rose-600">

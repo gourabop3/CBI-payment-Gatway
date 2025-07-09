@@ -5,6 +5,13 @@ import NotValidUser from './+__(components)/NotValidUser';
 import HeaderName from '@/components/HeaderName';
 import RenGenerateModal from './+__(components)/RenGenerateModal';
 
+// Helper function to truncate long strings like API keys/hashes for cleaner UI
+const truncateString = (str, front = 6, back = 4) => {
+  if (!str) return '';
+  if (str.length <= front + back) return str;
+  return `${str.slice(0, front)}...${str.slice(-back)}`;
+};
+
 const ApiKeyPage = () => {
 
         const {user} = useMainContext()
@@ -42,8 +49,8 @@ const ApiKeyPage = () => {
                 <tbody>
                   <tr className='py-4'>
                     <td className='py-4 text-center '>1</td>
-                    <td className='py-4 text-center '>{user?.api_keys?.api_secret}</td>
-                    <td className='py-4 text-center '>{user?.api_keys?.api_hash}</td>
+                    <td className='py-4 text-center '>{truncateString(user?.api_keys?.api_secret)}</td>
+                    <td className='py-4 text-center '>{truncateString(user?.api_keys?.api_hash)}</td>
                     <td className='border-r text-center py-4'>
                         <RenGenerateModal/>
                     </td>

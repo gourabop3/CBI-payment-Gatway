@@ -7,12 +7,13 @@ import { TbCoins } from "react-icons/tb";
 import { axiosClient } from '@/utils/AxiosClient';
 import { toast } from 'react-toastify';
 import { useMainContext } from '@/context/MainContext';
+import { generateAccountNumber, formatAccountNumber } from '@/utils/accountUtils';
 
 const ClaimFDModel = ({id,methods:{isUpdate,setIsUpdate}}) => {
     let [isOpen, setIsOpen] = useState(false)
     const [loading,setLoading]= useState(false)
     const [data,setData]  = useState(null)
-    const {fetchUserProfile} = useMainContext()
+    const {fetchUserProfile, user} = useMainContext()
 
     function closeModal() {
       setIsOpen(false)
@@ -68,6 +69,15 @@ const ClaimFDModel = ({id,methods:{isUpdate,setIsUpdate}}) => {
         fetchFBInformation()
     },[])
 
+    // Compute the formatted account number so it matches the style shown on the home-page
+    const formattedAccountNumber = (() => {
+      if (!data || !user) return '';
+      const accountObj = user?.account_no?.find(acc => acc._id === data?.account);
+      if (!accountObj) return data?.account || '';
+      const accNum = generateAccountNumber(user._id, accountObj._id, accountObj.ac_type);
+      return formatAccountNumber(accNum);
+    })();
+
     if(loading){
         return <>
                 <div className=""></div>
@@ -122,7 +132,7 @@ const ClaimFDModel = ({id,methods:{isUpdate,setIsUpdate}}) => {
                            <tbody className='w-full'>
                            <tr className='border text-center w-full'>
                                 <th className='text-center py-3 border'>Account No</th>
-                                <td className='text-center py-3 border  px-10'>{data?.account}</td>
+                                <td className='text-center py-3 border  px-10'>{formattedAccountNumber}</td>
                             </tr>
                            
                            <tr className='border text-center w-full'>
