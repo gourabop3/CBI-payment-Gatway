@@ -20,6 +20,9 @@ const routes =[{
 },{
     path:'/api-key',
     route:require("./api-keys")
+},{
+    path:'/admin',
+    route:require('./admin')
 }]
 
 routes.forEach((cur)=>{
