@@ -109,13 +109,29 @@ export default function AddAmountModel({id}) {
       order_id: data.order_id,
       
       // Enhanced payment handlers
-      handler: function (response) {
+      handler: async function (response) {
         console.log("Payment successful:", response);
         toast.success("Payment completed successfully! Verifying with backend...");
-        
+
+        try {
+          /*
+            Explicitly trigger payment verification on the backend. This ensures the balance is
+            updated even if Razorpay is unable to reach our callback_url due to network or
+            allow-listing issues.
+          */
+          await axiosClient.post(`/amount/payment/${data.txn_id}`, {
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+          });
+        } catch (verificationErr) {
+          console.error("Immediate backend verification failed", verificationErr);
+          // We will still fall back to polling below.
+        }
+
         // Close the modal immediately
         closeModal();
-        
+
         // Start polling for transaction status
         setTimeout(async () => {
           const verified = await pollTransactionStatus(data.txn_id);
@@ -124,8 +140,8 @@ export default function AddAmountModel({id}) {
           }
           setLoading(false);
         }, 1000); // Small delay to allow backend processing to start
-        
-        // The callback_url will handle the actual verification
+
+        // The callback_url will also handle verification if reachable.
       },
       
       "modal": {
