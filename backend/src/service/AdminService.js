@@ -26,15 +26,24 @@ class AdminService {
     }
 
     static async updateUserProfile(userId, body){
-        await UserModel.findByIdAndUpdate(userId,{
-            name:body.name,
-            email:body.email
-        });
-        await ProfileModel.findOneAndUpdate({user:userId},{
-            mobile_no:body.mobile_no,
-            bio:body.bio,
-            lastProfileUpdate:new Date()
-        })
+        await UserModel.findByIdAndUpdate(
+            userId,
+            {
+                name: body.name,
+                email: body.email
+            },
+            { new: true, runValidators: true }
+        );
+
+        await ProfileModel.findOneAndUpdate(
+            { user: userId },
+            {
+                mobile_no: body.mobile_no,
+                bio: body.bio,
+                lastProfileUpdate: new Date()
+            },
+            { new: true }
+        );
         return {msg:'Profile updated by admin'}
     }
 
