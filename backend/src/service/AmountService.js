@@ -9,16 +9,22 @@ class AmountService{
 
     static async addMoney(body,user){
  
+      // Ensure numeric amount (allowing 2-decimal precision)
+      const amountINR = parseFloat(body.amount);
+      if (isNaN(amountINR) || amountINR <= 0) {
+        throw new ApiError(400, "Invalid amount supplied");
+      }
+
       const transaction=  await TransactionModel.create({
             account:body.account_no,
             user:user,
-            amount:parseInt(body.amount),
+            amount:amountINR,
             type:'credit',
             remark:'Payment Initiated - Waiting for Confirmation'
         })
 
         const options = {
-            amount: parseInt(body.amount)*100,
+            amount: Math.round(amountINR*100),  // convert to paise
             currency: 'INR',
             receipt: transaction._id
         };
