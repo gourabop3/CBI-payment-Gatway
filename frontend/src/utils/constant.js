@@ -1,8 +1,11 @@
 export const checkout_url ="https://checkout.razorpay.com/v1/checkout.js"
 
-export const razorpayCallBackUrl  = (txn_id)=>{
-    return `${process.env.NEXT_PUBLIC_BASE_URI}/amount/payment/${txn_id}`
-}
+export const razorpayCallBackUrl = txn_id => {
+  const base = process.env.NEXT_PUBLIC_BASE_URI?.replace(/\/$/, "") || "";
+  // Guarantee the API prefix /api/v1 is present exactly once
+  const apiBase = base.endsWith("/api/v1") ? base : `${base}/api/v1`;
+  return `${apiBase}/amount/payment/${txn_id}`;
+};
 
 export const onlyInputNumber = (e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')
 
