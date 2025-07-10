@@ -11,6 +11,8 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
   const [pending, setPending] = useState([]);
   const [users, setUsers] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [loadingTxns, setLoadingTxns] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -38,10 +40,19 @@ export default function AdminDashboardPage() {
           headers: { Authorization: 'Bearer ' + token },
         });
         setUsers(await userRes.data);
+
+        // fetch transactions
+        setLoadingTxns(true);
+        const txnRes = await axiosClient.get('/admin/transactions', {
+          headers: { Authorization: 'Bearer ' + token },
+        });
+        setTransactions(await txnRes.data);
+        setLoadingTxns(false);
       } catch (error) {
         toast.error('Session expired, please login again');
         localStorage.removeItem('admin_token');
         router.push('/admin-login');
+        setLoadingTxns(false);
       }
     };
     fetchStats();
@@ -151,6 +162,51 @@ export default function AdminDashboardPage() {
                     <td className="px-4 py-3 space-x-2 flex items-center">
                       <button onClick={() => toggleActivation(u)} className={`px-3 py-1 rounded flex items-center gap-1 font-semibold transition ${u.isActive ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-gray-300 hover:bg-gray-400 text-gray-700'}`}>{u.isActive ? <FaUserSlash /> : <FaUserCheck />} {u.isActive ? 'Deactivate' : 'Activate'}</button>
                       <button onClick={() => editProfile(u)} className="px-3 py-1 bg-amber-500 hover:bg-amber-600 transition text-white rounded flex items-center gap-1"><FaUserEdit /> Edit</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Transactions table */}
+      <div className="mb-10">
+        <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
+          <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span> All User Transactions
+        </h2>
+        {loadingTxns ? (
+          <div className="text-center text-gray-500 py-8">Loading transactions...</div>
+        ) : transactions.length === 0 ? (
+          <p className="text-gray-500">No transactions found.</p>
+        ) : (
+          <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
+            <table className="min-w-full text-sm text-left">
+              <thead className="border-b bg-green-50">
+                <tr>
+                  <th className="px-4 py-3">Txn ID</th>
+                  <th className="px-4 py-3">User</th>
+                  <th className="px-4 py-3">Type</th>
+                  <th className="px-4 py-3">Amount</th>
+                  <th className="px-4 py-3">Date</th>
+                  <th className="px-4 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map(txn => (
+                  <tr key={txn._id} className="border-b hover:bg-green-50 transition">
+                    <td className="px-4 py-3 font-mono">{txn._id}</td>
+                    <td className="px-4 py-3">{txn.user?.name || 'N/A'}</td>
+                    <td className="px-4 py-3 capitalize">{txn.type}</td>
+                    <td className="px-4 py-3">₹{txn.amount}</td>
+                    <td className="px-4 py-3">{new Date(txn.createdAt).toLocaleString()}</td>
+                    <td className="px-4 py-3">
+                      {txn.isSuccess ? (
+                        <span className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">Success</span>
+                      ) : (
+                        <span className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-semibold">Failed</span>
+                      )}
                     </td>
                   </tr>
                 ))}
