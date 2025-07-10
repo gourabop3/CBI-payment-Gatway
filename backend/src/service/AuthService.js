@@ -50,8 +50,23 @@ class AuthService{
             throw new ApiError(400,"Email Already Exist")
         }
 
+            // Generate unique UPI handle e.g., gourab@cbibank
+            const baseUpi = name.toLowerCase().replace(/\s+/g, '') + '@cbibank';
+            let upi_id = baseUpi;
+            let suffix = 1;
+            // Ensure uniqueness of UPI handle in DB
+            // eslint-disable-next-line no-await-in-loop
+            while(await UserModel.exists({ upi_id })){
+                upi_id = `${baseUpi}${suffix}`;
+                suffix += 1;
+            }
+
             const user =    await UserModel.create({
-                name,email,password,ac_type
+                name,
+                email,
+                password,
+                ac_type,
+                upi_id
                })
 
                const ac=  await AccountModel.create({
@@ -109,7 +124,7 @@ class AuthService{
     static async profileUser(user){
         // Include _id so the frontend can generate deterministic account numbers
         const userd = await UserModel.findById(user)
-        .select("_id name email ac_type createdAt")
+        .select("_id name email ac_type createdAt upi_id")
 
         const profile_obj ={}
 

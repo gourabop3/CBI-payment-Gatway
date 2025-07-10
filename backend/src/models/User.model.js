@@ -34,6 +34,14 @@ const schema = new mongoose.Schema({
     isActive:{
         type:Boolean,
         default:true
+    },
+
+    // Unique UPI handle for the user (e.g., gourab@cbibank)
+    upi_id:{
+        type:String,
+        unique:true,
+        sparse:true,
+        trim:true
     }
 },{
     timestamps:true

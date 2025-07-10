@@ -11,6 +11,9 @@ class ATMCardValidation{
         body('pin').notEmpty().withMessage("PIN is Required").isLength({max:4,min:4}).withMessage("PIN Length Should be equal to 4"),
         body('amount').isNumeric().notEmpty().withMessage("Amount is Required"),
 
+        // Optional location field for ATM withdrawals (e.g., city or ATM branch name)
+        body('location').optional().isString().withMessage("Location must be a string"),
+
         
 
     ]
