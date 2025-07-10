@@ -18,6 +18,7 @@ import {
 } from 'react-icons/md';
 import { FaCheckCircle, FaSpinner } from 'react-icons/fa';
 import { BiMoney } from 'react-icons/bi';
+import { useRouter } from 'next/navigation';
 
 const RechargePage = () => {
   const [activeTab, setActiveTab] = useState('mobile');
@@ -34,6 +35,7 @@ const RechargePage = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [operatorDetails, setOperatorDetails] = useState(null);
   const { user } = useMainContext();
+  const router = useRouter();
 
   // Get user's account information
   const primaryAccount = user?.account_no?.[0];
@@ -189,17 +191,10 @@ const RechargePage = () => {
       if (response.data.success) {
         if (activeTab === 'mobile') {
           const { transactionId, details } = response.data;
-          toast.success(
-            <div style={{ color: '#059669' }}>
-              <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 4 }}>Recharge Successful!</div>
-              <div><b>Txn ID:</b> <span style={{ fontFamily: 'monospace' }}>{transactionId || 'N/A'}</span></div>
-              <div><b>Mobile:</b> {details?.mobileNumber || rechargeData.mobileNumber}</div>
-              <div><b>Amount:</b> ₹{details?.amount || rechargeData.amount}</div>
-            </div>,
-            { autoClose: 7000 }
-          );
+          router.push(`/recharge/recharge-success?txn=${transactionId}&mobile=${details?.mobileNumber || rechargeData.mobileNumber}&amount=${details?.amount || rechargeData.amount}&operator=${details?.operator || rechargeData.operator}`);
         } else {
           toast.success('Bill payment completed successfully!');
+          // Optionally, you can redirect to a bill success page
         }
         // Reset form
         setRechargeData({
@@ -212,8 +207,7 @@ const RechargePage = () => {
         });
         setPlans([]);
         setShowConfirmation(false);
-        // Refresh user data
-        window.location.reload();
+        // No reload here, as we redirect
       }
     } catch (error) {
       toast.error(error?.response?.data?.msg || `${activeTab === 'mobile' ? 'Recharge' : 'Bill payment'} failed`);
