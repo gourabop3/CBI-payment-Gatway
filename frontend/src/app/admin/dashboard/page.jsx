@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { axiosClient } from '@/utils/AxiosClient';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { FaCheckCircle, FaTimesCircle, FaUserEdit, FaUserSlash, FaUserCheck } from 'react-icons/fa';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -56,81 +57,108 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <button onClick={adminLogout} className="bg-rose-600 text-white px-4 py-1 rounded">Logout</button>
+    <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 to-purple-100">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-extrabold text-blue-900 tracking-tight drop-shadow">Admin Dashboard</h1>
+        <button onClick={adminLogout} className="bg-rose-600 hover:bg-rose-700 transition text-white px-5 py-2 rounded shadow font-semibold">Logout</button>
       </div>
-      <div className="bg-white p-4 rounded shadow">
-        <p className="text-xl">{stats.msg}</p>
-        <p className="text-lg mt-2">User count: {stats.userCount}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <span className="text-2xl font-bold text-blue-700">{stats.userCount}</span>
+          <span className="text-gray-500 mt-1">Total Users</span>
+        </div>
+        <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <span className="text-2xl font-bold text-green-600">{pending.length}</span>
+          <span className="text-gray-500 mt-1">Pending KYC</span>
+        </div>
+        <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <span className="text-2xl font-bold text-purple-700">{stats.msg}</span>
+          <span className="text-gray-500 mt-1">System Status</span>
+        </div>
       </div>
 
-      <h2 className="text-2xl font-bold my-6">Pending KYC Applications</h2>
-      {pending.length === 0 ? <p>No pending applications.</p> : (
-        <div className="overflow-x-auto bg-white shadow rounded">
-          <table className="min-w-full text-sm text-left">
-            <thead className="border-b">
-              <tr>
-                <th className="px-4 py-2">User</th>
-                <th className="px-4 py-2">Aadhaar</th>
-                <th className="px-4 py-2">PAN</th>
-                <th className="px-4 py-2">Docs</th>
-                <th className="px-4 py-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pending.map((app) => (
-                <tr key={app._id} className="border-b">
-                  <td className="px-4 py-2">{app.user?.name}<br/><span className="text-xs text-gray-500">{app.user?.email}</span></td>
-                  <td className="px-4 py-2">{app.aadhaarNumber}</td>
-                  <td className="px-4 py-2">{app.panNumber}</td>
-                  <td className="px-4 py-2 space-x-2">
-                    <a href={app.documents?.aadhaarImage} target="_blank" className="text-blue-600 underline">Aadhaar</a>
-                    <a href={app.documents?.panImage} target="_blank" className="text-blue-600 underline">PAN</a>
-                  </td>
-                  <td className="px-4 py-2 space-x-2">
-                    <button onClick={() => handleApprove(app._id)} className="px-3 py-1 bg-green-600 text-white rounded">Approve</button>
-                    <button onClick={() => handleReject(app._id)} className="px-3 py-1 bg-red-600 text-white rounded">Reject</button>
-                  </td>
+      <div className="mb-10">
+        <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
+          <FaUserCheck className="text-green-500" /> Pending KYC Applications
+        </h2>
+        {pending.length === 0 ? <p className="text-gray-500">No pending applications.</p> : (
+          <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
+            <table className="min-w-full text-sm text-left">
+              <thead className="border-b bg-blue-50">
+                <tr>
+                  <th className="px-4 py-3">User</th>
+                  <th className="px-4 py-3">Aadhaar</th>
+                  <th className="px-4 py-3">PAN</th>
+                  <th className="px-4 py-3">Docs</th>
+                  <th className="px-4 py-3">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {pending.map((app) => (
+                  <tr key={app._id} className="border-b hover:bg-blue-50 transition">
+                    <td className="px-4 py-3">
+                      <span className="font-semibold text-blue-900">{app.user?.name}</span><br/>
+                      <span className="text-xs text-gray-500">{app.user?.email}</span>
+                    </td>
+                    <td className="px-4 py-3">{app.aadhaarNumber}</td>
+                    <td className="px-4 py-3">{app.panNumber}</td>
+                    <td className="px-4 py-3 space-x-2">
+                      <a href={app.documents?.aadhaarImage} target="_blank" className="text-blue-600 underline font-medium">Aadhaar</a>
+                      <a href={app.documents?.panImage} target="_blank" className="text-blue-600 underline font-medium">PAN</a>
+                    </td>
+                    <td className="px-4 py-3 space-x-2 flex items-center">
+                      <button onClick={() => handleApprove(app._id)} className="px-3 py-1 bg-green-600 hover:bg-green-700 transition text-white rounded flex items-center gap-1"><FaCheckCircle /> Approve</button>
+                      <button onClick={() => handleReject(app._id)} className="px-3 py-1 bg-red-600 hover:bg-red-700 transition text-white rounded flex items-center gap-1"><FaTimesCircle /> Reject</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Users table */}
-      <h2 className="text-2xl font-bold my-6">Users</h2>
-      {users.length === 0 ? <p>No users.</p> : (
-        <div className="overflow-x-auto bg-white shadow rounded mb-6">
-          <table className="min-w-full text-sm text-left">
-            <thead className="border-b">
-              <tr>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Active</th>
-                <th className="px-4 py-2">Joined</th>
-                <th className="px-4 py-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u._id} className="border-b">
-                  <td className="px-4 py-2">{u.name}</td>
-                  <td className="px-4 py-2">{u.email}</td>
-                  <td className="px-4 py-2">{u.isActive ? 'Yes' : 'No'}</td>
-                  <td className="px-4 py-2">{new Date(u.createdAt).toLocaleDateString()}</td>
-                  <td className="px-4 py-2 space-x-2">
-                    <button onClick={() => toggleActivation(u)} className="px-3 py-1 bg-indigo-600 text-white rounded">{u.isActive ? 'Deactivate' : 'Activate'}</button>
-                    <button onClick={() => editProfile(u)} className="px-3 py-1 bg-amber-600 text-white rounded">Edit</button>
-                  </td>
+      <div className="mb-10">
+        <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
+          <FaUserEdit className="text-amber-500" /> Users
+        </h2>
+        {users.length === 0 ? <p className="text-gray-500">No users.</p> : (
+          <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
+            <table className="min-w-full text-sm text-left">
+              <thead className="border-b bg-purple-50">
+                <tr>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Active</th>
+                  <th className="px-4 py-3">Joined</th>
+                  <th className="px-4 py-3">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {users.map(u => (
+                  <tr key={u._id} className="border-b hover:bg-purple-50 transition">
+                    <td className="px-4 py-3 font-semibold text-blue-900">{u.name}</td>
+                    <td className="px-4 py-3">{u.email}</td>
+                    <td className="px-4 py-3">
+                      {u.isActive ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold"><FaUserCheck /> Active</span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-semibold"><FaUserSlash /> Inactive</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">{new Date(u.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 space-x-2 flex items-center">
+                      <button onClick={() => toggleActivation(u)} className={`px-3 py-1 rounded flex items-center gap-1 font-semibold transition ${u.isActive ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-gray-300 hover:bg-gray-400 text-gray-700'}`}>{u.isActive ? <FaUserSlash /> : <FaUserCheck />} {u.isActive ? 'Deactivate' : 'Activate'}</button>
+                      <button onClick={() => editProfile(u)} className="px-3 py-1 bg-amber-500 hover:bg-amber-600 transition text-white rounded flex items-center gap-1"><FaUserEdit /> Edit</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
