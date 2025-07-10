@@ -23,8 +23,9 @@ const schema = new mongoose.Schema({
             image_uri:String,
             public_id:String
         },
+        // Default to empty strings so no placeholder avatar is set. The user can upload their own image.
         default:{
-             image_uri:faker.image.avatar(),
+             image_uri:'',
             public_id:''
         }
     },
