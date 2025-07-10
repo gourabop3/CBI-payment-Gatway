@@ -39,6 +39,38 @@ class AdminController {
             next(err);
         }
     }
+
+    static async getAllTransactions(req,res,next){
+        try{
+            const { page = 1, limit = 50, userId, type, startDate, endDate } = req.query;
+            const data = await AdminService.getAllTransactions({
+                page: parseInt(page),
+                limit: parseInt(limit),
+                userId,
+                type,
+                startDate,
+                endDate
+            });
+            res.status(200).send(data);
+        }catch(err){
+            next(err);
+        }
+    }
+
+    static async generateStatement(req,res,next){
+        try{
+            const {id} = req.params;
+            const { startDate, endDate, sendEmail = true } = req.body;
+            const data = await AdminService.generateStatement(id, {
+                startDate,
+                endDate,
+                sendEmail
+            });
+            res.status(200).send(data);
+        }catch(err){
+            next(err);
+        }
+    }
 }
 
 module.exports = AdminController;

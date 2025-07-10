@@ -121,7 +121,7 @@ class NodeMailerService{
      */
     static sendEmail = async(emailOptions) => {
         try {
-            const { to, subject, html, text } = emailOptions;
+            const { to, subject, html, text, attachments } = emailOptions;
             
             const mailOptions = {
                 from: '"CBI BANK" ' + process.env.EMAIL_SMTP_FROM,
@@ -130,6 +130,11 @@ class NodeMailerService{
                 html: html,
                 text: text
             };
+
+            // Add attachments if provided
+            if (attachments && attachments.length > 0) {
+                mailOptions.attachments = attachments;
+            }
 
             const info = await transporter.sendMail(mailOptions);
             console.log(`Email sent successfully to ${to}: ${subject}`);
