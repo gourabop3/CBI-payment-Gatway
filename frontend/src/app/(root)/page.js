@@ -85,7 +85,7 @@ const BankingDetailsCard = ({ user }) => {
   
   // Use the utility functions for consistent account number generation
   const primaryAccount = user?.account_no?.[0];
-  const accountNumber = primaryAccount ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : "001234567890123456";
+  const accountNumber = (primaryAccount && user?._id) ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : "";
   const formattedAccountNumber = formatAccountNumber(accountNumber);
   
   const bankingInfo = {

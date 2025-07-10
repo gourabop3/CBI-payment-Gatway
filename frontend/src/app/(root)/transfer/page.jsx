@@ -24,7 +24,7 @@ const TransferPage = () => {
 
   // Get user's account information
   const primaryAccount = user?.account_no?.[0];
-  const userAccountNumber = primaryAccount ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : '';
+  const userAccountNumber = (primaryAccount && user?._id) ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : '';
   const userBalance = primaryAccount?.amount || 0;
 
   const handleInputChange = (e) => {
