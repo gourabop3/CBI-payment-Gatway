@@ -69,6 +69,11 @@ const Schema = new mongoose.Schema({
     fdId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'fixdeposit'
+    },
+    // Recharge related fields
+    rechargeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'recharge'
     }
 },{
     timestamps:true

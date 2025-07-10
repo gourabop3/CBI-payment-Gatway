@@ -160,16 +160,41 @@ class ATMCardService{
         })
 
         // transaction 
-        await TransactionModel.create({
-            type:'debit',
+        const transaction = await TransactionModel.create({
+            type:'atm_withdrawal',
             account:account._id,
             user:user,
             isSuccess:true,
             amount:amount_req,
-            remark:`amount withdrawl  ${amount_req}`
+            remark:`ATM Withdrawal - ₹${amount_req} at ${new Date().toLocaleString()}`,
+            atmId: atm_details.card_no.slice(-4),
+            atmLocation: 'ATM Location - Main Branch' // In real scenario, this would come from ATM location data
         })
-            
 
+        // Send ATM transaction notifications
+        setImmediate(async () => {
+            try {
+                const NotificationService = require("./NotificationService");
+                
+                await NotificationService.sendATMTransactionEmail(
+                    user_exist.name,
+                    user_exist.email,
+                    amount_req,
+                    'ATM Location - Main Branch',
+                    'Withdrawal',
+                    atm_details.card_no.slice(-4)
+                );
+
+                await NotificationService.createAnnouncement(
+                    user,
+                    'atm_transaction',
+                    'ATM Withdrawal Successful',
+                    `₹${amount_req} withdrawn from ATM using card ending ${atm_details.card_no.slice(-4)}`
+                );
+            } catch (emailError) {
+                console.error("Failed to send ATM transaction notifications:", emailError);
+            }
+        });
 
         return {
            msg:"Amount Withdrawl"

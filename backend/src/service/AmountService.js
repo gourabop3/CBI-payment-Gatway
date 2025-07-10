@@ -423,6 +423,33 @@ class AmountService{
             isSuccess:true
         })
 
+        // Send account opening notifications
+        setImmediate(async () => {
+            try {
+                const { generateAccountNumber, getAccountTypeDisplayName } = require("../utils/accountNumberUtils");
+                const NotificationService = require("./NotificationService");
+                
+                const accountNumber = generateAccountNumber(user, ac._id, ac.ac_type);
+                const accountType = getAccountTypeDisplayName(ac.ac_type);
+                
+                await NotificationService.sendAccountOpeningEmail(
+                    exist_user.name,
+                    exist_user.email,
+                    accountNumber,
+                    accountType
+                );
+
+                await NotificationService.createAnnouncement(
+                    user,
+                    'account_opening',
+                    'Welcome to CBI Bank!',
+                    `Your ${accountType} has been successfully opened. Account Number: ${accountNumber}`
+                );
+            } catch (emailError) {
+                console.error("Failed to send account opening notifications:", emailError);
+            }
+        });
+
         return {
             msg:"Account Created :)"
         }

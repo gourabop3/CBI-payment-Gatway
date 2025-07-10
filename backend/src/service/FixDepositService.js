@@ -32,7 +32,7 @@ class FixDepositService{
         const interest_amount = parseInt(body.amount)*(0.1/100)
 
         // apply for fd
-        await FixDepositModel.create({
+        const newFD = await FixDepositModel.create({
             account:body.account,
             amount:parseInt(body.amount),
             apply_for:body.apply_for,
@@ -55,6 +55,38 @@ class FixDepositService{
         await AccountModel.findByIdAndUpdate(existAccount._id,{
             amount:existAccount.amount-parseInt(body.amount)
         })
+
+        // Send FD opening notifications
+        setImmediate(async () => {
+            try {
+                const { UserModel } = require("../models/User.model");
+                const NotificationService = require("./NotificationService");
+                
+                const userDoc = await UserModel.findById(user).select("name email");
+                if (userDoc) {
+                    const maturityDate = new Date();
+                    maturityDate.setMonth(maturityDate.getMonth() + parseInt(body.apply_for));
+                    
+                    await NotificationService.sendFDEmail(
+                        userDoc.name,
+                        userDoc.email,
+                        parseInt(body.amount),
+                        'opened',
+                        maturityDate.toLocaleDateString(),
+                        newFD._id.toString()
+                    );
+
+                    await NotificationService.createAnnouncement(
+                        user,
+                        'fd_opened',
+                        'Fixed Deposit Opened Successfully',
+                        `₹${body.amount} FD opened for ${body.apply_for} months with attractive interest rates`
+                    );
+                }
+            } catch (emailError) {
+                console.error("Failed to send FD opening notifications:", emailError);
+            }
+        });
 
         return {
             msg:"Fund Deposit Success "
@@ -142,6 +174,35 @@ await FixDepositModel.findByIdAndUpdate( id,{
     isClaimed:true,
     claimed_date:Date.now()
 })
+
+// Send FD claiming notifications
+setImmediate(async () => {
+    try {
+        const { UserModel } = require("../models/User.model");
+        const NotificationService = require("./NotificationService");
+        
+        const userDoc = await UserModel.findById(user).select("name email");
+        if (userDoc) {
+            await NotificationService.sendFDEmail(
+                userDoc.name,
+                userDoc.email,
+                parseFloat(totalClaimAmount),
+                'claimed',
+                null,
+                foundFD._id.toString()
+            );
+
+            await NotificationService.createAnnouncement(
+                user,
+                'fd_claimed',
+                'Fixed Deposit Claimed Successfully',
+                `₹${totalClaimAmount.toFixed(2)} credited to your account (Principal: ₹${foundFD.amount} + Interest: ₹${totalamount.toFixed(2)})`
+            );
+        }
+    } catch (emailError) {
+        console.error("Failed to send FD claiming notifications:", emailError);
+    }
+});
 
 return {
     msg:"FD Claimed :)"
