@@ -57,6 +57,13 @@ class AuthService{
                 ac_type:ac_type
             }) 
 
+            // Link the newly created account with the user so that subsequent
+            // `.populate('account_no')` queries (used by RechargeService, TransferService, etc.)
+            // can correctly retrieve the user's primary account.
+            await UserModel.findByIdAndUpdate(user._id, {
+                $push: { account_no: ac._id }
+            });
+
 
             await TransactionModel.create({
                 user:user._id,
