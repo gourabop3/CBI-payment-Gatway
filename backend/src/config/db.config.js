@@ -7,8 +7,8 @@ exports.ConnectDB = async()=>{
         await mongoose.connect(mongoUri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 10000, // How long to wait for a server to be discovered
-            connectTimeoutMS: 10000,         // How long to wait for a connection to be established
+            serverSelectionTimeoutMS: 30000,
+            connectTimeoutMS: 30000,
             socketTimeoutMS: 45000,          // How long a send or receive on a socket can take
         });
 
