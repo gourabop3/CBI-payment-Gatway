@@ -158,11 +158,13 @@ const TransferPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <p className="text-sm text-gray-600">From Account</p>
-                <p className="font-mono font-semibold">{formatAccountNumber(userAccountNumber)}</p>
+                <p className="font-mono font-semibold">
+                  {userAccountNumber ? formatAccountNumber(userAccountNumber) : 'Loading...'}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Account Holder</p>
-                <p className="font-semibold">{user?.name}</p>
+                <p className="font-semibold">{user?.name || 'Loading...'}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Available Balance</p>
