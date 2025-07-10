@@ -38,7 +38,7 @@ export default function UseCardModel({type}) {
   const onSubmitHandler = async(values,{resetForm})=>{
     try {
         setLoading(true)
-        const response = await axiosClient.post(`/atm/withdrawal/${atm._id}`,values,{
+        const response = await axiosClient.post(`/atm-card/withdrawal/${atm._id}`,values,{
             headers:{
                 'Authorization':'Bearer '+localStorage.getItem("token")
             }
