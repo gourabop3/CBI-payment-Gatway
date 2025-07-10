@@ -8,42 +8,54 @@ const { TransactionModel } = require("../models/Transactions.model")
 class ATMCardService{
 
 
-    static addNewCard = async(user,body)=>{
-
-    const   exist_atm= await ATMmodel.findOne({
-            account:body.account,
-            card_type:body.card_type
-
-        })
-
-        if(exist_atm){
-            throw new ApiError(400,"Card Already Exists")
+    static addNewCard = async (user, body) => {
+        // Ensure the account exists and belongs to the current user
+        const accountDoc = await AccountModel.findById(body.account);
+        if (!accountDoc) {
+            throw new ApiError(404, "Account Not Found");
         }
 
-        const generateATMNO = ()=>{
-         return   random(1000, 9999)+""+random(1000, 9999)+""+random(1000, 9999)+""+random(1000, 9999)
+        if (accountDoc.user.toString() !== user.toString()) {
+            throw new ApiError(403, "This account does not belong to you");
         }
 
-        const cvv_no = random(100, 999)
+        // Auto-heal: persist linkage in user.account_no if missing
+        await UserModel.findByIdAndUpdate(user, {
+            $addToSet: { account_no: accountDoc._id }
+        });
 
-        const date = new Date()
-        date.setMonth(date.getMonth()+3)
-        const expiry = date
+        // Prevent multiple cards of the same type for the same account
+        const exist_atm = await ATMmodel.findOne({
+            account: body.account,
+            card_type: body.card_type,
+        });
+
+        if (exist_atm) {
+            throw new ApiError(400, "Card Already Exists");
+        }
+
+        const generateATMNO = () =>
+            random(1000, 9999) + "" + random(1000, 9999) + "" + random(1000, 9999) + "" + random(1000, 9999);
+
+        const cvv_no = random(100, 999);
+
+        const date = new Date();
+        date.setMonth(date.getMonth() + 3);
+        const expiry = date;
 
         await ATMmodel.create({
-            account:body.account,
-            card_no:generateATMNO(),
-            card_type:body.card_type,
-            cvv:cvv_no,
-            pin:body.pin,
-            expiry:expiry,
-            user
-        })
-
+            account: body.account,
+            card_no: generateATMNO(),
+            card_type: body.card_type,
+            cvv: cvv_no,
+            pin: body.pin,
+            expiry: expiry,
+            user,
+        });
 
         return {
-           msg:"Card Generated :)"
-        }
+            msg: "Card Generated :)",
+        };
     }
 
     static getATMById = async(user,id)=>{
