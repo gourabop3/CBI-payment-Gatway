@@ -16,7 +16,6 @@ import { IoCardSharp } from "react-icons/io5";
 import { FaKey } from "react-icons/fa";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { MdPhoneAndroid } from "react-icons/md";
-import { MdQrCode } from "react-icons/md";
 
 const RootTemplate = ({children}) => {
 
@@ -65,7 +64,6 @@ const CustomMenu = ({link,text,Icon})=>{
       <CustomMenu link={'/amount'} text={'Account'} Icon={GrCurrency} />
       <CustomMenu link={'/transfer'} text={'Transfer'} Icon={MdTransferWithinAStation} />
       <CustomMenu link={'/recharge'} text={'Mobile & Bills'} Icon={MdPhoneAndroid} />
-      <CustomMenu link={'/upi'} text={'UPI'} Icon={MdQrCode} />
       <CustomMenu link={'/fd-amount'} text={'Fix Deposit'} Icon={GiReceiveMoney} />
       <CustomMenu link={'/transactions'} text={'Transactions'} Icon={PiNewspaperClipping} />
       <CustomMenu link={'/atm-cards'} text={'ATM Cards'} Icon={IoCardSharp} />
