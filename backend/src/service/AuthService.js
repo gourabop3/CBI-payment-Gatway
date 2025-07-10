@@ -198,6 +198,9 @@ class AuthService{
             throw new ApiError(401,"Profile Not Found")
         }
 
+        // Ensure _id field is present in the merged object (some clients rely on it)
+        profile_obj['_id'] = userd._id;
+
         // api key credentials
 
             const existApiKeyDoc = await APIKEYModel.findOne({user,isOnWorking:true})
