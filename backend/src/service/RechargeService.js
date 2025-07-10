@@ -29,13 +29,31 @@ class RechargeService {
             throw new ApiError(400, "Minimum recharge amount is ₹10");
         }
 
-        // Get user and account details
-        const user = await UserModel.findById(userId).populate('account_no');
-        if (!user || !user.account_no || user.account_no.length === 0) {
-            throw new ApiError(404, "User account not found");
+        // Get user and account details (auto-heal missing account linkage)
+        let user = await UserModel.findById(userId).populate('account_no');
+        if (!user) {
+            throw new ApiError(404, "User not found");
         }
 
-        const account = user.account_no[0]; // Primary account
+        // If the user document doesn't yet have account_no references, attempt to fetch accounts directly
+        if (!user.account_no || user.account_no.length === 0) {
+            const accounts = await AccountModel.find({ user: userId });
+            if (accounts.length === 0) {
+                throw new ApiError(404, "User account not found");
+            }
+
+            // Persist the linkage for future calls
+            await UserModel.findByIdAndUpdate(userId, {
+                $addToSet: {
+                    account_no: { $each: accounts.map(acc => acc._id) }
+                }
+            });
+
+            // Re-populate so the rest of the logic can continue unchanged
+            user = await UserModel.findById(userId).populate('account_no');
+        }
+
+        const account = user.account_no[0]; // Primary (first) account
 
         // Check sufficient balance
         if (account.amount < amount) {
@@ -180,10 +198,23 @@ class RechargeService {
             throw new ApiError(400, "Minimum bill payment amount is ₹10");
         }
 
-        // Get user and account details
-        const user = await UserModel.findById(userId).populate('account_no');
-        if (!user || !user.account_no || user.account_no.length === 0) {
-            throw new ApiError(404, "User account not found");
+        // Get user and account details (auto-heal missing account linkage)
+        let user = await UserModel.findById(userId).populate('account_no');
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        if (!user.account_no || user.account_no.length === 0) {
+            const accounts = await AccountModel.find({ user: userId });
+            if (accounts.length === 0) {
+                throw new ApiError(404, "User account not found");
+            }
+
+            await UserModel.findByIdAndUpdate(userId, {
+                $addToSet: { account_no: { $each: accounts.map(acc => acc._id) } }
+            });
+
+            user = await UserModel.findById(userId).populate('account_no');
         }
 
         const account = user.account_no[0]; // Primary account

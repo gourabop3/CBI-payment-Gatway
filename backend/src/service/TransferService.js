@@ -75,10 +75,23 @@ class TransferService {
             throw new ApiError(400, "RTGS minimum amount is ₹2,00,000");
         }
 
-        // Get sender's account
-        const senderUser = await UserModel.findById(senderUserId).populate('account_no');
-        if (!senderUser || !senderUser.account_no || senderUser.account_no.length === 0) {
-            throw new ApiError(404, "Sender account not found");
+        // Get sender's account (auto-heal missing linkage)
+        let senderUser = await UserModel.findById(senderUserId).populate('account_no');
+        if (!senderUser) {
+            throw new ApiError(404, "Sender not found");
+        }
+
+        if (!senderUser.account_no || senderUser.account_no.length === 0) {
+            const accounts = await AccountModel.find({ user: senderUserId });
+            if (accounts.length === 0) {
+                throw new ApiError(404, "Sender account not found");
+            }
+
+            await UserModel.findByIdAndUpdate(senderUserId, {
+                $addToSet: { account_no: { $each: accounts.map(acc => acc._id) } }
+            });
+
+            senderUser = await UserModel.findById(senderUserId).populate('account_no');
         }
 
         const senderAccount = senderUser.account_no[0]; // Primary account
