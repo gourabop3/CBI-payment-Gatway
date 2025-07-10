@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import HeaderName from '@/components/HeaderName';
 import { axiosClient } from '@/utils/AxiosClient';
 import { useMainContext } from '@/context/MainContext';
-import { generateAccountNumber, formatAccountNumber } from '@/utils/accountUtils';
+import { generateAccountNumber, formatAccountNumber, isKYCVerified, getAccountNumberDisplay, getKYCStatusMessage } from '@/utils/accountUtils';
 import { 
   MdPhoneAndroid, 
   MdElectricBolt, 
@@ -16,8 +16,9 @@ import {
   MdTv,
   MdCheckCircle
 } from 'react-icons/md';
-import { FaCheckCircle, FaSpinner } from 'react-icons/fa';
+import { FaCheckCircle, FaSpinner, FaExclamationTriangle, FaShieldAlt } from 'react-icons/fa';
 import { BiMoney } from 'react-icons/bi';
+import Link from 'next/link';
 
 const RechargePage = () => {
   const [activeTab, setActiveTab] = useState('mobile');
@@ -37,8 +38,10 @@ const RechargePage = () => {
 
   // Get user's account information
   const primaryAccount = user?.account_no?.[0];
-  const userAccountNumber = (primaryAccount && user?._id) ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : '';
   const userBalance = primaryAccount?.amount || 0;
+  const kycVerified = isKYCVerified(user);
+  const userAccountNumberDisplay = (primaryAccount && user?._id) ? 
+    getAccountNumberDisplay(user._id, primaryAccount._id, primaryAccount.ac_type, user) : '';
 
   // Mobile operators with their details
   const mobileOperators = [

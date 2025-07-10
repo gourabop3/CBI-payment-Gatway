@@ -92,3 +92,53 @@ export const getAccountTypeDisplayName = (accountType) => {
   
   return displayNames[accountType?.toLowerCase()] || 'Savings Account';
 };
+
+/**
+ * Check if user's KYC is verified
+ * @param {Object} user - User object with kyc_status
+ * @returns {boolean} - True if KYC is verified
+ */
+export const isKYCVerified = (user) => {
+  return user?.kyc_status === 'verified';
+};
+
+/**
+ * Get account number display based on KYC status
+ * If KYC verified: show full account number
+ * If KYC not verified: show masked account number
+ * @param {string} userId - User ID
+ * @param {string} accountId - Account ID  
+ * @param {string} accountType - Account type
+ * @param {Object} user - User object with kyc_status
+ * @returns {string} - Account number (formatted or masked)
+ */
+export const getAccountNumberDisplay = (userId, accountId, accountType, user) => {
+  if (isKYCVerified(user)) {
+    const accountNumber = generateAccountNumber(userId, accountId, accountType);
+    return formatAccountNumber(accountNumber);
+  }
+  
+  // Return masked account number for non-KYC users
+  return 'XXXX XXXX XXXX';
+};
+
+/**
+ * Get KYC status message for account number display
+ * @param {Object} user - User object with kyc_status
+ * @returns {string} - Status message
+ */
+export const getKYCStatusMessage = (user) => {
+  const status = user?.kyc_status || 'not_submitted';
+  
+  switch (status) {
+    case 'verified':
+      return '';
+    case 'pending':
+      return 'Complete KYC verification to view account number';
+    case 'rejected':
+      return 'KYC verification failed. Please resubmit KYC documents';
+    case 'not_submitted':
+    default:
+      return 'Complete KYC verification to view account number';
+  }
+};
