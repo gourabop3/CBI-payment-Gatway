@@ -20,11 +20,8 @@ const generateAccountNumber = (userId, accountId, accountType = 'savings') => {
     */
   
     if (!userId || !accountId) {
-        // Generate a random account number if data is missing
-        const randomPrefix = '00';
-        const randomUserPart = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
-        const randomAccountPart = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-        return `${randomPrefix}${randomUserPart}${randomAccountPart}`;
+        // Return null when data is missing - calling code should handle this case
+        return null;
     }
   
     // 2-digit prefix per account type
