@@ -23,7 +23,7 @@ class TransferService {
 
         for (const user of users) {
             for (const account of user.account_no) {
-                const generatedAccountNumber = generateAccountNumber(user._id, account._id, account.ac_type);
+                const generatedAccountNumber = account.account_number || generateAccountNumber(user._id, account._id, account.ac_type);
                 if (generatedAccountNumber === accountNumber) {
                     recipientAccount = account;
                     recipientUser = user;

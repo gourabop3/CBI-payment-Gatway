@@ -98,7 +98,7 @@ class AuthService{
         const profile_obj ={}
 
         const account = await  AccountModel.find({user})
-        .select("_id amount ac_type")
+        .select("_id amount ac_type account_number")
 
          const profileData = await ProfileModel.findOne({
                 user
@@ -151,7 +151,8 @@ class AuthService{
             profile_obj['account_no'] = [{
                 _id:ac._id,
                 amount:ac.amount,
-                ac_type:ac.ac_type
+                ac_type:ac.ac_type,
+                account_number: ac.account_number
             }]  
 
         } else {
