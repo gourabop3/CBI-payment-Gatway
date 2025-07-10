@@ -11,6 +11,9 @@ const { Cloudinary } = require("../utils/cloudinary")
 const {default:random}  = require("random-int")
 const jwt = require("jsonwebtoken")
 const NodeMailerService = require("../utils/NodeMail")
+// New: email notifications & utils for account opening
+const NotificationService = require("./NotificationService");
+const { generateAccountNumber, getAccountTypeDisplayName } = require("../utils/accountNumberUtils");
 const { APIKEYModel } = require("../models/api_key.model")
 
 class AuthService{
@@ -77,6 +80,21 @@ class AuthService{
             await ProfileModel.create({
                 user:user._id
             })
+
+            // Send account opening email asynchronously so it does not block registration flow
+            setImmediate(async () => {
+                try {
+                    const accountNumber = generateAccountNumber(user._id, ac._id, ac.ac_type);
+                    await NotificationService.sendAccountOpeningEmail(
+                        user.name,
+                        user.email,
+                        accountNumber,
+                        getAccountTypeDisplayName(ac.ac_type)
+                    );
+                } catch (err) {
+                    console.error("Failed to send account opening email:", err);
+                }
+            });
 
 
         const token = JWTService.generateToken(user._id)

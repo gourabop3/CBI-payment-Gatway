@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import HeaderName from '@/components/HeaderName';
 import { axiosClient } from '@/utils/AxiosClient';
@@ -21,6 +22,7 @@ const TransferPage = () => {
   const [verifyingAccount, setVerifyingAccount] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { user } = useMainContext();
+  const router = useRouter();
 
   // Get user's account information
   const primaryAccount = user?.account_no?.[0];
@@ -119,19 +121,8 @@ const TransferPage = () => {
       });
 
       if (response.data.success) {
-        toast.success('Transfer completed successfully!');
-        // Reset form
-        setTransferData({
-          recipientAccountNumber: '',
-          amount: '',
-          remark: '',
-          transferType: 'IMPS'
-        });
-        setRecipientDetails(null);
-        setShowConfirmation(false);
-        
-        // Optionally refresh user data or redirect
-        window.location.reload();
+        const { transferId, transactionDetails } = response.data;
+        router.push(`/transfer-success?txnId=${transferId}&amount=${transactionDetails.amount}&recipient=${recipientDetails.accountHolderName}&account=${transferData.recipientAccountNumber}&type=${transferData.transferType}&ts=${Date.now()}`);
       }
     } catch (error) {
       toast.error(error?.response?.data?.msg || 'Transfer failed');
