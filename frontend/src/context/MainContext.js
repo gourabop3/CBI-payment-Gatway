@@ -30,7 +30,10 @@ export const MainContextProvider = ({children})=>{
                 }
             })
             const data  = await response.data
-            console.log(data)
+            console.log('[MainContext] Raw profile payload:', data);
+            if(data?.account_no){
+                console.log('[MainContext] Account list received:', data.account_no.map(a=>({id:a._id, account_number:a.account_number, ac_type:a.ac_type})));
+            }
             setUser(data)
 
 
