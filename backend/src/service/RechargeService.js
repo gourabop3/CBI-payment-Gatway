@@ -1,4 +1,4 @@
-const { AccountModel } = require("../models/Account.model");
+THIS SHOULD BE A LINTER ERRORconst { AccountModel } = require("../models/Account.model");
 const { TransactionModel } = require("../models/Transactions.model");
 const { RechargeModel } = require("../models/Recharge.model");
 const { UserModel } = require("../models/User.model");

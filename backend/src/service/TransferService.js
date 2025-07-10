@@ -96,9 +96,16 @@ class TransferService {
 
         const recipientUser = recipientAccount.user;
 
-        // Start database transaction for atomicity
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        let session;
+        let transactionSupported = true;
+        try {
+            session = await mongoose.startSession();
+            await session.startTransaction();
+        } catch (err) {
+            // Fallback when transactions are not supported (e.g., single-node Mongo instance)
+            console.warn("⚠️  Mongo transactions not supported – proceeding without transactional guarantees:", err.message);
+            transactionSupported = false;
+        }
 
         try {
             // Create transfer transactions
@@ -130,25 +137,29 @@ class TransferService {
                 senderAccount: senderAccount._id
             });
 
+            const updateOptions = transactionSupported ? { session } : {};
+
             // Update account balances
             await AccountModel.findByIdAndUpdate(
                 senderAccount._id,
                 { $inc: { amount: -amount } },
-                { session }
+                updateOptions
             );
 
             await AccountModel.findByIdAndUpdate(
                 recipientAccount._id,
                 { $inc: { amount: amount } },
-                { session }
+                updateOptions
             );
 
             // Save transactions
-            await debitTransaction.save({ session });
-            await creditTransaction.save({ session });
+            await debitTransaction.save(updateOptions);
+            await creditTransaction.save(updateOptions);
 
-            // Commit the transaction
-            await session.commitTransaction();
+            // Commit if using transaction
+            if (transactionSupported) {
+                await session.commitTransaction();
+            }
 
             // Send email notifications asynchronously
             setImmediate(async () => {
@@ -207,10 +218,12 @@ class TransferService {
             };
 
         } catch (error) {
-            await session.abortTransaction();
+            if (transactionSupported && session) {
+                await session.abortTransaction();
+            }
             throw new ApiError(500, "Transfer failed: " + error.message);
         } finally {
-            session.endSession();
+            if (session) session.endSession();
         }
     }
 
