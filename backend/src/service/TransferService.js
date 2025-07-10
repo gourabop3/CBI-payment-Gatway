@@ -11,46 +11,83 @@ class TransferService {
      * Verify if recipient account exists and is valid
      */
     static async verifyAccount(accountNumber, currentUserId) {
+        console.log("Verifying account:", accountNumber, "for user:", currentUserId);
+        
         if (!accountNumber || accountNumber.length !== 12) {
             throw new ApiError(400, "Invalid account number format");
         }
 
-        // Find all users and their accounts to match the account number
-        const users = await UserModel.find({ isActive: true }).populate('account_no');
-        
-        let recipientAccount = null;
-        let recipientUser = null;
+        try {
+            // More efficient approach: Use pagination and limit results
+            const batchSize = 50;
+            let skip = 0;
+            let recipientAccount = null;
+            let recipientUser = null;
 
-        for (const user of users) {
-            for (const account of user.account_no) {
-                const generatedAccountNumber = generateAccountNumber(user._id, account._id, account.ac_type);
-                if (generatedAccountNumber === accountNumber) {
-                    recipientAccount = account;
-                    recipientUser = user;
-                    break;
+            while (true) {
+                console.log(`Searching batch starting at ${skip}`);
+                
+                // Get users in batches to avoid memory issues
+                const users = await UserModel.find({ isActive: true })
+                    .populate('account_no')
+                    .skip(skip)
+                    .limit(batchSize);
+
+                if (users.length === 0) {
+                    break; // No more users to check
                 }
+
+                // Check this batch of users
+                for (const user of users) {
+                    if (!user.account_no || user.account_no.length === 0) continue;
+                    
+                    for (const account of user.account_no) {
+                        try {
+                            const generatedAccountNumber = generateAccountNumber(user._id, account._id, account.ac_type);
+                            console.log(`Checking generated account ${generatedAccountNumber} against ${accountNumber}`);
+                            
+                            if (generatedAccountNumber === accountNumber) {
+                                recipientAccount = account;
+                                recipientUser = user;
+                                console.log("Account found!");
+                                break;
+                            }
+                        } catch (genError) {
+                            console.error("Error generating account number:", genError);
+                            continue;
+                        }
+                    }
+                    if (recipientAccount) break;
+                }
+
+                if (recipientAccount) break;
+                skip += batchSize;
             }
-            if (recipientAccount) break;
-        }
 
-        if (!recipientAccount || !recipientUser) {
-            throw new ApiError(404, "Account not found");
-        }
-
-        // Check if user is trying to transfer to their own account
-        if (recipientUser._id.toString() === currentUserId.toString()) {
-            throw new ApiError(400, "Cannot transfer to your own account");
-        }
-
-        return {
-            success: true,
-            accountDetails: {
-                accountId: recipientAccount._id,
-                accountHolderName: recipientUser.name,
-                accountType: getAccountTypeDisplayName(recipientAccount.ac_type),
-                accountNumber: accountNumber
+            if (!recipientAccount || !recipientUser) {
+                console.log("Account not found after searching all users");
+                throw new ApiError(404, "Account not found");
             }
-        };
+
+            // Check if user is trying to transfer to their own account
+            if (recipientUser._id.toString() === currentUserId.toString()) {
+                throw new ApiError(400, "Cannot transfer to your own account");
+            }
+
+            console.log("Account verification successful");
+            return {
+                success: true,
+                accountDetails: {
+                    accountId: recipientAccount._id,
+                    accountHolderName: recipientUser.name,
+                    accountType: getAccountTypeDisplayName(recipientAccount.ac_type),
+                    accountNumber: accountNumber
+                }
+            };
+        } catch (error) {
+            console.error("Error in verifyAccount:", error);
+            throw error;
+        }
     }
 
     /**
