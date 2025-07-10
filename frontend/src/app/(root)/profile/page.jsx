@@ -98,18 +98,22 @@ updateImageAvatar()
     <>
             <div className="w-full  px-2 py-24 flex flex-col">
                 <div className="mb-3 w-[200px] h-[200px] rounded-full  object-cover mx-auto bg-white p-2 shadow-lg relative">
-                   {imageLoading? <>
+                   {imageLoading ? (
                    <div className="w-[200px] flex justify-center items-center h-[200px]">
-
                       <CgSpinner className='animate-spin text-7xl text-rose-700' />
                    </div>
-                   </>: <img src={ image ? URL.createObjectURL(image) : user?.image} className="border rounded-full shadow-sm w-full h-full" alt="" />}
-                   
-                    <input accept='image/*' onChange={(e)=>{
+                   ) : (
+                     (image || user?.image) ? (
+                       <img src={ image ? URL.createObjectURL(image) : user?.image } className="border rounded-full shadow-sm w-full h-full" alt="" />
+                     ) : (
+                       <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-full text-gray-400 text-6xl">
+                         <CiCamera />
+                       </div>
+                     )
+                   )}
+                   <input accept='image/*' onChange={(e)=>{
                       setImage(e.target.files[0])
                     }} ref={imageRef} type="file" className='hidden' />
-
-
                     <button disabled={imageLoading} onClick={onFilePickHandler} className="absolute bottom-0 right-[10px] shadow text-black bg-white 
                     rounded-full p-2 text-2xl"> <CiCamera/></button>
                 </div>
