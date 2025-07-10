@@ -1,4 +1,4 @@
-THIS SHOULD BE A LINTER ERRORconst { AccountModel } = require("../models/Account.model");
+const { AccountModel } = require("../models/Account.model");
 const { TransactionModel } = require("../models/Transactions.model");
 const { RechargeModel } = require("../models/Recharge.model");
 const { UserModel } = require("../models/User.model");
@@ -42,9 +42,16 @@ class RechargeService {
             throw new ApiError(400, "Insufficient balance for recharge");
         }
 
-        // Start database transaction
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        // Start (optional) database transaction
+        let session;
+        let transactionSupported = true;
+        try {
+            session = await mongoose.startSession();
+            await session.startTransaction();
+        } catch (err) {
+            console.warn("⚠️  Mongo transactions not supported – proceeding without transactional guarantees:", err.message);
+            transactionSupported = false;
+        }
 
         try {
             // Create recharge record
@@ -70,8 +77,8 @@ class RechargeService {
             });
 
             // Save recharge and transaction
-            await recharge.save({ session });
-            await transaction.save({ session });
+            await recharge.save(transactionSupported ? { session } : {});
+            await transaction.save(transactionSupported ? { session } : {});
 
             // Simulate recharge processing (in real scenario, this would call operator API)
             const rechargeSuccess = await this.simulateRechargeProcessing(operator, mobileNumber, amount);
@@ -81,7 +88,7 @@ class RechargeService {
                 await AccountModel.findByIdAndUpdate(
                     account._id,
                     { $inc: { amount: -amount } },
-                    { session }
+                    transactionSupported ? { session } : {}
                 );
 
                 // Update recharge status
@@ -94,8 +101,9 @@ class RechargeService {
                 transaction.remark = `Mobile Recharge Successful - ${this.getOperatorName(operator)} - ${mobileNumber}`;
                 await transaction.save({ session });
 
-                // Commit transaction
-                await session.commitTransaction();
+                if (transactionSupported) {
+                    await session.commitTransaction();
+                }
 
                 // Send notifications asynchronously
                 setImmediate(async () => {
@@ -151,16 +159,18 @@ class RechargeService {
                 transaction.remark = `Mobile Recharge Failed - ${this.getOperatorName(operator)} - ${mobileNumber}`;
                 await transaction.save({ session });
 
-                await session.commitTransaction();
+                if (transactionSupported) {
+                    await session.commitTransaction();
+                }
 
                 throw new ApiError(500, "Recharge failed due to operator service issue");
             }
 
         } catch (error) {
-            await session.abortTransaction();
+            if (transactionSupported && session) await session.abortTransaction();
             throw new ApiError(500, "Recharge processing failed: " + error.message);
         } finally {
-            session.endSession();
+            if (session) session.endSession();
         }
     }
 
@@ -193,9 +203,16 @@ class RechargeService {
             throw new ApiError(400, "Insufficient balance for bill payment");
         }
 
-        // Start database transaction
-        const session = await mongoose.startSession();
-        session.startTransaction();
+        // Start (optional) database transaction
+        let session;
+        let transactionSupported = true;
+        try {
+            session = await mongoose.startSession();
+            await session.startTransaction();
+        } catch (err) {
+            console.warn("⚠️  Mongo transactions not supported – proceeding without transactional guarantees:", err.message);
+            transactionSupported = false;
+        }
 
         try {
             // Create recharge record for bill payment
@@ -221,8 +238,8 @@ class RechargeService {
             });
 
             // Save bill payment and transaction
-            await billPayment.save({ session });
-            await transaction.save({ session });
+            await billPayment.save(transactionSupported ? { session } : {});
+            await transaction.save(transactionSupported ? { session } : {});
 
             // Simulate bill payment processing
             const paymentSuccess = await this.simulateBillPaymentProcessing(billType, consumerNumber, amount);
@@ -232,7 +249,7 @@ class RechargeService {
                 await AccountModel.findByIdAndUpdate(
                     account._id,
                     { $inc: { amount: -amount } },
-                    { session }
+                    transactionSupported ? { session } : {}
                 );
 
                 // Update bill payment status
@@ -245,8 +262,9 @@ class RechargeService {
                 transaction.remark = `Bill Payment Successful - ${this.getBillTypeName(billType)} - ${consumerNumber}`;
                 await transaction.save({ session });
 
-                // Commit transaction
-                await session.commitTransaction();
+                if (transactionSupported) {
+                    await session.commitTransaction();
+                }
 
                 // Send notifications asynchronously
                 setImmediate(async () => {
@@ -302,16 +320,18 @@ class RechargeService {
                 transaction.remark = `Bill Payment Failed - ${this.getBillTypeName(billType)} - ${consumerNumber}`;
                 await transaction.save({ session });
 
-                await session.commitTransaction();
+                if (transactionSupported) {
+                    await session.commitTransaction();
+                }
 
                 throw new ApiError(500, "Bill payment failed due to service provider issue");
             }
 
         } catch (error) {
-            await session.abortTransaction();
+            if (transactionSupported && session) await session.abortTransaction();
             throw new ApiError(500, "Bill payment processing failed: " + error.message);
         } finally {
-            session.endSession();
+            if (session) session.endSession();
         }
     }
 
