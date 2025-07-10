@@ -17,8 +17,6 @@ for (const envVar of requiredEnvVars) {
 }
 
 const smtpPort = Number(process.env.EMAIL_SMTP_PORT);
-
-// Check if secure connection should be used (typically true for port 465, false for 587)
 const useSecure = process.env.EMAIL_SMTP_SECURE 
     ? process.env.EMAIL_SMTP_SECURE === "true" 
     : smtpPort === 465;
@@ -33,13 +31,13 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-class NodeMailerService{
-    static SendVerificationEmail = async(user,otp,email)=>{
+class NodeMailerService {
+    static SendVerificationEmail = async (user, otp, email) => {
         try {
             console.log("Sending verification email to:", email);
-            
+
             const info = await transporter.sendMail({
-                from: '"CBI BANK" '+process.env.EMAIL_SMTP_FROM,
+                from: process.env.EMAIL_SMTP_FROM, // ✅ No duplication
                 to: email,
                 subject: "Verification Email - CBI Bank",
                 html: `
@@ -61,7 +59,7 @@ class NodeMailerService{
                 </div>
                 `
             });
-            
+
             console.log("Verification email sent successfully");
             return info;
         } catch (error) {
@@ -70,10 +68,10 @@ class NodeMailerService{
         }
     }
 
-    static SendDepositEmail = async(name,email,amount,accountNumber)=>{
+    static SendDepositEmail = async (name, email, amount, accountNumber) => {
         try {
             const info = await transporter.sendMail({
-                from: '"CBI BANK" '+process.env.EMAIL_SMTP_FROM,
+                from: process.env.EMAIL_SMTP_FROM, // ✅ No duplication
                 to: email,
                 subject: `Deposit Confirmation - ₹${amount} Added to Your Account`,
                 html: `
@@ -93,27 +91,25 @@ class NodeMailerService{
                 </div>
                 `
             });
-            console.log('Deposit confirmation email sent to',email);
+
+            console.log('Deposit confirmation email sent to', email);
             return info;
         } catch (err) {
-            console.error('Failed sending deposit email',err);
+            console.error('Failed sending deposit email', err);
             throw err;
         }
     }
 
-    /**
-     * Generic method to send any type of email
-     */
-    static sendEmail = async(emailOptions) => {
+    static sendEmail = async (emailOptions) => {
         try {
             const { to, subject, html, text } = emailOptions;
-            
+
             const mailOptions = {
-                from: '"CBI BANK" ' + process.env.EMAIL_SMTP_FROM,
-                to: to,
-                subject: subject,
-                html: html,
-                text: text
+                from: process.env.EMAIL_SMTP_FROM, // ✅ No duplication
+                to,
+                subject,
+                html,
+                text
             };
 
             const info = await transporter.sendMail(mailOptions);
@@ -126,4 +122,4 @@ class NodeMailerService{
     }
 }
 
-module.exports = NodeMailerService
+module.exports = NodeMailerService;
