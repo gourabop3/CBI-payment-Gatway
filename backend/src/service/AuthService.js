@@ -156,6 +156,14 @@ class AuthService{
             }]  
 
         } else {
+            // Ensure every account has a 12-digit account_number; backfill if missing
+            const { generateAccountNumber } = require("../utils/accountNumberUtils");
+            for (const acc of account) {
+                if (!acc.account_number) {
+                    acc.account_number = generateAccountNumber(user, acc._id, acc.ac_type);
+                    await acc.save();
+                }
+            }
             profile_obj['account_no'] = account
         }
         
