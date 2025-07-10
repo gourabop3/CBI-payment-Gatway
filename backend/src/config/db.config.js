@@ -13,7 +13,13 @@ exports.ConnectDB = async()=>{
 
     } catch (error) {
         console.error('MongoDB connection failed:', error.message);
-        // Exit the process if a database connection cannot be established
+        console.log('🚨 Running in development mode without MongoDB - some features may not work');
+        // For development: Don't exit, let the app start
+        if (process.env.NODE_ENV === 'development') {
+            console.log('⚠️  Install MongoDB to enable database functionality');
+            return;
+        }
+        // Exit only in production
         process.exit(1);
     }
 }

@@ -10,28 +10,43 @@ const requiredEnvVars = [
 ];
 
 // Check if all required environment variables are set
-for (const envVar of requiredEnvVars) {
-    if (!process.env[envVar]) {
+const hasIncompleteConfig = requiredEnvVars.some(envVar => !process.env[envVar]);
+
+if (hasIncompleteConfig) {
+    if (process.env.NODE_ENV === 'development') {
+        console.log('⚠️  SMTP configuration incomplete - email features disabled in development mode');
+        // Create a mock transporter for development
+        var transporter = {
+            sendMail: async (options) => {
+                console.log('📧 Mock email sent:', {
+                    to: options.to,
+                    subject: options.subject,
+                    from: options.from
+                });
+                return { messageId: 'mock-' + Date.now() };
+            }
+        };
+    } else {
         throw new Error("SMTP configuration incomplete – see backend/src/utils/NodeMail.js");
     }
+} else {
+    const smtpPort = Number(process.env.EMAIL_SMTP_PORT);
+
+    // Check if secure connection should be used (typically true for port 465, false for 587)
+    const useSecure = process.env.EMAIL_SMTP_SECURE 
+        ? process.env.EMAIL_SMTP_SECURE === "true" 
+        : smtpPort === 465;
+
+    var transporter = nodemailer.createTransporter({
+        host: process.env.EMAIL_SMTP_HOST,
+        port: smtpPort,
+        secure: useSecure,
+        auth: {
+            user: process.env.EMAIL_SMTP_USERNAME,
+            pass: process.env.EMAIL_SMTP_PASSWORD,
+        },
+    });
 }
-
-const smtpPort = Number(process.env.EMAIL_SMTP_PORT);
-
-// Check if secure connection should be used (typically true for port 465, false for 587)
-const useSecure = process.env.EMAIL_SMTP_SECURE 
-    ? process.env.EMAIL_SMTP_SECURE === "true" 
-    : smtpPort === 465;
-
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_SMTP_HOST,
-    port: smtpPort,
-    secure: useSecure,
-    auth: {
-        user: process.env.EMAIL_SMTP_USERNAME,
-        pass: process.env.EMAIL_SMTP_PASSWORD,
-    },
-});
 
 class NodeMailerService{
     static SendVerificationEmail = async(user,otp,email)=>{
