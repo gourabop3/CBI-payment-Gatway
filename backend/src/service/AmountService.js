@@ -408,6 +408,12 @@ class AmountService{
         throw new ApiError(401,"User Not Found")
       }
 
+      // Check for existing account of this type
+      const existingSameType = await AccountModel.findOne({ user, ac_type: body.ac_type });
+      if (existingSameType) {
+        throw new ApiError(400, `You already have a ${body.ac_type} account`);
+      }
+
       const ac=  await AccountModel.create({
             user,
             ac_type:body.ac_type,
@@ -426,6 +432,23 @@ class AmountService{
         return {
             msg:"Account Created :)"
         }
+    }
+
+    static async deleteAccount(user, accountId){
+        const account = await AccountModel.findById(accountId);
+        if(!account){
+            throw new ApiError(404, 'Account not found');
+        }
+        if(account.user.toString() !== user.toString()){
+            throw new ApiError(403, 'Unauthorized to delete this account');
+        }
+        if(account.amount !== 0){
+            throw new ApiError(400, 'Account balance must be zero before deletion');
+        }
+
+        await AccountModel.deleteOne({ _id: accountId });
+
+        return { msg: 'Account deleted successfully' };
     }
 
     // Debug methods for troubleshooting
