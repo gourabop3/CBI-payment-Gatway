@@ -2,6 +2,19 @@
 // seeds two users + accounts, then checks the money-transfer and mobile-recharge
 // endpoints.  Run with:  `node backend/scripts/test_transfer_recharge.js`
 
+// ─────────────────────────────────────────────
+//  Environment Setup (dummy SMTP vars so NodeMail doesn't crash)
+// ─────────────────────────────────────────────
+process.env.EMAIL_SMTP_HOST = process.env.EMAIL_SMTP_HOST || 'smtp.example.com';
+process.env.EMAIL_SMTP_PORT = process.env.EMAIL_SMTP_PORT || '587';
+process.env.EMAIL_SMTP_USERNAME = process.env.EMAIL_SMTP_USERNAME || 'user@example.com';
+process.env.EMAIL_SMTP_PASSWORD = process.env.EMAIL_SMTP_PASSWORD || 'password';
+process.env.EMAIL_SMTP_FROM = process.env.EMAIL_SMTP_FROM || 'noreply@example.com';
+
+// Dummy Razorpay creds to appease utils/Razarpay.js during tests
+process.env.RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'dummy';
+process.env.RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'dummy';
+
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const supertest = require('supertest');
 const JWTService = require('../src/utils/JwtService');

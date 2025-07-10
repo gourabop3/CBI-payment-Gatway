@@ -57,6 +57,12 @@ class AuthService{
                 ac_type:ac_type
             }) 
 
+            // Link the newly created account to the user document so
+            // populate('account_no') works everywhere else.
+            user.account_no = user.account_no || [];
+            user.account_no.push(ac._id);
+            await user.save();
+
 
             await TransactionModel.create({
                 user:user._id,
@@ -125,6 +131,14 @@ class AuthService{
                 amount:0,
                 ac_type: 'saving' // Default to saving account
             }) 
+
+            // Also attach this new account to the user's document if not present
+            const usr = await UserModel.findById(user);
+            if(usr){
+                usr.account_no = usr.account_no || [];
+                usr.account_no.push(ac._id);
+                await usr.save();
+            }
 
            
 
