@@ -28,8 +28,18 @@ const schema = new mongoose.Schema({
         default:true
     }
 },{
-    timestamps:true
+    timestamps:true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 })
+
+// Virtual populate to link accounts owned by the user
+schema.virtual('account_no', {
+    ref: 'account',            // Model to use
+    localField: '_id',         // Find accounts where `foreignField` matches `_id`
+    foreignField: 'user',      // Account model's `user` field
+    justOne: false             // A user can have multiple accounts
+});
 
 
 schema.pre("save",async function(next){
