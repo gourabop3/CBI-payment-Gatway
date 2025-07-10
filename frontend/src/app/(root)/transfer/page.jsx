@@ -20,7 +20,7 @@ const TransferPage = () => {
   const [recipientDetails, setRecipientDetails] = useState(null);
   const [verifyingAccount, setVerifyingAccount] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const { user } = useMainContext();
+  const { user, fetchUserProfile } = useMainContext();
 
   // Get user's account information
   const primaryAccount = user?.account_no?.[0];
@@ -137,9 +137,9 @@ const TransferPage = () => {
         });
         setRecipientDetails(null);
         setShowConfirmation(false);
-        
-        // Optionally refresh user data or redirect
-        window.location.reload();
+
+        // Refresh user data to update balances without full page reload
+        fetchUserProfile?.();
       }
     } catch (error) {
       toast.error(error?.response?.data?.msg || 'Transfer failed');
