@@ -10,7 +10,8 @@ import { RxCross1 } from "react-icons/rx";
 import { toast } from 'react-toastify';
 import * as yup from 'yup'
 export default function AddAccountModal() {
-    const {fetchUserProfile} = useMainContext()
+    const context = typeof useMainContext === 'function' ? useMainContext() : null;
+    const fetchUserProfile = context && context.fetchUserProfile ? context.fetchUserProfile : async () => {};
   let [isOpen, setIsOpen] = useState(false)
   const [loading,setLoading] = useState(false)
 

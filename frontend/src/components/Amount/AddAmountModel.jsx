@@ -14,8 +14,9 @@ import { toast } from 'react-toastify';
 import * as yup from 'yup'
 
 export default function AddAmountModel({id}) {
-
-  const {user, fetchUserProfile} = useMainContext()
+  const context = typeof useMainContext === 'function' ? useMainContext() : null;
+  const user = context && context.user ? context.user : null;
+  const fetchUserProfile = context && context.fetchUserProfile ? context.fetchUserProfile : async () => {};
 
   let [isOpen, setIsOpen] = useState(false)
   const [loading,setLoading]  = useState(false)
