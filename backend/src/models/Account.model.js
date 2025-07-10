@@ -17,8 +17,18 @@ const Schema = new mongoose.Schema({
                 maxlength: 12,
                 default: function(){
                     const { generateAccountNumber } = require("../utils/accountNumberUtils");
-                    if(!this.user) return undefined;
-                    return generateAccountNumber(this.user.toString(), this._id.toString(), this.ac_type);
+                    if(!this.user){
+                        console.warn('[Account.model] No user reference while generating account_number for account', this._id?.toString());
+                        return undefined;
+                    }
+                    const accNum = generateAccountNumber(this.user.toString(), this._id.toString(), this.ac_type);
+                    console.log('[Account.model] Generated account_number', {
+                        user: this.user.toString(),
+                        accountId: this._id.toString(),
+                        ac_type: this.ac_type,
+                        account_number: accNum
+                    });
+                    return accNum;
                 }
             },
             ac_type:{
