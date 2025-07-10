@@ -1,34 +1,23 @@
-const express = require("express")
-const router= express.Router()
-const AuthRoute = require("./auth")
-const AmountRoute = require("./amount")
-const FDRoute = require("./fd")
-const ATMCards = require("./atm-card")
-const routes =[{
-    path:'/auth',
-    route:AuthRoute
-},{
-    path:'/amount',
-    route:AmountRoute
-},
-{
-    path:'/fd',
-    route:FDRoute
-},{
-    path:'/atm',
-    route:ATMCards
-},{
-    path:'/api-key',
-    route:require("./api-keys")
-},{
-    path:'/admin',
-    route:require('./admin')
-},{
-    path:'/kyc',
-    route:require('./kyc')
-}]
+const express = require('express');
+const authRoutes = require('./auth');
+const amountRoutes = require('./amount');
+const transferRoutes = require('./transfer');
+const kycRoutes = require('./kyc');
+const atmCardRoutes = require('./atm-card');
+const fdRoutes = require('./fd');
+const apiKeyRoutes = require('./api-keys');
+const adminRoutes = require('./admin');
 
-routes.forEach((cur)=>{
-    router.use(cur.path,cur.route)
-})
-module.exports = router
+const router = express.Router();
+
+// Route definitions
+router.use('/auth', authRoutes);
+router.use('/amount', amountRoutes);
+router.use('/transfer', transferRoutes);
+router.use('/kyc', kycRoutes);
+router.use('/atm-card', atmCardRoutes);
+router.use('/fd', fdRoutes);
+router.use('/api-keys', apiKeyRoutes);
+router.use('/admin', adminRoutes);
+
+module.exports = router;

@@ -14,6 +14,8 @@ import { PiNewspaperClipping } from "react-icons/pi";
 import { GiReceiveMoney } from "react-icons/gi";
 import { IoCardSharp } from "react-icons/io5";
 import { FaKey } from "react-icons/fa";
+import { MdTransferWithinAStation } from "react-icons/md";
+import { MdPhoneAndroid } from "react-icons/md";
 
 const RootTemplate = ({children}) => {
 
@@ -60,6 +62,8 @@ const CustomMenu = ({link,text,Icon})=>{
   <Menu className='!bg-white !min-h-screen lg:!min-h-[90vh] px-3 py-10'>
       <CustomMenu link={'/'} text={'Home'} Icon={MdDashboard} />
       <CustomMenu link={'/amount'} text={'Account'} Icon={GrCurrency} />
+      <CustomMenu link={'/transfer'} text={'Transfer'} Icon={MdTransferWithinAStation} />
+      <CustomMenu link={'/recharge'} text={'Mobile & Bills'} Icon={MdPhoneAndroid} />
       <CustomMenu link={'/fd-amount'} text={'Fix Deposit'} Icon={GiReceiveMoney} />
       <CustomMenu link={'/transactions'} text={'Transactions'} Icon={PiNewspaperClipping} />
       <CustomMenu link={'/atm-cards'} text={'ATM Cards'} Icon={IoCardSharp} />
