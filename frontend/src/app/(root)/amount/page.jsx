@@ -10,8 +10,8 @@ import CustomLoader from '@/components/reuseable/CustomLoader';
 import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
 
 const AmountPage = () => {
-
-  const {user} = useMainContext()
+  const context = useMainContext();
+  const user = context ? context.user : null;
 
   return (
     <>
@@ -22,7 +22,6 @@ const AmountPage = () => {
       {
     user && user.account_no && user.account_no.length>0 && user.account_no.map((cur,i)=>{
         return <Card key={i} cur={cur} user={user} />
-    
     })
    } 
 
@@ -40,7 +39,6 @@ const AmountPage = () => {
 }
 
 export default AmountPage
-
 
 const Card =({cur, user})=>{
   const [isShow,setIsShow] = useState(false)
