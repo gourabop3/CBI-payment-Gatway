@@ -5,6 +5,7 @@ const { UserModel } = require("../models/User.model");
 const ApiError = require("../utils/ApiError");
 const NotificationService = require("./NotificationService");
 const mongoose = require("mongoose");
+const { generateAccountNumber } = require("../utils/accountNumberUtils");
 
 class RechargeService {
     /**
@@ -100,6 +101,7 @@ class RechargeService {
                 // Send notifications asynchronously
                 setImmediate(async () => {
                     try {
+                        const generatedAccountNumber = generateAccountNumber(user._id, account._id, account.ac_type);
                         await NotificationService.sendMobileRechargeEmail(
                             user.name,
                             user.email,
@@ -107,7 +109,7 @@ class RechargeService {
                             mobileNumber,
                             operator,
                             recharge.transactionId,
-                            account._id.toString().slice(-6)
+                            generatedAccountNumber
                         );
 
                         await NotificationService.sendMobileRechargeSMS(
@@ -251,6 +253,7 @@ class RechargeService {
                 // Send notifications asynchronously
                 setImmediate(async () => {
                     try {
+                        const generatedAccountNumber = generateAccountNumber(user._id, account._id, account.ac_type);
                         await NotificationService.sendBillPaymentEmail(
                             user.name,
                             user.email,
@@ -258,7 +261,7 @@ class RechargeService {
                             billType,
                             consumerNumber,
                             billPayment.transactionId,
-                            account._id.toString().slice(-6)
+                            generatedAccountNumber
                         );
 
                         await NotificationService.sendBillPaymentSMS(
