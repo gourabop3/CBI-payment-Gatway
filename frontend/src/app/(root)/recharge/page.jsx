@@ -187,8 +187,20 @@ const RechargePage = () => {
       });
 
       if (response.data.success) {
-        toast.success(`${activeTab === 'mobile' ? 'Recharge' : 'Bill payment'} completed successfully!`);
-        
+        if (activeTab === 'mobile') {
+          const { transactionId, details } = response.data;
+          toast.success(
+            <div style={{ color: '#059669' }}>
+              <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 4 }}>Recharge Successful!</div>
+              <div><b>Txn ID:</b> <span style={{ fontFamily: 'monospace' }}>{transactionId || 'N/A'}</span></div>
+              <div><b>Mobile:</b> {details?.mobileNumber || rechargeData.mobileNumber}</div>
+              <div><b>Amount:</b> ₹{details?.amount || rechargeData.amount}</div>
+            </div>,
+            { autoClose: 7000 }
+          );
+        } else {
+          toast.success('Bill payment completed successfully!');
+        }
         // Reset form
         setRechargeData({
           mobileNumber: '',
@@ -200,7 +212,6 @@ const RechargePage = () => {
         });
         setPlans([]);
         setShowConfirmation(false);
-        
         // Refresh user data
         window.location.reload();
       }
