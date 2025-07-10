@@ -1,2 +1,6 @@
-import dynamic from 'next/dynamic';
-export default dynamic(() => import('./AmountPageImpl'), { ssr: false });
+"use client";
+import AmountPageImpl from './AmountPageImpl';
+
+export default function Page(props) {
+  return <AmountPageImpl {...props} />;
+}
