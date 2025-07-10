@@ -29,6 +29,12 @@ export const txn_type ={
         "color":"text-red-400 font-medium",
         "desc":"How much money you widrawl",
         "bg-color":"bg-red-100",
+    },
+    "recharge":{
+        name:"Recharge",
+        "color":"text-blue-400 font-medium",
+        "desc":"Mobile recharge and bill payments",
+        "bg-color":"bg-blue-100",
     }
 }
 

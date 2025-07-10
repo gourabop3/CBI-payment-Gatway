@@ -10,21 +10,65 @@ import CustomLoader from '@/components/reuseable/CustomLoader';
 
 const Transactions = () => {
   const [transaction, setTransaction] = useState([]);
-  const [loading, setLoading] = useState(true); // default true to delay table rendering
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'deposits', 'recharges'
 
   const fetchAllTransaction = async () => {
     try {
-      const response = await axiosClient.get('/amount/transactions', {
+      // Fetch regular transactions
+      const transactionResponse = await axiosClient.get('/amount/transactions', {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       });
-      const data = response.data;
-      setTransaction(data);
+
+      // Fetch recharge history
+      const rechargeResponse = await axiosClient.get('/recharge/history', {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      });
+
+      const regularTransactions = transactionResponse.data || [];
+      const rechargeHistory = rechargeResponse.data?.history || [];
+
+      // Transform recharge history to match transaction format
+      const transformedRecharges = rechargeHistory.map(recharge => ({
+        _id: recharge.transactionId,
+        type: 'recharge',
+        amount: recharge.amount,
+        createdAt: recharge.date,
+        isSuccess: recharge.status === 'success',
+        remark: recharge.description || `${recharge.type} - ${recharge.mobileNumber || recharge.consumerNumber}`,
+        rechargeType: recharge.type,
+        rechargeDetails: {
+          mobileNumber: recharge.mobileNumber,
+          operator: recharge.operator,
+          billType: recharge.billType,
+          consumerNumber: recharge.consumerNumber
+        }
+      }));
+
+      // Combine and sort by date (newest first)
+      const allTransactions = [...regularTransactions, ...transformedRecharges]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      setTransaction(allTransactions);
     } catch (error) {
       toast.error(error?.response?.data?.msg || error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getFilteredTransactions = () => {
+    switch (activeTab) {
+      case 'deposits':
+        return transaction.filter(t => t.type === 'credit' || t.type === 'debit');
+      case 'recharges':
+        return transaction.filter(t => t.type === 'recharge');
+      default:
+        return transaction;
     }
   };
 
@@ -41,6 +85,42 @@ const Transactions = () => {
           <MessageShow />
         </div>
 
+        {/* Tab Navigation */}
+        <div className="mb-6">
+          <div className="flex bg-gray-100 rounded-lg p-1 max-w-md">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'all'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              All Transactions
+            </button>
+            <button
+              onClick={() => setActiveTab('deposits')}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'deposits'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Deposits/Withdrawals
+            </button>
+            <button
+              onClick={() => setActiveTab('recharges')}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'recharges'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Recharges & Bills
+            </button>
+          </div>
+        </div>
+
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -52,11 +132,10 @@ const Transactions = () => {
             </tr>
           </thead>
 
-          {/* Do not render tbody at all while loading */}
           {!loading && (
             <tbody>
-              {transaction.length > 0 ? (
-                transaction.map((cur, i) => (
+              {getFilteredTransactions().length > 0 ? (
+                getFilteredTransactions().map((cur, i) => (
                   <TableCard key={i} id={i} data={cur} />
                 ))
               ) : (
@@ -70,7 +149,6 @@ const Transactions = () => {
           )}
         </table>
 
-        {/* Render loader outside the table */}
         {loading && (
           <div className="flex justify-center items-center py-10">
             <CustomLoader />

@@ -3,7 +3,10 @@ import moment from 'moment'
 import { txn_type } from '@/utils/constant'
 const TableCard = ({id,data:Datas}) => {
 
-        const data = Datas.type=='credit'?txn_type.credit : Datas.type=='debit' ?txn_type.debit:txn_type.fix_deposit
+        const data = Datas.type=='credit'?txn_type.credit : 
+                     Datas.type=='debit' ?txn_type.debit:
+                     Datas.type=='recharge' ?txn_type.recharge:
+                     txn_type.fix_deposit
 
   return (
     <>
