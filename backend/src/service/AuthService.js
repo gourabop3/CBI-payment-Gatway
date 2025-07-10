@@ -93,7 +93,7 @@ class AuthService{
     }
     static async profileUser(user){
         const userd = await UserModel.findById(user)
-        .select("name email ac_type createdAt -_id")
+        .select("name email ac_type createdAt")
 
         const profile_obj ={}
 
