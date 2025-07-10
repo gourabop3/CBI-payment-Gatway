@@ -421,6 +421,9 @@ class AmountService{
             amount:0
         })
 
+      // Link the new account so that future `populate('account_no')` correctly returns it.
+      await UserModel.findByIdAndUpdate(user, { $push: { account_no: ac._id } });
+
         await TransactionModel.create({
             account:ac._id,
             amount:0,
