@@ -16,8 +16,18 @@ const { APIKEYModel } = require("../models/api_key.model")
 class AuthService{
     static async loginUser(body){
         
-        const {email,password} = body
-        const check_exist = await UserModel.findOne({email})
+        const { email, password } = body;
+
+        console.log(`[AuthService.loginUser] Attempting users.findOne for email=${email}`);
+        const queryStart = Date.now();
+        let check_exist;
+        try {
+            check_exist = await UserModel.findOne({ email }).maxTimeMS(29000);
+            console.log(`[AuthService.loginUser] users.findOne completed in ${Date.now() - queryStart}ms`);
+        } catch (err) {
+            console.error(`[AuthService.loginUser] users.findOne failed after ${Date.now() - queryStart}ms`, err);
+            throw err;
+        }
         if(!check_exist){
             throw new ApiError(400,"No Account Found")
         }
