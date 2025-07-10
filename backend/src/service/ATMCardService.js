@@ -5,6 +5,7 @@ const ApiError = require("../utils/ApiError")
 const {default:random}  = require("random-int")
 const { Account_LIMIT, CARD_TYPE } = require("../utils/constant")
 const { TransactionModel } = require("../models/Transactions.model")
+const NotificationService = require("./NotificationService");
 class ATMCardService{
 
 
@@ -79,12 +80,14 @@ class ATMCardService{
         // pin verification
         if(parseInt(body.pin) !== atm_details.pin){
             await TransactionModel.create({
-                type:'debit',
+                type:'atm_withdrawal',
                 account:account._id,
                 user:user,
                 isSuccess:false,
                 amount:amount_req,
-                remark:`ATM Withdrawal Failed - Invalid PIN entered`
+                remark:`ATM Withdrawal Failed - Invalid PIN entered`,
+                atmId: atm_details._id.toString(),
+                atmLocation: body.location || ''
             })
             throw new ApiError(401,"Invalid PIN")
         }
@@ -95,12 +98,14 @@ class ATMCardService{
                if(account.ac_type === 'current'){
                    if(account.amount <= Account_LIMIT.current){
                     await TransactionModel.create({
-                        type:'debit',
+                        type:'atm_withdrawal',
                         account:account._id,
                         user:user,
                         isSuccess:false,
                         amount:amount_req,
-                        remark:`amount not withdrawl  Insufficient Balanace by Limit`
+                        remark:`amount not withdrawl  Insufficient Balanace by Limit`,
+                        atmId: atm_details._id.toString(),
+                        atmLocation: body.location || ''
                     })
                        throw new ApiError(400,"Insufficient Balanace by Limit ")
                    }
@@ -108,12 +113,14 @@ class ATMCardService{
             // for amount
         if(amount_req>=account.amount){
             await TransactionModel.create({
-                type:'debit',
+                type:'atm_withdrawal',
                 account:account._id,
                 user:user,
                 isSuccess:false,
                 amount:amount_req,
-                remark:`amount not withdrawl  Insufficient fund`
+                remark:`amount not withdrawl  Insufficient fund`,
+                atmId: atm_details._id.toString(),
+                atmLocation: body.location || ''
             })
             throw new ApiError(400,"Insufficient Fund")
               // transaction 
@@ -161,13 +168,31 @@ class ATMCardService{
 
         // transaction 
         await TransactionModel.create({
-            type:'debit',
+            type:'atm_withdrawal',
             account:account._id,
             user:user,
             isSuccess:true,
             amount:amount_req,
-            remark:`amount withdrawl  ${amount_req}`
+            remark:`amount withdrawl  ${amount_req}`,
+            atmId: atm_details._id.toString(),
+            atmLocation: body.location || ''
         })
+
+        // Send ATM transaction email notification asynchronously (non-blocking)
+        setImmediate(async () => {
+            try {
+                await NotificationService.sendATMTransactionEmail(
+                    user_exist.name,
+                    user_exist.email,
+                    amount_req,
+                    body.location || 'Unknown',
+                    'Withdrawal',
+                    atm_details._id.toString()
+                );
+            } catch (err) {
+                console.error("Failed to send ATM withdrawal email", err);
+            }
+        });
             
 
 
