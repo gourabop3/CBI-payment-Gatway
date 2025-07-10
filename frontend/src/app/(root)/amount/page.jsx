@@ -46,7 +46,7 @@ const Card =({cur, user})=>{
   const [isShow,setIsShow] = useState(false)
   
   // Generate realistic account number
-  const accountNumber = generateAccountNumber(user?._id, cur._id, cur.ac_type);
+  const accountNumber = cur.account_number || generateAccountNumber(user?._id, cur._id, cur.ac_type);
   const formattedAccountNumber = formatAccountNumber(accountNumber);
   const accountTypeDisplay = getAccountTypeDisplayName(cur.ac_type);
 

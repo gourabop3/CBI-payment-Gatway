@@ -27,7 +27,7 @@ if(selected){
     if(!user) return atmItem.account;
     const accountObj = user?.account_no?.find(acc=>acc._id === atmItem.account);
     if(!accountObj) return atmItem.account;
-    const accNum = generateAccountNumber(user._id, accountObj._id, accountObj.ac_type);
+    const accNum = accountObj.account_number || generateAccountNumber(user._id, accountObj._id, accountObj.ac_type);
     return formatAccountNumber(accNum);
   }
 
