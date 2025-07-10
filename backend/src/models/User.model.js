@@ -17,6 +17,14 @@ const schema = new mongoose.Schema({
         type:String,
         required:true
     },
+    // Array of linked bank accounts for the user. This enables
+    // `.populate('account_no')` queries used throughout the
+    // services (TransferService, RechargeService, etc.)
+    // Each element references a document from the `account` collection.
+    account_no:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'account'
+    }],
     ac_type:{
         type:String,
         required:true,
