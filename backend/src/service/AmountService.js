@@ -6,6 +6,10 @@ const { NewRazorpay } = require("../utils/Razarpay");
 const crypto = require("crypto")
 const mongoose = require("mongoose")
 const PaymentDebug = require("../utils/PaymentDebug")
+
+// Add fallback for FRONTEND_URI to prevent undefined URLs
+const FRONTEND_URI = process.env.FRONTEND_URI || process.env.NEXT_PUBLIC_BASE_URI || 'http://localhost:3000';
+
 class AmountService{
 
     static async addMoney(body,user){
@@ -47,12 +51,12 @@ class AmountService{
         // Validate txn_id presence and format (24-hex Mongo ObjectId)
         if(!txn_id){
             console.log("No transaction ID supplied in params");
-            return { url:`${process.env.FRONTEND_URI}/transactions?error=Transaction id missing` }
+            return { url:`${FRONTEND_URI}/transactions?error=Transaction id missing` }
         }
 
         if(!mongoose.Types.ObjectId.isValid(txn_id)){
             console.log("Invalid transaction ID format:", txn_id);
-            return { url:`${process.env.FRONTEND_URI}/transactions?error=Invalid transaction id` }
+            return { url:`${FRONTEND_URI}/transactions?error=Invalid transaction id` }
         }
         try {
             const log = (...args)=>{
@@ -83,7 +87,7 @@ class AmountService{
                     remark: 'Payment Failed - Invalid Razorpay IDs'
                 });
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Invalid Razorpay IDs`
+                    url:`${FRONTEND_URI}/transactions?error=Invalid Razorpay IDs`
                 }
             }
 
@@ -96,7 +100,7 @@ class AmountService{
                     razorpay_signature: !razorpay_signature
                 });
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Missing payment data`
+                    url:`${FRONTEND_URI}/transactions?error=Missing payment data`
                 }
             }
 
@@ -104,7 +108,7 @@ class AmountService{
             if (!process.env.RAZORPAY_KEY_SECRET) {
                 console.error("RAZORPAY_KEY_SECRET is not configured!");
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Payment configuration error`
+                    url:`${FRONTEND_URI}/transactions?error=Payment configuration error`
                 }
             }
 
@@ -113,7 +117,7 @@ class AmountService{
             if (!transaction) {
                 console.log("Transaction not found in database:", txn_id);
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Transaction not found`
+                    url:`${FRONTEND_URI}/transactions?error=Transaction not found`
                 }
             }
 
@@ -134,7 +138,7 @@ class AmountService{
             if (transaction.isSuccess) {
                 console.log("Transaction already processed successfully:", txn_id);
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?success=Transaction already completed`
+                    url:`${FRONTEND_URI}/transactions?success=Transaction already completed`
                 }
             }
 
@@ -208,7 +212,7 @@ class AmountService{
                     remark: 'Payment Failed - ' + paymentValidationErr.message
                 });
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Payment validation failed`
+                    url:`${FRONTEND_URI}/transactions?error=Payment validation failed`
                 }
             }
 
@@ -224,7 +228,7 @@ class AmountService{
                 });
                 
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Payment verification failed`
+                    url:`${FRONTEND_URI}/transactions?error=Payment verification failed`
                 }
             }
 
@@ -239,7 +243,7 @@ class AmountService{
                     remark: 'Payment Failed - Account not found'
                 });
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Account not found`
+                    url:`${FRONTEND_URI}/transactions?error=Account not found`
                 }
             }
 
@@ -342,7 +346,7 @@ class AmountService{
 
                 // Redirect to transactions page with success message
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?success=Payment successful! Amount ₹${transaction.amount} has been added to your account.`
+                    url:`${FRONTEND_URI}/transactions?success=Payment successful! Amount ₹${transaction.amount} has been added to your account.`
                 }
 
             } catch (updateError) {
@@ -364,7 +368,7 @@ class AmountService{
                 }
 
                 return {
-                    url:`${process.env.FRONTEND_URI}/transactions?error=Failed to update account balance. Please contact support.`
+                    url:`${FRONTEND_URI}/transactions?error=Failed to update account balance. Please contact support.`
                 }
             }
 
@@ -388,7 +392,7 @@ class AmountService{
             }
 
             return {
-                url:`${process.env.FRONTEND_URI}/transactions?error=Payment processing failed. Please contact support.`
+                url:`${FRONTEND_URI}/transactions?error=Payment processing failed. Please contact support.`
             }
         }
     }

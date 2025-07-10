@@ -34,7 +34,7 @@ useEffect(()=>{
   }else{
     setLoading(false)
   }
-},[user])
+},[user, router])
 
 if(loading){
   return <div className='min-h-screen flex items-center justify-center'>
