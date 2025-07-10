@@ -22,7 +22,7 @@ const Schema = new mongoose.Schema({
     },
     type:{
         type:String,
-        enum:['credit','debit','fix_deposit'],
+        enum:['credit','debit','fix_deposit', 'atm_withdrawal', 'atm_deposit'],
         required:true
     },
     razorpayPaymentId:{
@@ -40,6 +40,35 @@ const Schema = new mongoose.Schema({
     remark:{
         type:String,
         default:'Payment Processing'
+    },
+    // Transfer related fields
+    transferId: {
+        type: mongoose.Schema.Types.ObjectId,
+        index: true
+    },
+    transferType: {
+        type: String,
+        enum: ['NEFT', 'RTGS', 'IMPS']
+    },
+    recipientAccount: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'account'
+    },
+    senderAccount: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'account'
+    },
+    // ATM related fields
+    atmId: {
+        type: String
+    },
+    atmLocation: {
+        type: String
+    },
+    // FD related fields
+    fdId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'fixdeposit'
     }
 },{
     timestamps:true
