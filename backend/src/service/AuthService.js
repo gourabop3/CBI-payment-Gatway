@@ -124,7 +124,7 @@ class AuthService{
     static async profileUser(user){
         // Include _id so the frontend can generate deterministic account numbers
         const userd = await UserModel.findById(user)
-        .select("_id name email ac_type createdAt")
+        .select("_id name email ac_type createdAt upi_id")
 
         const profile_obj ={}
 

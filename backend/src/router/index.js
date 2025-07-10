@@ -8,6 +8,7 @@ const fdRoutes = require('./fd');
 const apiKeyRoutes = require('./api-keys');
 const adminRoutes = require('./admin');
 const rechargeRoutes = require('./recharge');
+const upiRoutes = require('./upi');
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use('/fd', fdRoutes);
 router.use('/api-keys', apiKeyRoutes);
 router.use('/admin', adminRoutes);
 router.use('/recharge', rechargeRoutes);
+router.use('/upi', upiRoutes);
 
 module.exports = router;
