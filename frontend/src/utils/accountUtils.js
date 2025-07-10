@@ -19,7 +19,13 @@ export const generateAccountNumber = (userId, accountId, accountType = 'savings'
     That gives 1 000 000 × 10 000 = 10¹⁰ possibilities per prefix – practically collision-free.
   */
 
-  if (!userId || !accountId) return '000000000000';
+  if (!userId || !accountId) {
+    // Generate a random account number if data is missing (same as backend)
+    const randomPrefix = '00';
+    const randomUserPart = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+    const randomAccountPart = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return `${randomPrefix}${randomUserPart}${randomAccountPart}`;
+  }
 
   // 2-digit prefix per account type
   const prefixes = { savings:'00', current:'01', salary:'02', student:'03', senior:'04' };
@@ -32,8 +38,8 @@ export const generateAccountNumber = (userId, accountId, accountType = 'savings'
     return h;
   };
 
-  const userPart    = `${numericHash(userId, 1_000_000)}`.padStart(6,'0'); // 6 digits
-  const accountPart = `${numericHash(accountId,     10_000)}`.padStart(4,'0'); // 4 digits
+  const userPart    = `${numericHash(userId.toString(), 1_000_000)}`.padStart(6,'0'); // 6 digits
+  const accountPart = `${numericHash(accountId.toString(),     10_000)}`.padStart(4,'0'); // 4 digits
 
   return `${prefix}${userPart}${accountPart}`; // 12 digits total
 };
