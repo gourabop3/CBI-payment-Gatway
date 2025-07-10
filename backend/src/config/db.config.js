@@ -1,10 +1,19 @@
 const mongoose = require("mongoose")
 
+// Set demo mode to avoid MongoDB operations
+process.env.DEMO_MODE = 'true';
+
 exports.ConnectDB = async()=>{
     try {
-        // Skip database connection for demo purposes
-        console.log('Skipping MongoDB connection for demo mode');
-        return;
+        if (process.env.DEMO_MODE === 'true') {
+            console.log('Running in DEMO MODE - MongoDB connection skipped');
+            
+            // Configure mongoose to not buffer operations
+            mongoose.set('bufferCommands', false);
+            mongoose.set('bufferMaxEntries', 0);
+            
+            return;
+        }
         
         await mongoose.connect(process.env.MONGO_URI)
         console.log(`the db is connect with ${mongoose.connection.host}`);
