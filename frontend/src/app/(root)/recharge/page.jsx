@@ -188,32 +188,41 @@ const RechargePage = () => {
 
       if (response.data.success) {
         if (activeTab === 'mobile') {
+          // Redirect to success page with all details
           const { transactionId, details } = response.data;
-          toast.success(
-            <div style={{ color: '#059669' }}>
-              <div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 4 }}>Recharge Successful!</div>
-              <div><b>Txn ID:</b> <span style={{ fontFamily: 'monospace' }}>{transactionId || 'N/A'}</span></div>
-              <div><b>Mobile:</b> {details?.mobileNumber || rechargeData.mobileNumber}</div>
-              <div><b>Amount:</b> ₹{details?.amount || rechargeData.amount}</div>
-            </div>,
-            { autoClose: 7000 }
-          );
+          const successUrl = `/recharge/success?mobile=${encodeURIComponent(details?.mobileNumber || rechargeData.mobileNumber)}&amount=${encodeURIComponent(details?.amount || rechargeData.amount)}&operator=${encodeURIComponent(rechargeData.operator)}&txnId=${encodeURIComponent(transactionId || 'N/A')}&timestamp=${Date.now()}`;
+          
+          // Reset form before redirect
+          setRechargeData({
+            mobileNumber: '',
+            operator: '',
+            amount: '',
+            billType: '',
+            consumerNumber: '',
+            billAmount: ''
+          });
+          setPlans([]);
+          setShowConfirmation(false);
+          
+          // Redirect to success page
+          window.location.href = successUrl;
         } else {
+          // For bill payments, still show toast (can create separate success page later)
           toast.success('Bill payment completed successfully!');
+          // Reset form
+          setRechargeData({
+            mobileNumber: '',
+            operator: '',
+            amount: '',
+            billType: '',
+            consumerNumber: '',
+            billAmount: ''
+          });
+          setPlans([]);
+          setShowConfirmation(false);
+          // Refresh user data
+          window.location.reload();
         }
-        // Reset form
-        setRechargeData({
-          mobileNumber: '',
-          operator: '',
-          amount: '',
-          billType: '',
-          consumerNumber: '',
-          billAmount: ''
-        });
-        setPlans([]);
-        setShowConfirmation(false);
-        // Refresh user data
-        window.location.reload();
       }
     } catch (error) {
       toast.error(error?.response?.data?.msg || `${activeTab === 'mobile' ? 'Recharge' : 'Bill payment'} failed`);
