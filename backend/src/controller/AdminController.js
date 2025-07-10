@@ -39,6 +39,54 @@ class AdminController {
             next(err);
         }
     }
+
+    /* -------------------- Transactions -------------------- */
+    static async listTransactions(req,res,next){
+        try{
+            const data = await AdminService.listTransactions(req.query);
+            res.status(200).send(data);
+        }catch(err){
+            next(err);
+        }
+    }
+
+    /* -------------------- Discounts -------------------- */
+    static async createDiscount(req,res,next){
+        try{
+            const disc = await AdminService.createOrUpdateDiscount(req.body);
+            res.status(200).send(disc);
+        }catch(err){
+            next(err);
+        }
+    }
+
+    static async listDiscounts(req,res,next){
+        try{
+            const data = await AdminService.listDiscounts();
+            res.status(200).send(data);
+        }catch(err){
+            next(err);
+        }
+    }
+
+    /* -------------------- Plans -------------------- */
+    static async createRechargePlan(req,res,next){
+        try{
+            const plan = await AdminService.createOrUpdatePlan(req.body);
+            res.status(200).send(plan);
+        }catch(err){
+            next(err);
+        }
+    }
+
+    static async listRechargePlans(req,res,next){
+        try{
+            const data = await AdminService.listRechargePlans(req.query);
+            res.status(200).send(data);
+        }catch(err){
+            next(err);
+        }
+    }
 }
 
 module.exports = AdminController;

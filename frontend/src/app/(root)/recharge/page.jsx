@@ -33,6 +33,7 @@ const RechargePage = () => {
   const [plans, setPlans] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [operatorDetails, setOperatorDetails] = useState(null);
+  const [bestDiscount,setBestDiscount] = useState(null);
   const { user } = useMainContext();
 
   // Get user's account information
@@ -92,6 +93,25 @@ const RechargePage = () => {
       { amount: 797, validity: '160 days', data: '2GB/day', description: 'Unlimited calls + 100 SMS' }
     ]
   };
+
+  useEffect(()=>{
+    const fetchSuggestions = async()=>{
+      if(rechargeData.operator && rechargeData.amount){
+        try{
+          const res = await axiosClient.get('/recharge/suggestions',{
+            params:{ operator: rechargeData.operator, amount: rechargeData.amount}
+          });
+          setBestDiscount(res.data.bestDiscount);
+        }catch(err){
+          console.log('suggestions',err);
+        }
+      }else{
+        setBestDiscount(null);
+      }
+    };
+    const debounce = setTimeout(fetchSuggestions,500);
+    return ()=> clearTimeout(debounce);
+  },[rechargeData.operator, rechargeData.amount]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -363,6 +383,15 @@ const RechargePage = () => {
                     required
                   />
                 </div>
+
+                {bestDiscount && (
+                  <div className="p-4 mb-4 bg-emerald-50 border-emerald-200 border rounded-lg flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-emerald-700">Apply code <span className="font-mono">{bestDiscount.code}</span> and save ₹{bestDiscount.savings?.toFixed(0)}</p>
+                    </div>
+                    <button type="button" onClick={()=>toast.info(`Use code ${bestDiscount.code} while confirming`)} className="px-3 py-1 text-sm bg-emerald-600 text-white rounded">Copy</button>
+                  </div>
+                )}
 
                 <button
                   type="submit"

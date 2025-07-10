@@ -2,6 +2,8 @@ const { AccountModel } = require("../models/Account.model");
 const { TransactionModel } = require("../models/Transactions.model");
 const { RechargeModel } = require("../models/Recharge.model");
 const { UserModel } = require("../models/User.model");
+const { DiscountModel } = require("../models/Discount.model");
+const { RechargePlanModel } = require("../models/RechargePlan.model");
 const ApiError = require("../utils/ApiError");
 const NotificationService = require("./NotificationService");
 const mongoose = require("mongoose");
@@ -12,7 +14,7 @@ class RechargeService {
      * Process mobile recharge
      */
     static async processMobileRecharge(rechargeData, userId) {
-        const { mobileNumber, operator, amount, rechargeType } = rechargeData;
+        const { mobileNumber, operator, amount, discountCode } = rechargeData;
 
         // Validate input
         if (!mobileNumber || !operator || !amount) {
@@ -25,8 +27,16 @@ class RechargeService {
             throw new ApiError(400, "Invalid mobile number format");
         }
 
-        // Validate amount
-        if (amount < 10) {
+        // Calculate discount (if any) just once
+        let payableAmount = amount;
+        let appliedDiscount = null;
+        if (discountCode) {
+            const discountObj = await this.validateAndApplyDiscount(discountCode, amount);
+            appliedDiscount = discountObj;
+            payableAmount = discountObj.payableAmount;
+        }
+
+        if (payableAmount < 10) {
             throw new ApiError(400, "Minimum recharge amount is ₹10");
         }
 
@@ -38,8 +48,7 @@ class RechargeService {
 
         const account = user.account_no[0]; // Primary account
 
-        // Check sufficient balance
-        if (account.amount < amount) {
+        if (account.amount < payableAmount) {
             throw new ApiError(400, "Insufficient balance for recharge");
         }
 
@@ -63,7 +72,7 @@ class RechargeService {
             const transaction = new TransactionModel({
                 account: account._id,
                 user: userId,
-                amount: amount,
+                amount: payableAmount,
                 type: 'debit',
                 isSuccess: false,
                 remark: `Mobile Recharge - ${this.getOperatorName(operator)} - ${mobileNumber}`,
@@ -81,7 +90,7 @@ class RechargeService {
                 // Update account balance
                 await AccountModel.findByIdAndUpdate(
                     account._id,
-                    { $inc: { amount: -amount } },
+                    { $inc: { amount: -payableAmount } },
                     { session }
                 );
 
@@ -105,7 +114,7 @@ class RechargeService {
                         await NotificationService.sendMobileRechargeEmail(
                             user.name,
                             user.email,
-                            amount,
+                            payableAmount,
                             mobileNumber,
                             operator,
                             recharge.transactionId,
@@ -115,7 +124,7 @@ class RechargeService {
                         await NotificationService.sendMobileRechargeSMS(
                             user.name,
                             mobileNumber,
-                            amount,
+                            payableAmount,
                             operator,
                             recharge.transactionId,
                             mobileNumber // Send SMS to the recharged number
@@ -125,7 +134,7 @@ class RechargeService {
                             userId,
                             'mobile_recharge',
                             'Mobile Recharge Successful',
-                            `₹${amount} recharge completed for ${mobileNumber} via ${this.getOperatorName(operator)}`
+                            `₹${payableAmount} recharge completed for ${mobileNumber} via ${this.getOperatorName(operator)}`
                         );
                     } catch (notificationError) {
                         console.error("Failed to send recharge notifications:", notificationError);
@@ -139,8 +148,9 @@ class RechargeService {
                     details: {
                         mobileNumber: mobileNumber,
                         operator: this.getOperatorName(operator),
-                        amount: amount,
-                        newBalance: account.amount - amount
+                        amount: payableAmount,
+                        discount: appliedDiscount,
+                        newBalance: account.amount - payableAmount
                     }
                 };
 
@@ -419,6 +429,63 @@ class RechargeService {
             dth: 'DTH/Cable TV Bill'
         };
         return billTypes[billTypeId] || billTypeId;
+    }
+
+    /* -------------------- Discount helpers -------------------- */
+    static async validateAndApplyDiscount(code, amount){
+        const disc = await DiscountModel.findOne({ code: code.toUpperCase() });
+        if(!disc) throw new ApiError(404,'Invalid discount code');
+        const now = new Date();
+        if(!(disc.validFrom <= now && now <= disc.validTo)) throw new ApiError(400,'Discount expired');
+        if(disc.used >= disc.usageLimit) throw new ApiError(400,'Discount exhausted');
+        if(amount < disc.minAmount) throw new ApiError(400,`Minimum amount for this discount is ₹${disc.minAmount}`);
+
+        let discountValue = disc.discountType==='flat'? disc.value : (amount * disc.value /100);
+        const payable = Math.max(0, amount - discountValue);
+
+        // Increment usage counter atomically
+        await DiscountModel.updateOne({ _id: disc._id }, { $inc: { used: 1 } });
+
+        return {
+            code: disc.code,
+            discountType: disc.discountType,
+            value: disc.value,
+            discountAmount: discountValue,
+            payableAmount: payable
+        };
+    }
+
+    /* -------------------- Suggestions -------------------- */
+    static async getSuggestions(operator, amount){
+        const plans = await RechargePlanModel.find({ operator, isActive:true })
+            .sort({ amount: 1 })
+            .limit(10);
+
+        // discounts
+        const now = new Date();
+        const discounts = await DiscountModel.find({
+            validFrom: { $lte: now },
+            validTo: { $gte: now },
+            minAmount: { $lte: amount },
+            $expr: { $lt: ["$used", "$usageLimit"] }
+        });
+
+        // compute best discount (highest savings)
+        let best = null;
+        for(const d of discounts){
+            const savings = d.discountType==='flat'? d.value : amount*d.value/100;
+            if(!best || savings > best.savings){
+                best = {
+                    code: d.code,
+                    discountType: d.discountType,
+                    value: d.value,
+                    savings,
+                    payable: Math.max(0, amount - savings)
+                }
+            }
+        }
+
+        return { plans, bestDiscount: best };
     }
 }
 

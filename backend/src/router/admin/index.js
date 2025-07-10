@@ -18,4 +18,15 @@ router.get('/stats', AdminAuthMiddleware, (req, res)=>{
     res.send({msg:'Protected admin stats endpoint', userCount:0});
 });
 
+// transactions
+router.get('/transactions', AdminAuthMiddleware, AdminController.listTransactions);
+
+// discounts
+router.post('/discount', AdminAuthMiddleware, AdminController.createDiscount);
+router.get('/discounts', AdminAuthMiddleware, AdminController.listDiscounts);
+
+// recharge plans
+router.post('/recharge-plan', AdminAuthMiddleware, AdminController.createRechargePlan);
+router.get('/recharge-plans', AdminAuthMiddleware, AdminController.listRechargePlans);
+
 module.exports = router;

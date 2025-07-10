@@ -48,6 +48,16 @@ class RechargeController {
             });
         }
     }
+
+    static getSuggestions = async (req,res)=>{
+        try{
+            const { operator, amount } = req.query;
+            const result = await RechargeService.getSuggestions(operator, parseFloat(amount));
+            res.status(200).json({ success:true, ...result});
+        }catch(error){
+            res.status(400).json({ success:false, msg: error.message || 'Failed to fetch suggestions'});
+        }
+    }
 }
 
 module.exports = RechargeController;

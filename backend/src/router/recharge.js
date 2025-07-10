@@ -16,4 +16,7 @@ router.get('/history', AuthMiddleware, RechargeController.getRechargeHistory);
 // Get operator details
 router.get('/operators', AuthMiddleware, RechargeController.getOperators);
 
+// Suggestions (public, no auth required)
+router.get('/suggestions', RechargeController.getSuggestions);
+
 module.exports = router;
