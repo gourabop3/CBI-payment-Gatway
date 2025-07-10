@@ -43,6 +43,11 @@ class AmountController{
         res.status(201).send(res_obj)
     }
 
+    static deleteAccount = async(req,res)=>{
+        const res_obj = await AmountService.deleteAccount(req.user, req.params.id);
+        res.status(200).send(res_obj);
+    }
+
     // Debug methods for troubleshooting
     static debugTransaction = async(req,res)=>{
         try {
