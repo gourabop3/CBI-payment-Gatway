@@ -1,5 +1,7 @@
 const { KYCApplicationModel } = require('../models/KYCApplication.model');
 const { ProfileModel } = require('../models/Profile.model');
+const { UserModel } = require('../models/User.model');
+const NotificationService = require('../service/NotificationService');
 const ApiError = require('../utils/ApiError');
 
 class KYCService {
@@ -52,6 +54,14 @@ class KYCService {
     await app.save();
 
     await ProfileModel.findOneAndUpdate({ user: app.user }, { kyc_status: 'verified' });
+
+    // Activate user account and send activation email
+    const user = await UserModel.findById(app.user);
+    if (user) {
+      user.isActive = true;
+      await user.save();
+      await NotificationService.sendAccountActivationEmail(user.email, user.name);
+    }
 
     return { msg: 'KYC approved' };
   }

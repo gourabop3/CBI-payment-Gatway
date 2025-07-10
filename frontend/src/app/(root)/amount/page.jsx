@@ -53,7 +53,16 @@ const Card =({cur, user})=>{
   return  <div className="card w-full border py-5 rounded flex items-center justify-between px-3">
   <div className="flex flex-col">
   <h1 className='text-2xl font-bold'>Add Amount</h1>
-  <p className='text-lg text-zinc-500 font-medium'>{formattedAccountNumber}</p>
+  <p className='text-lg text-zinc-500 font-medium'>
+    {user.isKycApproved && user.isActive ? (
+      formattedAccountNumber
+    ) : (
+      <span className="text-gray-400 flex items-center gap-2">
+        <svg className="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0-6v2m-6 4V7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2z" /></svg>
+        Complete KYC to view your account number
+      </span>
+    )}
+  </p>
   <p className='text-sm text-zinc-400 font-medium'>{accountTypeDisplay}</p>
    <div className='text-2xl text-start w-full font-bold text-zinc-950 flex items-center gap-x-2 justify-start'> <span>Total Amount &#8377; {isShow ? cur.amount: ``.padStart(`${cur.amount}`.length,'x')}/-</span> <button
                   onClick={(e)=>{
