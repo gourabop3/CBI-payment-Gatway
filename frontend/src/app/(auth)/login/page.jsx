@@ -58,36 +58,40 @@ const router = useRouter()
 
   return (
     <>
-          <div className="min-h-[80vh] flex items-center justify-center">
+          <div className="min-h-[100vh] flex items-center justify-center px-4 py-8">
        
-                    <div className=" w-full xl:w-[60%] flex items-start border">
-                        <div className="hidden lg:block bg-white">
-                            <img src="https://bfsi.eletsonline.com/wp-content/uploads/2023/07/Yono-SBI.jpg" className='h-full w-full object-cover' alt="" />
+                    <div className="w-full max-w-6xl flex flex-col lg:flex-row items-stretch border rounded-lg overflow-hidden shadow-lg">
+                        <div className="hidden lg:block lg:w-1/2 bg-white">
+                            <img src="https://bfsi.eletsonline.com/wp-content/uploads/2023/07/Yono-SBI.jpg" className='h-full w-full object-cover' alt="Banking" />
                         </div>
                         <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={onSubmitHandler}
           >
-          <Form  className=" w-full lg:w-1/2 px-10 py-10 ">
- 
-<div className="mb-3">
-<Field type="text" name='email'  className="w-full py-3 px-3 rounded border outline-none"  placeholder="Enter Your Email"/>
-<ErrorMessage name='email' className='text-red-500' component={'p'} />
+          <Form  className="w-full lg:w-1/2 px-6 sm:px-10 py-8 sm:py-10 bg-white">
+            <div className="mb-6">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
+              <p className="text-gray-600">Please sign in to your account</p>
+            </div>
+
+<div className="mb-4">
+<Field type="email" name='email'  className="w-full py-3 px-4 rounded-lg border border-gray-300 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all"  placeholder="Enter Your Email"/>
+<ErrorMessage name='email' className='text-red-500 text-sm mt-1' component={'p'} />
 
 </div>
-<div className="mb-3">
-<Field type="text" name='password'  className="w-full py-3 px-3 rounded border outline-none" placeholder="Enter Your Password" />
-<ErrorMessage name='password' className='text-red-500' component={'p'} />
+<div className="mb-6">
+<Field type="password" name='password'  className="w-full py-3 px-4 rounded-lg border border-gray-300 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all" placeholder="Enter Your Password" />
+<ErrorMessage name='password' className='text-red-500 text-sm mt-1' component={'p'} />
 
 </div>
  
-<div className="mb-3">
+<div className="mb-4">
         <CustomAuthButton isLoading={loading} text={'Login'} type='submit' />
 </div>
-<div className="mb-3">
-<p className='text-end font-medium'>Don't Have An Account ? <Link href={'/register'} className='text-red-600 '>Register</Link> </p>
-<p className='text-end font-medium'>Admin? <Link href={'/admin-login'} className='text-red-600 '>Login here</Link></p>
+<div className="space-y-2 text-center">
+<p className='text-sm text-gray-600'>Don't Have An Account ? <Link href={'/register'} className='text-red-600 hover:text-red-800 font-medium'>Register</Link> </p>
+<p className='text-sm text-gray-600'>Admin? <Link href={'/admin-login'} className='text-red-600 hover:text-red-800 font-medium'>Login here</Link></p>
 </div>
 </Form>
           </Formik>

@@ -21,11 +21,19 @@ const PoppinsFont= Poppins({
 export const metadata = {
   title: "Kono Banking Application",
   description: "A Bank for childrens and Program ",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </head>
       <body
         className={`  ${PoppinsFont.variable}   `}
         suppressHydrationWarning
