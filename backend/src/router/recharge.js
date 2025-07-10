@@ -1,6 +1,6 @@
 const express = require('express');
 const RechargeController = require('../controller/RechargeController');
-const { AuthMiddleware } = require('../middleware/AuthMiddleware');
+const AuthMiddleware = require('../middleware/AuthMiddleware');
 
 const router = express.Router();
 
