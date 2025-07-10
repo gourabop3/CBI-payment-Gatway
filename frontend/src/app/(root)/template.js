@@ -17,6 +17,8 @@ import { FaKey } from "react-icons/fa";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { MdPhoneAndroid } from "react-icons/md";
 import { MdQrCode } from "react-icons/md";
+import { MdSupportAgent } from "react-icons/md";
+import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
 
 const RootTemplate = ({children}) => {
 
@@ -71,8 +73,14 @@ const CustomMenu = ({link,text,Icon})=>{
       <CustomMenu link={'/atm-cards'} text={'ATM Cards'} Icon={IoCardSharp} />
       <CustomMenu link={'/api-keys'} text={'API Keys'} Icon={FaKey} />
       <CustomMenu link={'/profile'} text={'Profile'} Icon={GiFalloutShelter} />
+      <CustomMenu link={'/customer-care'} text={'Customer Care'} Icon={MdSupportAgent} />
   
   </Menu>
+  <footer className="mt-auto flex justify-center gap-4 py-4 border-t border-gray-200">
+  <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-pink-500 text-2xl"><FaInstagram /></a>
+  <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-700 text-2xl"><FaLinkedin /></a>
+  <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-black text-2xl"><FaGithub /></a>
+</footer>
 </Sidebar> 
 <main className='px-1 md:px-3 w-full'>
      {children}
