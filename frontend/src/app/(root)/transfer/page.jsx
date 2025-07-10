@@ -29,15 +29,23 @@ const TransferPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'recipientAccountNumber') {
+      // Allow only digits and cap at 12 characters
+      const sanitized = value.replace(/\D/g, '').slice(0, 12);
+      setTransferData(prev => ({
+        ...prev,
+        recipientAccountNumber: sanitized
+      }));
+
+      // Reset recipient details whenever account number changes
+      setRecipientDetails(null);
+      return;
+    }
+
     setTransferData(prev => ({
       ...prev,
       [name]: value
     }));
-
-    // Reset recipient details when account number changes
-    if (name === 'recipientAccountNumber') {
-      setRecipientDetails(null);
-    }
   };
 
   const verifyRecipientAccount = async () => {
@@ -182,13 +190,14 @@ const TransferPage = () => {
                 </label>
                 <div className="flex gap-2">
                   <input
-                    type="text"
+                    type="tel" // mobile-friendly numeric keypad
                     name="recipientAccountNumber"
                     value={transferData.recipientAccountNumber}
                     onChange={handleInputChange}
                     placeholder="Enter 12-digit account number"
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     maxLength="12"
+                    inputMode="numeric"
                     pattern="[0-9]{12}"
                   />
                   <button
