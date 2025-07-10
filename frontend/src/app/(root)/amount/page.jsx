@@ -9,6 +9,9 @@ import AddAccountModal from './+__(components)/AddAccountModal';
 import CustomLoader from '@/components/reuseable/CustomLoader';
 import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
 
+// Force dynamic rendering to prevent static generation issues with Redux
+export const dynamic = 'force-dynamic'
+
 const AmountPage = () => {
 
   const {user} = useMainContext()

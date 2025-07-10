@@ -14,4 +14,4 @@ export const SidebarSlice= createSlice({
 
 export const {setIsToggle} = SidebarSlice.actions
 
-export const SidebarSlicePath = (state)=> state.SidebarSlice.isToggle
+export const SidebarSlicePath = (state)=> state?.SidebarSlice?.isToggle ?? false

@@ -1,4 +1,4 @@
-"use client";
+THIS SHOULD BE A LINTER ERROR"use client";
 import Loader from '@/components/Loader';
 import { useMainContext } from '@/context/MainContext';
 import { setIsToggle, SidebarSlicePath } from '@/redux/slice/sidebarSlice';
