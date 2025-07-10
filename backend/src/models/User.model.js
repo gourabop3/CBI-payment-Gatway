@@ -29,8 +29,18 @@ const schema = new mongoose.Schema({
     }
 },{
     timestamps:true
+    // Enable virtuals in output so populated data appears when using toJSON / toObject
+    ,toJSON:{ virtuals:true }
+    ,toObject:{ virtuals:true }
 })
 
+// Virtual populate to link user with their bank accounts
+schema.virtual('account_no', {
+    ref: 'account',          // The model to use
+    localField: '_id',       // Find accounts where `user` field equals this user's _id
+    foreignField: 'user',    // Field in AccountModel
+    justOne: false           // A user can have multiple accounts
+});
 
 schema.pre("save",async function(next){
     const user =this;
