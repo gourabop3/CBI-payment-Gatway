@@ -2,17 +2,18 @@ const mongoose = require("mongoose")
 
 exports.ConnectDB = async()=>{
     try {
-        // Skip database connection for demo purposes
-        console.log('Skipping MongoDB connection for demo mode');
-        return;
-        
-        await mongoose.connect(process.env.MONGO_URI)
-        console.log(`the db is connect with ${mongoose.connection.host}`);
-        
+        const mongoUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/bankdb';
+
+        await mongoose.connect(mongoUri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+
+        console.log(`MongoDB connected → ${mongoose.connection.host}`);
+
     } catch (error) {
-        console.log('MongoDB connection failed, continuing without database:', error.message);
-        // Don't exit, just log the error and continue
-        // mongoose.disconnect()
-        // process.exit(1)
+        console.error('MongoDB connection failed:', error.message);
+        // Exit the process if a database connection cannot be established
+        process.exit(1);
     }
 }
