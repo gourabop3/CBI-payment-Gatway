@@ -15,6 +15,15 @@ class AmountController{
         try {
             const res_obj = await AmountService.verifyPayment(req.body, req.params.txn_id);
 
+            // Safety check for undefined URL
+            if (!res_obj || !res_obj.url) {
+                console.error("No URL returned from AmountService.verifyPayment");
+                return res.status(500).json({ 
+                    success: false, 
+                    error: "Payment processing failed - no redirect URL generated" 
+                });
+            }
+
             // Detect XHR / fetch / JSON requests via the Accept header or the X-Requested-With header
             const wantsJson = (req.get("Accept") || "").includes("application/json") || req.xhr;
 
