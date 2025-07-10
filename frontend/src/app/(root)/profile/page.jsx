@@ -103,7 +103,7 @@ updateImageAvatar()
 
                       <CgSpinner className='animate-spin text-7xl text-rose-700' />
                    </div>
-                   </>: <img src={ image ? : user?.image} className="border rounded-full shadow-sm w-full h-full" alt="" />}
+                   </>: <img src={ image ? URL.createObjectURL(image) : user?.image} className="border rounded-full shadow-sm w-full h-full" alt="" />}
                    
                     <input accept='image/*' onChange={(e)=>{
                       setImage(e.target.files[0])
