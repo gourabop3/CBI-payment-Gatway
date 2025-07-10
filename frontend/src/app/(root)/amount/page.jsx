@@ -53,20 +53,35 @@ const Card =({cur, user})=>{
   const formattedAccountNumber = formatAccountNumber(accountNumber);
   const accountTypeDisplay = getAccountTypeDisplayName(cur.ac_type);
 
-  return  <div className="card w-full border py-5 rounded flex items-center justify-between px-3">
-  <div className="flex flex-col">
-  <h1 className='text-2xl font-bold'>Add Amount</h1>
-  <p className='text-lg text-zinc-500 font-medium'>{formattedAccountNumber}</p>
-  <p className='text-sm text-zinc-400 font-medium'>{accountTypeDisplay}</p>
-   <div className='text-2xl text-start w-full font-bold text-zinc-950 flex items-center gap-x-2 justify-start'> <span>Total Amount &#8377; {isShow ? cur.amount: ``.padStart(`${cur.amount}`.length,'x')}/-</span> <button
-                  onClick={(e)=>{
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setIsShow(!isShow)
-                  }}
-               type='button' className='outline-none cursor-pointer text-black'> { !isShow? <FaEye/>:<FaEyeSlash/>} </button>  </div> 
+  return  <div className="card w-full border border-gray-200 py-6 px-4 rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow duration-200">
+  <div className="flex flex-col mb-4">
+    <h1 className='text-xl font-bold text-gray-800 mb-1'>{accountTypeDisplay}</h1>
+    <p className='text-base text-gray-600 font-medium mb-1'>{formattedAccountNumber}</p>
+    <p className='text-sm text-gray-500'>Account Holder: {user?.name}</p>
   </div>
   
-  <AddAmountModel id={cur._id} />
+  <div className='mb-4'>
+    <div className='flex items-center gap-x-2 justify-start'> 
+      <span className="text-sm text-gray-600">Available Balance</span>
+      <button
+        onClick={(e)=>{
+          e.preventDefault()
+          e.stopPropagation()
+          setIsShow(!isShow)
+        }}
+        type='button' 
+        className='outline-none cursor-pointer text-gray-600 hover:text-gray-800'
+      > 
+        { !isShow? <FaEye className="text-sm"/>:<FaEyeSlash className="text-sm"/>} 
+      </button>  
+    </div>
+    <div className="text-2xl font-bold text-green-600 mt-1">
+      &#8377; {isShow ? cur.amount.toLocaleString(): `${'*'.repeat(`${cur.amount}`.length)}`}/-
+    </div>
+  </div>
+  
+  <div className="flex justify-end">
+    <AddAmountModel id={cur._id} />
+  </div>
 </div>
 }

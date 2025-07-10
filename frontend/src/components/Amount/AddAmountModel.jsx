@@ -232,7 +232,11 @@ export default function AddAmountModel({id}) {
   return (
     <> 
         <button type="button"
-          onClick={openModal} className='text-3xl text-rose-700 cursor-pointer'> <CiSquarePlus/> </button>
+          onClick={openModal} 
+          className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium transition-colors duration-200 shadow-md hover:shadow-lg'> 
+          <RiMoneyRupeeCircleLine className="text-lg" />
+          Deposit
+        </button>
         
  
 
@@ -261,34 +265,68 @@ export default function AddAmountModel({id}) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded  bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 flex items-center justify-between"
+                    className="text-xl font-semibold leading-6 text-gray-900 flex items-center justify-between mb-4"
                   >
-                  <span>  Add Payment</span>
+                  <span className="flex items-center gap-2">
+                    <RiMoneyRupeeCircleLine className="text-green-600 text-2xl" />
+                    Deposit Money
+                  </span>
 
-                  <button onClick={closeModal} className='text-2xl text-black p-2 bg-rose-100 rounded-full cursor-pointer'>
+                  <button onClick={closeModal} className='text-xl text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full cursor-pointer transition-colors'>
                     <IoClose/>
                   </button>
 
                   </Dialog.Title>
 
-                  <div className="w-full py-3 flex justify-center items-center ">
-                                <img src="/logo.svg" alt="" className='w-1/2 mx-auto' />
+                  <div className="w-full py-4 flex justify-center items-center border-b border-gray-200 mb-6">
+                                <img src="/logo.svg" alt="CBI Bank" className='w-1/3 mx-auto' />
                             </div> 
 
                          <Formik onSubmit={onSubmitHandler} validationSchema={validationSchema} initialValues={initial_state}>
                          {({values,handleSubmit})=>(
-                          <form onSubmit={handleSubmit} className=" w-[96%] lg:w-[80%] mx-auto">
-                          <div className="mb-3 flex items-center gap-x-2 border w-full px-2">
-                         <RiMoneyRupeeCircleLine className='text-2xl' />   <Field
-                         name="amount"
-                          onInput={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
-                         type="text" className='w-full py-2 outline-none border-none  rounded' placeholder='Enter Amount (in inr) '/>
+                          <form onSubmit={handleSubmit} className="w-full">
+                          <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Deposit Amount (₹)
+                            </label>
+                            <div className="flex items-center gap-x-3 border border-gray-300 rounded-lg px-4 py-3 focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-200">
+                              <RiMoneyRupeeCircleLine className='text-2xl text-green-600' />   
+                              <Field
+                                name="amount"
+                                onInput={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
+                                type="text" 
+                                className='w-full outline-none border-none text-lg' 
+                                placeholder='Enter amount to deposit'
+                              />
+                            </div>
                           </div>
-                          <div className="mb-3 flex w-full justify-end">
-                            <button disabled={values.amount<1 ||loading} className="px-5 flex items-center gap-x-2 w-full bg-rose-600 hover:bg-rose-700 text-white py-2 disabled:bg-rose-500 justify-center rounded"><span>Pay</span> <SiRazorpay/> </button>
+                          <div className="flex gap-3">
+                            <button 
+                              type="button"
+                              onClick={closeModal}
+                              className="flex-1 px-5 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              disabled={values.amount<1 ||loading} 
+                              className="flex-1 px-5 py-3 flex items-center gap-x-2 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-400 justify-center rounded-lg font-medium transition-colors"
+                            >
+                              {loading ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                  Processing...
+                                </>
+                              ) : (
+                                <>
+                                  <SiRazorpay className="text-lg" />
+                                  Pay ₹{values.amount || 0}
+                                </>
+                              )}
+                            </button>
                           </div>
                         </form>
 
