@@ -211,6 +211,10 @@ class AuthService{
 
 
 
+        // Debug: log profile object and payload to ensure account numbers are included
+        console.log('[AuthService.profileUser] profile_obj:', profile_obj);
+        console.log('[AuthService.profileUser] full payload:', {...userd.toObject(), ...profile_obj, atms});
+
         return  {...userd.toObject(),...profile_obj,atms}
 
     }
