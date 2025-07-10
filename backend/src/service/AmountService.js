@@ -6,6 +6,9 @@ const { NewRazorpay } = require("../utils/Razarpay");
 const crypto = require("crypto")
 const mongoose = require("mongoose")
 const PaymentDebug = require("../utils/PaymentDebug")
+// Notifications
+const NotificationService = require("./NotificationService");
+const { generateAccountNumber, getAccountTypeDisplayName } = require("../utils/accountNumberUtils");
 
 // Add fallback for FRONTEND_URI to prevent undefined URLs
 const FRONTEND_URI = process.env.FRONTEND_URI || process.env.NEXT_PUBLIC_BASE_URI || 'http://localhost:3000';
@@ -426,6 +429,21 @@ class AmountService{
             user:user,
             isSuccess:true
         })
+
+        // Send email notification asynchronously
+        setImmediate(async () => {
+            try {
+                const accountNumber = generateAccountNumber(exist_user._id, ac._id, ac.ac_type);
+                await NotificationService.sendAccountOpeningEmail(
+                    exist_user.name,
+                    exist_user.email,
+                    accountNumber,
+                    getAccountTypeDisplayName(ac.ac_type)
+                );
+            } catch (err) {
+                console.error("Failed to send account opening email:", err);
+            }
+        });
 
         return {
             msg:"Account Created :)"
