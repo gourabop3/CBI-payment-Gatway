@@ -7,6 +7,14 @@ exports.ConnectDB = async()=>{
         await mongoose.connect(mongoUri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 10000, // How long to wait for a server to be discovered
+            connectTimeoutMS: 10000,         // How long to wait for a connection to be established
+            socketTimeoutMS: 45000,          // How long a send or receive on a socket can take
+        });
+
+        // Extra safety: fail fast if initial connection cannot be made
+        mongoose.connection.on('error', err => {
+            console.error('MongoDB connection error:', err);
         });
 
         console.log(`MongoDB connected → ${mongoose.connection.host}`);
