@@ -127,33 +127,44 @@ class AuthService{
              }
 
         if(!account || account.length === 0){
-          const ac=  await AccountModel.create({
+          const ac = await AccountModel.create({
                 user,
-                amount:0,
+                amount: 0,
                 ac_type: 'saving' // Default to saving account
-            }) 
+            });
 
-           
-
+            // Link the brand-new account with the user document so that
+            // future `.populate('account_no')` queries succeed (required by
+            // RechargeService, TransferService, etc.). Using $addToSet avoids
+            // duplicate entries if this code ever runs twice.
+            await UserModel.findByIdAndUpdate(user, {
+                $addToSet: { account_no: ac._id }
+            });
 
             await TransactionModel.create({
-                    account:ac._id,
-                    amount:0,
-                    type:'credit',
-                    isSuccess:true,
-                    remark:'Account Opening !',
-                user:user._id,
-
-            })
+                    account: ac._id,
+                    amount: 0,
+                    type: 'credit',
+                    isSuccess: true,
+                    remark: 'Account Opening !',
+                    user: user,
+            });
 
             profile_obj['account_no'] = [{
-                _id:ac._id,
-                amount:ac.amount,
-                ac_type:ac.ac_type
-            }]  
+                _id: ac._id,
+                amount: ac.amount,
+                ac_type: ac.ac_type
+            }];  
 
         } else {
-            profile_obj['account_no'] = account
+            profile_obj['account_no'] = account;
+
+            // Ensure these existing accounts are also stored in the user document.
+            await UserModel.findByIdAndUpdate(user, {
+                $addToSet: {
+                    account_no: { $each: account.map(acc => acc._id) }
+                }
+            });
         }
         
         profile_obj['fd_amount'] = 0
