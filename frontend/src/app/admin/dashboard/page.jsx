@@ -11,6 +11,8 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
   const [pending, setPending] = useState([]);
   const [users, setUsers] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [activeTab, setActiveTab] = useState('users'); // 'users', 'transactions', 'kyc'
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -38,6 +40,12 @@ export default function AdminDashboardPage() {
           headers: { Authorization: 'Bearer ' + token },
         });
         setUsers(await userRes.data);
+
+        // fetch all transactions
+        const transactionRes = await axiosClient.get('/admin/transactions?limit=100', {
+          headers: { Authorization: 'Bearer ' + token },
+        });
+        setTransactions(await transactionRes.data.transactions);
       } catch (error) {
         toast.error('Session expired, please login again');
         localStorage.removeItem('admin_token');
@@ -77,10 +85,48 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="mb-10">
-        <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
-          <FaUserCheck className="text-green-500" /> Pending KYC Applications
-        </h2>
+      {/* Tab Navigation */}
+      <div className="mb-8">
+        <div className="flex bg-gray-100 rounded-lg p-1 max-w-md">
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              activeTab === 'users'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Users
+          </button>
+          <button
+            onClick={() => setActiveTab('transactions')}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              activeTab === 'transactions'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            All Transactions
+          </button>
+          <button
+            onClick={() => setActiveTab('kyc')}
+            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              activeTab === 'kyc'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            KYC Applications
+          </button>
+        </div>
+      </div>
+
+      {/* KYC Section */}
+      {activeTab === 'kyc' && (
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
+            <FaUserCheck className="text-green-500" /> Pending KYC Applications
+          </h2>
         {pending.length === 0 ? <p className="text-gray-500">No pending applications.</p> : (
           <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
             <table className="min-w-full text-sm text-left">
@@ -111,18 +157,20 @@ export default function AdminDashboardPage() {
                       <button onClick={() => handleReject(app._id)} className="px-3 py-1 bg-red-600 hover:bg-red-700 transition text-white rounded flex items-center gap-1"><FaTimesCircle /> Reject</button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
+)}
 
-      {/* Users table */}
-      <div className="mb-10">
-        <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
-          <FaUserEdit className="text-amber-500" /> Users
-        </h2>
+{/* Users Section */}
+{activeTab === 'users' && (
+<div className="mb-10">
+  <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
+    <FaUserEdit className="text-amber-500" /> Users
+  </h2>
         {users.length === 0 ? <p className="text-gray-500">No users.</p> : (
           <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
             <table className="min-w-full text-sm text-left">
@@ -159,6 +207,80 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </div>
+)}
+
+{/* Transactions Section */}
+{activeTab === 'transactions' && (
+  <div className="mb-10">
+    <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
+      <FaUserEdit className="text-purple-500" /> All User Transactions
+    </h2>
+    {transactions && transactions.length === 0 ? <p className="text-gray-500">No transactions found.</p> : (
+      <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
+        <table className="min-w-full text-sm text-left">
+          <thead className="border-b bg-purple-50">
+            <tr>
+              <th className="px-4 py-3">User</th>
+              <th className="px-4 py-3">Type</th>
+              <th className="px-4 py-3">Amount</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Date</th>
+              <th className="px-4 py-3">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions && transactions.map((txn, index) => (
+              <tr key={index} className="border-b hover:bg-purple-50 transition">
+                <td className="px-4 py-3">
+                  <span className="font-semibold text-blue-900">{txn.user?.name}</span><br/>
+                  <span className="text-xs text-gray-500">{txn.user?.email}</span>
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${
+                    txn.isRecharge 
+                      ? 'bg-orange-100 text-orange-700' 
+                      : txn.type === 'credit' 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-red-100 text-red-700'
+                  }`}>
+                    {txn.isRecharge ? `${txn.type} Recharge` : txn.type}
+                  </span>
+                </td>
+                <td className="px-4 py-3 font-mono">₹{txn.amount.toLocaleString()}</td>
+                <td className="px-4 py-3">
+                  {txn.isSuccess ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">
+                      <FaUserCheck /> Success
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-semibold">
+                      Failed
+                    </span>
+                  )}
+                </td>
+                <td className="px-4 py-3">{new Date(txn.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3">
+                  <div className="text-xs text-gray-600">
+                    {txn.isRecharge ? (
+                      <div>
+                        {txn.mobileNumber && <p>Mobile: {txn.mobileNumber}</p>}
+                        {txn.operator && <p>Operator: {txn.operator}</p>}
+                        {txn.consumerNumber && <p>Consumer: {txn.consumerNumber}</p>}
+                      </div>
+                    ) : (
+                      <p>{txn.remark || 'Banking transaction'}</p>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+)}
+
     </div>
   );
 }

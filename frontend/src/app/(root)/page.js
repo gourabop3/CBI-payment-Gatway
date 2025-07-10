@@ -11,6 +11,7 @@ import { FaEye,FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
 import { toast } from 'react-toastify';
 import { generateAccountNumber, generateIFSCCode, formatAccountNumber, getAccountTypeDisplayName, isKYCVerified, getAccountNumberDisplay, getKYCStatusMessage } from '@/utils/accountUtils';
+import Chatbot from "@/components/Chatbot/Chatbot";
 
 const HomePage=()=>{
 
@@ -77,6 +78,9 @@ const HomePage=()=>{
 
        {/* Banking Details Section */}
        <BankingDetailsCard user={user} />
+
+       {/* AI Chatbot */}
+       <Chatbot />
     
   </div>
   </>
