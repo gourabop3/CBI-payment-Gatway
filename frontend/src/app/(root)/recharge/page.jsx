@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import HeaderName from '@/components/HeaderName';
 import { axiosClient } from '@/utils/AxiosClient';
@@ -20,6 +21,7 @@ import { FaCheckCircle, FaSpinner } from 'react-icons/fa';
 import { BiMoney } from 'react-icons/bi';
 
 const RechargePage = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('mobile');
   const [rechargeData, setRechargeData] = useState({
     mobileNumber: '',
@@ -221,20 +223,19 @@ const RechargePage = () => {
         } else {
           toast.success('Bill payment completed successfully!');
         }
-        // Reset form
-        setRechargeData({
-          mobileNumber: '',
-          operator: '',
-          amount: '',
-          billType: '',
-          consumerNumber: '',
-          billAmount: ''
-        });
-        setPlans([]);
-        setShowConfirmation(false);
-        // Refresh user data
-        window.location.reload();
-      }
+        // Redirect to success page with query params
+        const txn = response.data.transactionId;
+        const details = response.data.details;
+        const qs = new URLSearchParams({
+          tx: txn || '',
+          amt: details?.amount?.toString() || rechargeData.billAmount,
+          mob: details?.mobileNumber || rechargeData.mobileNumber,
+          op: rechargeData.operator,
+          ts: new Date().toISOString()
+        }).toString();
+
+        router.push(`/recharge/success?${qs}`);
+        }
     } catch (error) {
       toast.error(error?.response?.data?.msg || `${activeTab === 'mobile' ? 'Recharge' : 'Bill payment'} failed`);
     } finally {
