@@ -232,7 +232,7 @@ export default function AddAmountModel({id}) {
   return (
     <> 
         <button type="button"
-          onClick={openModal} className='text-3xl text-rose-700 cursor-pointer'> <CiSquarePlus/> </button>
+          onClick={openModal} className="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-semibold shadow transition mb-2">Deposit</button>
         
  
 
