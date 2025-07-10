@@ -125,6 +125,10 @@ const BankingDetailsCard = ({ user }) => {
   };
 
   const copyToClipboard = (text, label) => {
+    if (!kycVerified) {
+      toast.error('Complete KYC verification to access banking details');
+      return;
+    }
     navigator.clipboard.writeText(text).then(() => {
       toast.success(`${label} copied to clipboard!`);
     }).catch(() => {
