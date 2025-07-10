@@ -57,7 +57,7 @@ export const MainContextProvider = ({children})=>{
             if(!id){
                 return
             }
-            const response = await axiosClient.get(`/atm/get/${id}`,{
+            const response = await axiosClient.get(`/atm-card/get/${id}`,{
                 headers:{
                     'Authorization':'Bearer '+ localStorage.getItem("token")
                 }

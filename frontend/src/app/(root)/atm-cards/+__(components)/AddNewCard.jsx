@@ -43,7 +43,7 @@ export default function AddNewCardDialog() {
     try {
       setLoading(true)
       
-      const response = await axiosClient.post('/atm/add-new',values,{
+      const response = await axiosClient.post('/atm-card/add-new',values,{
         headers:{
           'Authorization':'Bearer '+ localStorage.getItem("token")
         }
