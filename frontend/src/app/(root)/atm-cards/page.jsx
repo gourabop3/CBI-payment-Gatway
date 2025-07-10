@@ -1,10 +1,32 @@
+"use client";
 import HeaderName from '@/components/HeaderName'
 import React from 'react'
 import SelectCard from './+__(components)/SelectCard'
 import AddNewCardDialog from './+__(components)/AddNewCard'
 import ViewATMCard from './+__(components)/ViewATMCard'
+import { useMainContext } from '@/context/MainContext'
+import { isKYCVerified } from '@/utils/accountUtils'
+import KYCRequired from '@/components/KYCRequired'
 
 const AtmCards = () => {
+  const { user } = useMainContext();
+  
+  // Check KYC verification
+  const kycVerified = isKYCVerified(user);
+  
+  // If KYC not verified, show KYC required component
+  if (!kycVerified) {
+    return (
+      <div className="container py-10">
+        <HeaderName />
+        <KYCRequired
+          title="Complete KYC to Manage ATM Cards"
+          message="ATM card services require KYC verification for security and regulatory compliance."
+        />
+      </div>
+    );
+  }
+
   return (
     <>
         <div className="container py-10">

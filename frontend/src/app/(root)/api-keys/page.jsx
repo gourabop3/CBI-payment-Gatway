@@ -6,6 +6,8 @@ import HeaderName from '@/components/HeaderName';
 import RenGenerateModal from './+__(components)/RenGenerateModal';
 import { FaCopy } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { isKYCVerified } from '@/utils/accountUtils';
+import KYCRequired from '@/components/KYCRequired';
 
 // Helper function to truncate long strings like API keys/hashes for cleaner UI
 const truncateString = (str, front = 6, back = 4) => {
@@ -27,12 +29,28 @@ const ApiKeyPage = () => {
 
         const {user} = useMainContext()
         const [state,setState] = useState(true)
+        
+        // Check KYC verification
+        const kycVerified = isKYCVerified(user);
 
     useEffect(()=>{
         if(user && user.isEmailVerifed){
             setState(false)
         }
     },[user])
+    
+    // If KYC not verified, show KYC required component
+    if (!kycVerified) {
+      return (
+        <div className="py-10">
+          <HeaderName />
+          <KYCRequired
+            title="Complete KYC to Access API Keys"
+            message="API key management requires KYC verification for security and regulatory compliance."
+          />
+        </div>
+      );
+    }
 
         if( !state){
         return <>

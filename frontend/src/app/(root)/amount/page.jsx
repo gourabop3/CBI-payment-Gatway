@@ -8,6 +8,7 @@ import { FaEye, FaEyeSlash, FaExclamationTriangle, FaShieldAlt } from 'react-ico
 import AddAccountModal from './+__(components)/AddAccountModal';
 import CustomLoader from '@/components/reuseable/CustomLoader';
 import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName, isKYCVerified, getAccountNumberDisplay, getKYCStatusMessage } from '@/utils/accountUtils';
+import KYCRequired from '@/components/KYCRequired';
 import Link from 'next/link';
 
 // Force dynamic rendering to prevent static generation issues with Redux
@@ -16,6 +17,22 @@ export const dynamic = 'force-dynamic'
 const AmountPage = () => {
 
   const {user} = useMainContext()
+  
+  // Check if KYC is verified
+  const kycVerified = isKYCVerified(user);
+  
+  // If KYC not verified, show KYC required component
+  if (!kycVerified) {
+    return (
+      <div className="container py-10 px-3">
+        <HeaderName />
+        <KYCRequired
+          title="Complete KYC to Access Your Accounts"
+          message="Account management and deposit services require KYC verification for security and regulatory compliance."
+        />
+      </div>
+    );
+  }
 
   return (
     <>

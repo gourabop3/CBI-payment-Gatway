@@ -6,6 +6,7 @@ import HeaderName from '@/components/HeaderName';
 import { axiosClient } from '@/utils/AxiosClient';
 import { useMainContext } from '@/context/MainContext';
 import { generateAccountNumber, formatAccountNumber, isKYCVerified, getAccountNumberDisplay, getKYCStatusMessage } from '@/utils/accountUtils';
+import KYCRequired from '@/components/KYCRequired';
 import { 
   MdPhoneAndroid, 
   MdElectricBolt, 
@@ -233,6 +234,19 @@ const RechargePage = () => {
       setLoading(false);
     }
   };
+
+  // If KYC not verified, show KYC required component
+  if (!kycVerified) {
+    return (
+      <div className="container py-10">
+        <HeaderName />
+        <KYCRequired
+          title="Complete KYC to Use Recharge Services"
+          message="Mobile recharge and bill payment services require KYC verification for your security and regulatory compliance."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="container py-10">

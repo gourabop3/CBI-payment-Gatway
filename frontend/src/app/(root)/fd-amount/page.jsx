@@ -6,12 +6,19 @@ import FDCard from './+___compoents/FDCard'
 import { axiosClient } from '@/utils/AxiosClient'
 import CustomLoader from '@/components/reuseable/CustomLoader'
 import { toast } from 'react-toastify';
+import { useMainContext } from '@/context/MainContext'
+import { isKYCVerified } from '@/utils/accountUtils'
+import KYCRequired from '@/components/KYCRequired'
 
 const FDPage = () => {
   const[deposits,setDeposists] = useState([])
+  const { user } = useMainContext();
 
   const [loading,setLoading] = useState(true)
   const [isUpdate,setIsUpdate] = useState(false)
+  
+  // Check KYC verification
+  const kycVerified = isKYCVerified(user);
 
   const fetchAllDeposits = async()=>{
     
@@ -35,6 +42,20 @@ const FDPage = () => {
   useEffect(()=>{
     fetchAllDeposits()
   },[isUpdate])
+  
+  // If KYC not verified, show KYC required component
+  if (!kycVerified) {
+    return (
+      <div className="container py-10">
+        <HeaderName />
+        <KYCRequired
+          title="Complete KYC to Access Fixed Deposits"
+          message="Fixed deposit services require KYC verification for security and regulatory compliance."
+        />
+      </div>
+    );
+  }
+  
   if(loading){
     return <div className="w-full min-h-screen flex justify-center items-center">
       <CustomLoader/>

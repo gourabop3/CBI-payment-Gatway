@@ -5,7 +5,8 @@ import { toast } from 'react-toastify';
 import HeaderName from '@/components/HeaderName';
 import { axiosClient } from '@/utils/AxiosClient';
 import { useMainContext } from '@/context/MainContext';
-import { generateAccountNumber, formatAccountNumber } from '@/utils/accountUtils';
+import { generateAccountNumber, formatAccountNumber, isKYCVerified } from '@/utils/accountUtils';
+import KYCRequired from '@/components/KYCRequired';
 import { FaExchangeAlt, FaUserCheck, FaCheckCircle } from 'react-icons/fa';
 import { BiMoney } from 'react-icons/bi';
 
@@ -21,6 +22,9 @@ const TransferPage = () => {
   const [verifyingAccount, setVerifyingAccount] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { user } = useMainContext();
+  
+  // Check KYC verification
+  const kycVerified = isKYCVerified(user);
 
   // Get user's account information
   const primaryAccount = user?.account_no?.[0];
@@ -139,6 +143,19 @@ const TransferPage = () => {
       setLoading(false);
     }
   };
+
+  // If KYC not verified, show KYC required component
+  if (!kycVerified) {
+    return (
+      <div className="container py-10">
+        <HeaderName />
+        <KYCRequired
+          title="Complete KYC to Use Transfer Services"
+          message="Money transfer services require KYC verification for security and regulatory compliance."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="container py-10">

@@ -2,7 +2,7 @@
 import { BsCoin } from "react-icons/bs";
 import { RiCoinsLine } from "react-icons/ri";
 import { IoCardSharp } from "react-icons/io5";
-import { FaUniversity, FaUser, FaCreditCard } from "react-icons/fa";
+import { FaUniversity, FaUser, FaCreditCard, FaExclamationTriangle, FaShieldAlt } from "react-icons/fa";
 import { MdContentCopy } from "react-icons/md";
 import Link from "next/link";
 import HeaderName from "@/components/HeaderName";
@@ -10,7 +10,7 @@ import { useMainContext } from "@/context/MainContext";
 import { FaEye,FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
 import { toast } from 'react-toastify';
-import { generateAccountNumber, generateIFSCCode, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
+import { generateAccountNumber, generateIFSCCode, formatAccountNumber, getAccountTypeDisplayName, isKYCVerified, getAccountNumberDisplay, getKYCStatusMessage } from '@/utils/accountUtils';
 
 const HomePage=()=>{
 
@@ -42,6 +42,29 @@ const HomePage=()=>{
   return <>
   <div className="py-10 flex flex-col gap-y-4 " >
   <HeaderName/>
+  
+      {/* KYC Status Alert */}
+      {!isKYCVerified(user) && (
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <FaExclamationTriangle className="text-red-600 text-xl mt-1 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="text-red-800 font-semibold mb-1">⚠️ Banking Features Restricted</h3>
+              <p className="text-red-700 text-sm mb-3">
+                {getKYCStatusMessage(user)} All banking features including transfers, recharges, deposits, and account details are currently unavailable.
+              </p>
+              <Link 
+                href="/kyc" 
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                <FaShieldAlt />
+                Complete KYC Verification Now
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+  
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-3">
 
    
@@ -83,15 +106,18 @@ const DashboardCard = ({data})=>{
 const BankingDetailsCard = ({ user }) => {
   const [showDetails, setShowDetails] = useState(false);
   
+  // Check KYC verification
+  const kycVerified = isKYCVerified(user);
+  
   // Use the utility functions for consistent account number generation
   const primaryAccount = user?.account_no?.[0];
   const accountNumber = (primaryAccount && user?._id) ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : "";
-  const formattedAccountNumber = formatAccountNumber(accountNumber);
+  const displayAccountNumber = getAccountNumberDisplay(user?._id, primaryAccount?._id, primaryAccount?.ac_type, user);
   
   const bankingInfo = {
     accountNumber: accountNumber,
-    formattedAccountNumber: formattedAccountNumber,
-    ifscCode: generateIFSCCode(),
+    formattedAccountNumber: displayAccountNumber,
+    ifscCode: kycVerified ? generateIFSCCode() : "XXXX0001234",
     branchName: "Central Bank of India - Main Branch",
     branchCode: "001234",
     username: user?.name || "User",

@@ -7,11 +7,18 @@ import MessageShow from './+___compoents/MessageShow';
 import { toast } from 'react-toastify';
 import { axiosClient } from '@/utils/AxiosClient';
 import CustomLoader from '@/components/reuseable/CustomLoader';
+import { useMainContext } from '@/context/MainContext';
+import { isKYCVerified } from '@/utils/accountUtils';
+import KYCRequired from '@/components/KYCRequired';
 
 const Transactions = () => {
   const [transaction, setTransaction] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'deposits', 'recharges'
+  const { user } = useMainContext();
+  
+  // Check KYC verification
+  const kycVerified = isKYCVerified(user);
 
   const fetchAllTransaction = async () => {
     try {
@@ -75,6 +82,19 @@ const Transactions = () => {
   useEffect(() => {
     fetchAllTransaction();
   }, []);
+
+  // If KYC not verified, show KYC required component
+  if (!kycVerified) {
+    return (
+      <div className="container py-10">
+        <HeaderName />
+        <KYCRequired
+          title="Complete KYC to View Transaction History"
+          message="Transaction history and account statements require KYC verification for security and regulatory compliance."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="container py-10">
