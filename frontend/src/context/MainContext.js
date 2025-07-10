@@ -35,7 +35,15 @@ export const MainContextProvider = ({children})=>{
 
 
         } catch (error) {
-            toast.error(error.response.data.msg || error.message)
+            // If token is invalid or user is deactivated, force logout so the
+            // app doesn't stay stuck in a refresh loop with an unusable token.
+            const status = error?.response?.status;
+            if (status === 401 || status === 403) {
+                localStorage.removeItem("token");
+                setUser(null);
+                router.push("/login");
+            }
+            toast.error(error.response?.data?.msg || error.message);
         }finally{
             setLoading(false)
         }
