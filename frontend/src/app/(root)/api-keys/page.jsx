@@ -8,6 +8,7 @@ import { FaCopy, FaKey, FaShieldAlt, FaCode, FaLock, FaEye, FaEyeSlash, FaSync, 
 import { MdSecurity, MdVpnKey, MdDeveloperMode, MdPayment } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { axiosClient } from '@/utils/AxiosClient';
+import VerifiedEMailModel from '../profile/+__(components)/VerifiedEMailModel';
 
 // Helper function to truncate long strings like API keys/hashes for cleaner UI
 const truncateString = (str, front = 6, back = 4) => {
@@ -69,7 +70,12 @@ const ApiKeyPage = () => {
   }
 
   if (!isEmailVerified) {
-    return <NotValidUser/>
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <h2 className="text-2xl font-bold mb-4">Please verify your email to access API Keys</h2>
+        <VerifiedEMailModel />
+      </div>
+    );
   }
 
   if (loading) {
