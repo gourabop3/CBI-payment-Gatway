@@ -89,6 +89,8 @@ export default function AdminDashboardPage() {
                   <th className="px-4 py-3">User</th>
                   <th className="px-4 py-3">Aadhaar</th>
                   <th className="px-4 py-3">PAN</th>
+                  <th className="px-4 py-3">Mobile</th>
+                  <th className="px-4 py-3">Address</th>
                   <th className="px-4 py-3">Docs</th>
                   <th className="px-4 py-3">Action</th>
                 </tr>
@@ -102,6 +104,8 @@ export default function AdminDashboardPage() {
                     </td>
                     <td className="px-4 py-3">{app.aadhaarNumber}</td>
                     <td className="px-4 py-3">{app.panNumber}</td>
+                    <td className="px-4 py-3">{app.mobileNumber}</td>
+                    <td className="px-4 py-3 max-w-xs truncate" title={app.address}>{app.address}</td>
                     <td className="px-4 py-3 space-x-2">
                       <a href={app.documents?.aadhaarImage} target="_blank" className="text-blue-600 underline font-medium">Aadhaar</a>
                       <a href={app.documents?.panImage} target="_blank" className="text-blue-600 underline font-medium">PAN</a>
