@@ -143,7 +143,7 @@ const AllATMCards = () => {
               </div>
 
               {/* Card Number */}
-              <div className="relative mb-8">
+              <div className="relative mb-6">
                 <div className="card-label">Card Number</div>
                 <div className="flex items-center gap-3">
                   <div className="card-number text-xl">
@@ -165,8 +165,8 @@ const AllATMCards = () => {
                 </div>
               </div>
 
-              {/* Card Footer */}
-              <div className="relative flex items-center justify-between">
+              {/* Card Footer - CVV and Expiry */}
+              <div className="relative flex items-center justify-between mt-auto">
                 <div>
                   <div className="card-label">Cardholder</div>
                   <div className="card-value">{user?.name || 'CARDHOLDER'}</div>
@@ -175,7 +175,7 @@ const AllATMCards = () => {
                   <div>
                     <div className="card-label">CVV</div>
                     <div className="flex items-center gap-2">
-                      <span className="card-value">{isShowCVV ? atm.cvv : '***'}</span>
+                      <span className="card-value font-mono">{isShowCVV ? atm.cvv : '***'}</span>
                       <button
                         onClick={() => toggleCVV(atm._id)}
                         aria-label="Toggle CVV visibility"
@@ -187,7 +187,7 @@ const AllATMCards = () => {
                   </div>
                   <div>
                     <div className="card-label">Expires</div>
-                    <div className="card-value">{formatExpiry(atm.expiry)}</div>
+                    <div className="card-value font-mono">{formatExpiry(atm.expiry)}</div>
                   </div>
                 </div>
               </div>
