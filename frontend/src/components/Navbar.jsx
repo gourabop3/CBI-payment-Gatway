@@ -21,22 +21,22 @@ const Navbar = () => {
            <Logo/>
            </div>
 
-            <ul className="flex items-center justify-center gap-x-2">
-                <li>
+            <ul className="flex items-center justify-center gap-6 text-gray-700 font-medium">
+                <li className="hover:text-indigo-600 transition-colors">
                     <Link href={'/'}>Home</Link>
                 </li>
             
-                <li>
+                <li className="hover:text-indigo-600 transition-colors">
                     <Link href={'/about'}>About</Link>
                 </li>
               {user ?<>
-                <li>
+                <li className="hover:text-indigo-600 transition-colors">
                     <Link href={'/kyc'}>KYC</Link>
                 </li>
                 <li>
-                    <button onClick={LogoutHandler} className='bg-rose-700 text-white px-4 py-1 cursor-pointer font-medium rounded'>Logout</button>
+                    <button onClick={LogoutHandler} className='bg-rose-600 hover:bg-rose-700 transition-colors text-white px-5 py-2 cursor-pointer font-semibold rounded-md shadow'>Logout</button>
                 </li>
-              </>:  <li>
+              </>:  <li className="hover:text-indigo-600 transition-colors">
                     <Link href={'/login'}>Login</Link>
                 </li>}
             </ul>
