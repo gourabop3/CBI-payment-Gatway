@@ -78,7 +78,7 @@ const AllATMCards = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {validAtms.map((atm, index) => {
+      {validAtms.map((atm) => {
         const isShowCVV = visibleCVVs[atm._id] || false;
         const isShowNumber = visibleNumbers[atm._id] || false;
         const cardBg = getCardStyles(atm.card_type);
@@ -98,13 +98,13 @@ const AllATMCards = () => {
             {/* Card UI */}
             <div className={`relative w-full max-w-sm aspect-[16/9] rounded-xl shadow-lg p-6 mb-4 overflow-hidden text-white ${cardBg}`}>
               {/* Card Header */}
-              <div className="flex items-center justify-between text-lg font-semibold mb-4">
+              <div className="flex items-center justify-between text-lg font-semibold mb-4 drop-shadow-md">
                 <i className="fa-solid fa-credit-card text-2xl" />
                 <span className="capitalize">{atm.card_type} Card</span>
               </div>
 
               {/* Card Number */}
-              <div className="flex items-center gap-3 text-xl font-mono tracking-wider mb-6">
+              <div className="flex items-center gap-3 text-2xl font-mono font-extrabold tracking-widest mb-6 drop-shadow-lg">
                 {isShowNumber ? (
                   <>
                     {atm.card_no.slice(0, 4)} {atm.card_no.slice(4, 8)} {atm.card_no.slice(8, 12)} {atm.card_no.slice(12, 16)}
@@ -112,22 +112,35 @@ const AllATMCards = () => {
                 ) : (
                   <>**** **** **** {atm.card_no.slice(12, 16)}</>
                 )}
-                <button onClick={() => toggleNumber(atm._id)}>
+                <button
+                  onClick={() => toggleNumber(atm._id)}
+                  aria-label="Toggle card number visibility"
+                  className="text-white"
+                >
                   {isShowNumber ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
 
               {/* Card Footer */}
-              <div className="flex items-center justify-between text-sm">
-                <span className="capitalize font-medium">Cardholder</span>
+              <div className="flex items-center justify-between text-sm font-semibold drop-shadow-md">
+                <span className="capitalize">Cardholder</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">CVV: {isShowCVV ? atm.cvv : '***'}</span>
-                  <button onClick={() => toggleCVV(atm._id)}>
+                  <span>CVV: {isShowCVV ? atm.cvv : '***'}</span>
+                  <button
+                    onClick={() => toggleCVV(atm._id)}
+                    aria-label="Toggle CVV visibility"
+                    className="text-white"
+                  >
                     {isShowCVV ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
                 <span>Exp: {formatExpiry(atm.expiry)}</span>
               </div>
+
+              {/* Warm highlight for Basic card */}
+              {atm.card_type.toLowerCase() === 'basic' && (
+                <div className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-orange-600 to-transparent opacity-30 rounded-b-xl pointer-events-none" />
+              )}
             </div>
 
             {/* Use Card Button */}
