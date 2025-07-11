@@ -1,11 +1,12 @@
 "use client";
 import HeaderName from '@/components/HeaderName'
 import React from 'react'
-import { FaCreditCard, FaShieldAlt } from 'react-icons/fa'
+import { FaCreditCard, FaShieldAlt, FaPlus } from 'react-icons/fa'
 import { MdSecurity, MdContactless } from 'react-icons/md'
 
 import AllATMCards from './+__(components)/AllATMCards'
 import CardDemo from './+__(components)/CardDemo'
+import AddNewCard from './+__(components)/AddNewCard'
 
 const AtmCards = () => {
   return (
@@ -15,19 +16,25 @@ const AtmCards = () => {
         
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white bg-opacity-20 p-3 rounded-xl">
-              <FaCreditCard className="text-2xl md:text-3xl" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-white bg-opacity-20 p-3 rounded-xl">
+                <FaCreditCard className="text-2xl md:text-3xl" />
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold">ATM Card Management</h2>
+                <p className="text-purple-100">Manage your debit cards securely</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold">ATM Card Management</h2>
-              <p className="text-purple-100">Manage your debit cards securely</p>
+            <div className="hidden md:block">
+              <AddNewCard />
             </div>
           </div>
-          {/* Removed the grid of blank/decorative cards */}
+          {/* Mobile Add Card Button */}
+          <div className="md:hidden flex justify-center">
+            <AddNewCard />
+          </div>
         </div>
-
-
 
         {/* Card Demo Section */}
         <CardDemo />

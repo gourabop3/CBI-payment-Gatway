@@ -6,7 +6,7 @@ import { CARD_TYPE } from '@/utils/constant';
 import { Dialog, Transition } from '@headlessui/react'
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { Fragment, useState } from 'react'
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaCreditCard } from 'react-icons/fa';
 import { IoClose } from "react-icons/io5";
 import { toast } from 'react-toastify';
 import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
@@ -53,7 +53,7 @@ export default function AddNewCardDialog() {
       toast.success(data.msg)
       await fetchUserProfile()
       resetForm()
-
+      closeModal()
 
     } catch (error) {
       toast.error(error.response.data.msg || error.message)
@@ -68,9 +68,10 @@ export default function AddNewCardDialog() {
         <button
           type="button"
           onClick={openModal}
-          className="rounded-md w-1/2 px-6 py-2 bg-rose-600 text-white flex items-center justify-center gap-x-2 outline-none border-none cursor-pointer"
+          className="add-card-btn"
         >
-         <span>Add New</span> <FaPlus/>
+         <FaPlus className="text-lg" />
+         <span>Add New Card</span>
         </button> 
 
       <Transition appear show={isOpen} as={Fragment}>
@@ -103,28 +104,27 @@ export default function AddNewCardDialog() {
                     as="div"
                     className="text-lg font-medium leading-6 text-gray-900 flex items-center justify-between"
                   >
-                 <h3>   Add New ATM </h3>
-                 <button onClick={closeModal} className='p-2 text-2xl text-rose-700 bg-rose-50 rounded-full outline-none border-none cursor-pointer'>
+                 <div className="flex items-center gap-3">
+                   <div className="bg-blue-100 p-2 rounded-lg">
+                     <FaCreditCard className="text-blue-600 text-xl" />
+                   </div>
+                   <h3 className="text-xl font-bold">Add New ATM Card</h3>
+                 </div>
+                 <button onClick={closeModal} className='p-2 text-2xl text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-full outline-none border-none cursor-pointer transition-colors'>
                   <IoClose/>
                  </button>
-
-
                   </Dialog.Title>
-                  <div className="mt-2">
+                  <div className="mt-4">
                   <div className="w-full py-3 flex justify-center items-center ">
                                 <img src="/logo.svg" alt="" className='w-1/2 mx-auto' />
                             </div> 
 
-
                           <Formik  initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmitHandler}>
-
-
-
                           {({values,handleSubmit})=>(
                                   <form onSubmit={handleSubmit} className='py-4'>
-                                    <div className="mb-3">
-                                      <label htmlFor="account">Account No.</label>
-                                      <Field name="account" id="account" as="select" className="w-full py-2 border border-rose-500 rounded outline-none px-2">
+                                    <div className="mb-4">
+                                      <label htmlFor="account" className="block text-sm font-medium text-gray-700 mb-2">Account No.</label>
+                                      <Field name="account" id="account" as="select" className="w-full py-3 px-4 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                                       {
                   user && user.account_no && user.account_no.length>0 ? <>
                   <option value="">Select Account</option>
@@ -141,17 +141,16 @@ export default function AddNewCardDialog() {
                   </>:
                   <option value="">No Account Available</option>
                  }
-
                                       </Field>   
-                                      <ErrorMessage  className='text-red-500' component={'p'} name='account'  /> 
+                                      <ErrorMessage  className='text-red-500 text-sm mt-1' component={'p'} name='account'  /> 
                                     </div>
-                                    <div className="mb-3">
-                                    <label htmlFor="card_type">Card Type</label>
-                                        <Field as="select" className="w-full py-2 border border-rose-500 rounded outline-none px-2"  name="card_type" id="card_type">
+                                    <div className="mb-4">
+                                    <label htmlFor="card_type" className="block text-sm font-medium text-gray-700 mb-2">Card Type</label>
+                                        <Field as="select" className="w-full py-3 px-4 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"  name="card_type" id="card_type">
                                         {
                                       
                                       Types  && Types.length>0 ? <>
-                  <option value="">Select</option>
+                  <option value="">Select Card Type</option>
                    { Types.map((cur,i)=>{
                     return <option key={i} className='' value={cur}>{cur}</option>
                   })}
@@ -159,39 +158,24 @@ export default function AddNewCardDialog() {
                   <option value="">No Card Type Here</option>
                  }
                                         </Field>
-                                    <ErrorMessage  className='text-red-500' component={'p'} name='card_type'  /> 
-
+                                    <ErrorMessage  className='text-red-500 text-sm mt-1' component={'p'} name='card_type'  /> 
                                     </div>
 
-
-                 <div className="mb-3">
-                  <label htmlFor="pin">PIN</label>
-                  <Field type="text" id="pin" name="pin" className="w-full py-2 px-3 rounded-md border outline-none border-rose-500" placeholder='PIN Number' onInput={(e)=>{
+                 <div className="mb-6">
+                  <label htmlFor="pin" className="block text-sm font-medium text-gray-700 mb-2">PIN</label>
+                  <Field type="text" id="pin" name="pin" className="w-full py-3 px-4 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder='Enter 4-digit PIN' onInput={(e)=>{
                     e.target.value = e.target.value.replace(/\D/g, "");
                   }} />
-                  <ErrorMessage  className='text-red-500' component={'p'} name='pin'  /> 
-
+                  <ErrorMessage  className='text-red-500 text-sm mt-1' component={'p'} name='pin'  /> 
                  </div>
 
                       <div className="mb-3">
-                        <CustomAuthButton isLoading={loading}  text={'Add New'} />
+                        <CustomAuthButton isLoading={loading}  text={'Create Card'} />
                       </div>
-
-
-
-
                                   </form>
-
-
                           )}
-
                           </Formik>
-
-
-
                   </div>
-
-                  
                 </Dialog.Panel>
               </Transition.Child>
             </div>
