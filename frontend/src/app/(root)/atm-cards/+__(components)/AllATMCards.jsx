@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from 'react';
 import { useMainContext } from '@/context/MainContext';
-import { FaEye, FaEyeSlash, FaCreditCard, FaShieldAlt } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaCreditCard, FaShieldAlt, FaPlus } from 'react-icons/fa';
 import { MdContactless } from 'react-icons/md';
 import UseCardModel from './UseCard';
+import AddNewCard from './AddNewCard';
 import { generateAccountNumber, formatAccountNumber } from '@/utils/accountUtils';
 
 const AllATMCards = () => {
@@ -43,8 +44,6 @@ const AllATMCards = () => {
     return `${month}/${year}`;
   };
 
-
-
   const getCardIcon = (type) => {
     switch (type.toLowerCase()) {
       case 'basic':
@@ -79,15 +78,39 @@ const AllATMCards = () => {
   if (!user || validAtms.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="bg-gray-50 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-          <img src="/noData.png" alt="No ATM Cards" className="w-16 h-16 object-contain" />
+        {/* Empty State with Add Card Option */}
+        <div className="empty-state-container">
+          <div className="empty-state-icon">
+            <FaCreditCard className="text-3xl text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-3">
+            No ATM Cards Yet
+          </h3>
+          <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            {user ? 'You haven\'t created any ATM cards yet. Create your first card to start making secure transactions.' : 'User data not available. Please log in.'}
+          </p>
+          
+          {user && (
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <div className="feature-card">
+                <div className="feature-icon">
+                  <FaPlus className="text-2xl text-blue-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-800 mb-2">Add Your First Card</h4>
+                <p className="text-sm text-gray-600 mb-4">Create a new ATM card for secure transactions</p>
+                <AddNewCard />
+              </div>
+              
+              <div className="feature-card">
+                <div className="feature-icon">
+                  <FaShieldAlt className="text-2xl text-green-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-800 mb-2">Secure & Protected</h4>
+                <p className="text-sm text-gray-600">Advanced encryption and fraud protection</p>
+              </div>
+            </div>
+          )}
         </div>
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">
-          No ATM Cards Found
-        </h3>
-        <p className="text-gray-600">
-          {user ? 'No valid ATM cards available. Please request a new card or contact support.' : 'User data not available. Please log in.'}
-        </p>
       </div>
     );
   }
@@ -97,11 +120,6 @@ const AllATMCards = () => {
       {validAtms.map((atm) => {
         const isShowCVV = visibleCVVs[atm._id] || false;
         const isShowNumber = visibleNumbers[atm._id] || false;
-<<<<<<< HEAD
-        const cardStyle = getCardStyles(atm.card_type);
-=======
-
->>>>>>> cursor/design-professional-atm-card-variations-1391
 
         return (
           <div key={atm._id} className="flex flex-col items-center group">
@@ -117,97 +135,6 @@ const AllATMCards = () => {
 
             {/* Professional Card UI */}
             <div 
-<<<<<<< HEAD
-              className="relative w-full max-w-sm aspect-[1.586] rounded-2xl p-6 mb-6 overflow-hidden text-white transform transition-all duration-300 hover:scale-105 hover:rotate-1"
-              style={{
-                background: cardStyle.background,
-                border: cardStyle.border,
-                boxShadow: cardStyle.boxShadow
-              }}
-            >
-              {/* Card Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full translate-y-12 -translate-x-12"></div>
-              </div>
-
-              {/* Card Header */}
-              <div className="relative flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="text-3xl">{getCardIcon(atm.card_type)}</div>
-                  <div>
-                    <div className="text-xs text-white/80 uppercase tracking-wider">Bank Name</div>
-                    <div className="text-sm font-semibold">DEBIT CARD</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-white/80 uppercase tracking-wider">Card Type</div>
-                  <div className="text-sm font-bold">{getCardTitle(atm.card_type)}</div>
-                </div>
-              </div>
-
-              {/* Chip and Contactless */}
-              <div className="relative flex items-center justify-between mb-8">
-                <div className="w-12 h-9 bg-yellow-500 rounded-md flex items-center justify-center">
-                  <div className="w-8 h-6 bg-yellow-600 rounded-sm"></div>
-                </div>
-                <MdContactless className="text-3xl text-white/90" />
-              </div>
-
-              {/* Card Number */}
-              <div className="relative mb-8">
-                <div className="text-xs text-white/80 uppercase tracking-wider mb-2">Card Number</div>
-                <div className="flex items-center gap-3">
-                  <div className="text-xl font-mono font-bold tracking-wider">
-                    {isShowNumber ? (
-                      <>
-                        {atm.card_no.slice(0, 4)} {atm.card_no.slice(4, 8)} {atm.card_no.slice(8, 12)} {atm.card_no.slice(12, 16)}
-                      </>
-                    ) : (
-                      <>**** **** **** {atm.card_no.slice(12, 16)}</>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => toggleNumber(atm._id)}
-                    aria-label="Toggle card number visibility"
-                    className="text-white/80 hover:text-white transition-colors p-1"
-                  >
-                    {isShowNumber ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Card Footer */}
-              <div className="relative flex items-center justify-between">
-                <div>
-                  <div className="text-xs text-white/80 uppercase tracking-wider mb-1">Cardholder</div>
-                  <div className="text-sm font-semibold">{user?.name || 'CARDHOLDER'}</div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div>
-                    <div className="text-xs text-white/80 uppercase tracking-wider mb-1">CVV</div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold">{isShowCVV ? atm.cvv : '***'}</span>
-                      <button
-                        onClick={() => toggleCVV(atm._id)}
-                        aria-label="Toggle CVV visibility"
-                        className="text-white/80 hover:text-white transition-colors"
-                      >
-                        {isShowCVV ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-white/80 uppercase tracking-wider mb-1">Expires</div>
-                    <div className="text-sm font-semibold">{formatExpiry(atm.expiry)}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Security Badge */}
-              <div className="absolute bottom-4 right-4">
-                <FaShieldAlt className="text-white/60 text-lg" />
-=======
               className={`atm-card atm-card-${atm.card_type.toLowerCase()} card-entrance relative w-full max-w-sm rounded-2xl p-6 mb-6 overflow-hidden text-white`}
             >
               {/* Card Background Pattern */}
@@ -296,7 +223,6 @@ const AllATMCards = () => {
                 <div className="card-security-badge">
                   <FaShieldAlt className="text-lg" />
                 </div>
->>>>>>> cursor/design-professional-atm-card-variations-1391
               </div>
             </div>
 
