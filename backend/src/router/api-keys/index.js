@@ -4,12 +4,9 @@ const APIKEYController = require("../../controller/API_KEY.controller")
 
 const router = express.Router()
 
-// Existing routes
-router.route('/send-email-otp')
-.post(AuthMiddleware,APIKEYController.SendEmailOTP)
-
-router.route('/verify-email-otp')
-.post(AuthMiddleware,APIKEYController.VerifyEmailOTP)
+// Generate API keys directly without email verification
+router.route('/generate')
+.post(AuthMiddleware,APIKEYController.GenerateAPIKeys)
 
 router.route('/get-keys')
 .get(AuthMiddleware,APIKEYController.GetAPIKeys)
