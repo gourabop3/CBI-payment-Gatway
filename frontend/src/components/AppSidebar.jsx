@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
-import { MdDashboard } from 'react-icons/md';
+import { MdDashboard, MdIntegrationInstructions } from 'react-icons/md';
 import { GrCurrency } from 'react-icons/gr';
 import { MdTransferWithinAStation, MdPhoneAndroid, MdQrCode } from 'react-icons/md';
 import { GiReceiveMoney, GiFalloutShelter } from 'react-icons/gi';
@@ -21,6 +21,7 @@ const links = [
   { href: '/transactions', label: 'Transactions', Icon: PiNewspaperClipping },
   { href: '/atm-cards', label: 'ATM Cards', Icon: IoCardSharp },
   { href: '/api-keys', label: 'API Keys', Icon: FaKey },
+  { href: '/api-use', label: 'API Use', Icon: MdIntegrationInstructions },
   { href: '/customer-service', label: 'Customer Service', Icon: AiOutlineRobot },
   { href: '/about', label: 'About', Icon: AiOutlineInfoCircle },
   { href: '/profile', label: 'Profile', Icon: GiFalloutShelter },
