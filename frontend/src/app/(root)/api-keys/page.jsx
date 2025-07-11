@@ -94,6 +94,18 @@ const ApiKeyPage = () => {
       <div className="container py-6 md:py-10 px-4 md:px-6">
         <HeaderName/>
 
+        {/* Info/Instruction Section */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-center gap-4">
+          <FaInfoCircle className="text-blue-600 text-2xl" />
+          <div>
+            <h3 className="font-semibold text-blue-800">How to use your API Keys</h3>
+            <p className="text-blue-700 text-sm mt-1">
+              Use these credentials to integrate with the CBI Bank Payment Gateway. <br/>
+              <span className="font-medium">Keep your API Secret and Hash secure.</span> You can copy them using the copy button on each card.
+            </p>
+          </div>
+        </div>
+
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
           <div className="flex items-center gap-4 mb-6">
@@ -274,11 +286,19 @@ const APICredentialCard = ({
   truncateBack = 4 
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (!value) return;
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    });
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
       <div className={`h-2 bg-gradient-to-r ${bgGradient}`}></div>
-      
       <div className="p-6 md:p-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-gray-50 p-3 rounded-xl">
@@ -293,14 +313,16 @@ const APICredentialCard = ({
             </p>
           </div>
         </div>
-
         <div className="bg-gray-50 rounded-lg p-4 mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-600 text-sm font-medium">Credential Value</span>
             <button
               onClick={() => setIsVisible(!isVisible)}
-              className="text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-gray-500 hover:text-gray-700 transition-colors text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 rounded"
               title={isVisible ? "Hide" : "Show"}
+              aria-label={isVisible ? `Hide ${copyLabel}` : `Show ${copyLabel}`}
+              tabIndex={0}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setIsVisible(!isVisible); }}
             >
               {isVisible ? <FaEyeSlash /> : <FaEye />}
             </button>
@@ -310,15 +332,22 @@ const APICredentialCard = ({
               {isVisible ? value : truncateString(value, truncateFront, truncateBack)}
             </code>
             <button
-              onClick={() => copy(value)}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+              onClick={handleCopy}
+              className={`bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${copied ? 'ring-2 ring-green-400' : ''}`}
               title={`Copy ${copyLabel}`}
+              aria-label={`Copy ${copyLabel}`}
+              tabIndex={0}
+              onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !copied) handleCopy(); }}
+              disabled={copied}
             >
-              <FaCopy />
+              {copied ? (
+                <span className="text-xs font-semibold">Copied!</span>
+              ) : (
+                <FaCopy />
+              )}
             </button>
           </div>
         </div>
-
         <div className="flex items-center gap-2 text-green-600 text-sm">
           <FaShieldAlt />
           <span>Secure & Encrypted</span>
