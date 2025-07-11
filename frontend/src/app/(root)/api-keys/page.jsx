@@ -8,6 +8,7 @@ import { FaCopy, FaKey, FaShieldAlt, FaCode, FaLock, FaEye, FaEyeSlash, FaSync, 
 import { MdSecurity, MdVpnKey, MdDeveloperMode, MdPayment } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { axiosClient } from '@/utils/AxiosClient';
+import VerifiedEMailModel from '../profile/+__(components)/VerifiedEMailModel';
 
 // Helper function to truncate long strings like API keys/hashes for cleaner UI
 const truncateString = (str, front = 6, back = 4) => {
@@ -69,7 +70,12 @@ const ApiKeyPage = () => {
   }
 
   if (!isEmailVerified) {
-    return <NotValidUser/>
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <h2 className="text-2xl font-bold mb-4">Please verify your email to access API Keys</h2>
+        <VerifiedEMailModel />
+      </div>
+    );
   }
 
   if (loading) {
@@ -99,38 +105,7 @@ const ApiKeyPage = () => {
               <p className="text-indigo-100">Secure access to CBI Bank's payment gateway APIs</p>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <FaShieldAlt className="text-xl" />
-                <span className="text-sm opacity-90">Security Level</span>
-              </div>
-              <div className="text-lg font-semibold">
-                Enterprise Grade
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdSecurity className="text-xl" />
-                <span className="text-sm opacity-90">Encryption</span>
-              </div>
-              <div className="text-lg font-semibold">
-                256-bit SSL
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdPayment className="text-xl" />
-                <span className="text-sm opacity-90">Gateway Status</span>
-              </div>
-              <div className="text-lg font-semibold">
-                {apiKeys?.hasAPIKey ? 'Active' : 'Inactive'}
-              </div>
-            </div>
-          </div>
+          {/* Removed the grid of blank/decorative cards */}
         </div>
 
         {/* API Keys Section */}

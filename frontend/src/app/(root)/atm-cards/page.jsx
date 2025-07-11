@@ -23,38 +23,7 @@ const AtmCards = () => {
               <p className="text-purple-100">Manage your debit cards securely</p>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <FaShieldAlt className="text-xl" />
-                <span className="text-sm opacity-90">Secure Banking</span>
-              </div>
-              <div className="text-lg font-semibold">
-                256-bit Encryption
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdContactless className="text-xl" />
-                <span className="text-sm opacity-90">Contactless</span>
-              </div>
-              <div className="text-lg font-semibold">
-                Tap & Pay Ready
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdSecurity className="text-xl" />
-                <span className="text-sm opacity-90">Security</span>
-              </div>
-              <div className="text-lg font-semibold">
-                24/7 Monitoring
-              </div>
-            </div>
-          </div>
+          {/* Removed the grid of blank/decorative cards */}
         </div>
 
         {/* Add New Card Section */}

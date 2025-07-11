@@ -10,6 +10,10 @@ const AllATMCards = () => {
   const { user } = useMainContext()
   const [visibleCVVs, setVisibleCVVs] = useState({})
 
+  // Defensive: Ensure user, user.atms, and user.account_no are arrays
+  const atms = Array.isArray(user?.atms) ? user.atms : [];
+  const accountNos = Array.isArray(user?.account_no) ? user.account_no : [];
+
   const toggleCVV = (cardId) => {
     setVisibleCVVs(prev => ({
       ...prev,
@@ -20,13 +24,16 @@ const AllATMCards = () => {
   // Helper to get formatted account number for an ATM record
   const getFormattedAccountNumber = (atmItem) => {
     if (!user) return atmItem.account;
-    const accountObj = user?.account_no?.find(acc => acc._id === atmItem.account);
+    const accountObj = accountNos.find(acc => acc._id === atmItem.account);
     if (!accountObj) return atmItem.account;
     const accNum = generateAccountNumber(user._id, accountObj._id, accountObj.ac_type);
     return formatAccountNumber(accNum);
   }
 
-  if (!user?.atms || user.atms.length === 0) {
+  // Filter out invalid cards
+  const validAtms = atms.filter(atm => atm && atm._id && atm.card_type && atm.card_no && atm.card_no.length >= 16 && atm.cvv && atm.expiry && atm.account);
+
+  if (!user || validAtms.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="bg-gray-50 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
@@ -36,7 +43,7 @@ const AllATMCards = () => {
           No ATM Cards Found
         </h3>
         <p className="text-gray-600">
-          Request your first ATM card to get started
+          {user ? 'No valid ATM cards available. Please request a new card or contact support.' : 'User data not available. Please log in.'}
         </p>
       </div>
     )
@@ -44,7 +51,7 @@ const AllATMCards = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {user.atms.map((atm, index) => {
+      {validAtms.map((atm, index) => {
         const circl1 = atm.card_type === "basic" ? "bg-teal-600" : atm.card_type === "classic" ? "bg-indigo-600" : "bg-rose-600"
         const circl2 = atm.card_type === "basic" ? "bg-amber-600" : atm.card_type === "classic" ? "bg-rose-600" : "bg-indigo-600"
         const isShowCVV = visibleCVVs[atm._id] || false

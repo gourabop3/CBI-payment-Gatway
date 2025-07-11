@@ -2,7 +2,6 @@
 
 import HeaderName from '@/components/HeaderName';
 import React, { useEffect, useState } from 'react';
-import TransactionCard from './+___compoents/TransactionCard';
 import MessageShow from './+___compoents/MessageShow';
 import { toast } from 'react-toastify';
 import { axiosClient } from '@/utils/AxiosClient';
@@ -240,7 +239,21 @@ const Transactions = () => {
             <div className="space-y-4">
               {getFilteredTransactions().length > 0 ? (
                 getFilteredTransactions().map((transaction, index) => (
-                  <TransactionCard key={index} data={transaction} />
+                  <div key={index} className="bg-white rounded-lg shadow-md p-4 flex justify-between items-center">
+                    <div>
+                      <p className="text-lg font-semibold text-gray-800">{transaction._id}</p>
+                      <p className="text-sm text-gray-600">{transaction.remark}</p>
+                      <p className="text-sm text-gray-600">Date: {new Date(transaction.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <p className={`text-lg font-bold ${transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                        {transaction.type === 'credit' ? '+' : '-'}₹{transaction.amount.toLocaleString()}
+                      </p>
+                      <p className={`text-sm ${transaction.isSuccess ? 'text-green-600' : 'text-red-600'}`}>
+                        {transaction.isSuccess ? 'Success' : 'Failed'}
+                      </p>
+                    </div>
+                  </div>
                 ))
               ) : (
                 <div className="text-center py-20">
