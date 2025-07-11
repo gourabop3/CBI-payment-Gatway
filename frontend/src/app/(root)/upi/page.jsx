@@ -4,10 +4,11 @@ import HeaderName from '@/components/HeaderName';
 import { MdQrCode, MdSend, MdHistory, MdAccountBalance, MdPayment } from 'react-icons/md';
 import { FaDownload, FaShare, FaCopy, FaCheck } from 'react-icons/fa';
 import Card from '@/components/ui/Card';
-import { useAuthContext } from '@/context/AuthProvider';
+import { useMainContext } from '@/context/MainContext';
 
 const UPIPage = () => {
-  const { token } = useAuthContext();
+  const { user } = useMainContext();
+  const token = (user && user.token) || '';
   const [activeTab, setActiveTab] = useState('pay');
   const [upiInfo, setUpiInfo] = useState(null);
   const [qrCode, setQrCode] = useState(null);
