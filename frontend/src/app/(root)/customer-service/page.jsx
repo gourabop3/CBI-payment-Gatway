@@ -22,7 +22,7 @@ export default function CustomerServicePage() {
     {
       sender: "bot",
       text:
-        "Hello! I'm CBI Assistant, your intelligent banking chatbot created by Gourab. I'm here to help you 24/7 with all your banking needs. How can I assist you today?",
+        "Hello! I'm CBI Assistant, your intelligent banking chatbot created by Gourab. I'm here to help you 24/7 with all your banking needs.\n\n👨‍💻 Developer: Gourab | Email: gourabmop@gmail.com | Mobile: +91 9263839602 | West Bengal, India\n\nI can assist you with account balance, money transfers, ATM cards, mobile recharge, KYC verification, and much more. How can I help you today?",
       timestamp: new Date()
     }
   ]);
@@ -36,6 +36,7 @@ export default function CustomerServicePage() {
     { text: "ATM Card Help", icon: MdCreditCard },
     { text: "Mobile Recharge", icon: MdPhoneAndroid },
     { text: "KYC Verification", icon: MdHelp },
+    { text: "Developer Details", icon: AiOutlineUser },
     { text: "Customer Support", icon: MdSupportAgent }
   ];
 
@@ -152,6 +153,9 @@ export default function CustomerServicePage() {
                   <span className="inline-block w-2 h-2 bg-green-400 rounded-full mr-2" />
                   Online • Developed by Gourab
                 </p>
+                <p className="text-blue-200 text-xs">
+                  📧 gourabmop@gmail.com • 📱 +91 9263839602 • 📍 West Bengal
+                </p>
               </div>
             </div>
           </div>
@@ -252,6 +256,19 @@ export default function CustomerServicePage() {
               >
                 <AiOutlineSend className="text-lg" />
               </button>
+            </div>
+          </div>
+
+          {/* Chat Footer with Developer Info */}
+          <div className="bg-gray-50 border-t border-gray-200 px-6 py-3">
+            <div className="text-center">
+              <p className="text-xs text-gray-600">
+                🤖 CBI Assistant - Developed with ❤️ by{" "}
+                <span className="font-semibold text-blue-600">Gourab</span>
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                For technical support: gourabmop@gmail.com | +91 9263839602 | West Bengal, India
+              </p>
             </div>
           </div>
         </div>
