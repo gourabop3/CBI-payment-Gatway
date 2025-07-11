@@ -1,8 +1,8 @@
 "use client";
 import HeaderName from '@/components/HeaderName'
 import React, { Suspense, useEffect, useState } from 'react'
-import { FaCoins, FaCalendarAlt, FaChartLine } from 'react-icons/fa'
-import { MdSavings, MdAccountBalance, MdTrendingUp } from 'react-icons/md'
+import { FaCoins, FaCalendarAlt } from 'react-icons/fa'
+import { MdSavings, MdTrendingUp } from 'react-icons/md'
 
 import FDCard from './+___compoents/FDCard'
 import { axiosClient } from '@/utils/AxiosClient'
@@ -37,16 +37,13 @@ const FDPage = () => {
       
       const data = response.data || []
       
-      // Ensure data is an array and validate structure
       if (Array.isArray(data)) {
         setDeposits(data)
       } else {
-        console.warn('Unexpected data format received:', data)
         setDeposits([])
       }
 
     } catch (error) {
-      console.error('Error fetching deposits:', error)
       const errorMessage = error?.response?.data?.msg || error?.message || 'Failed to fetch fixed deposits'
       toast.error(errorMessage)
       setError(errorMessage)
@@ -57,7 +54,6 @@ const FDPage = () => {
   }
 
   useEffect(() => {
-    // If user is not loaded or not logged in, do not fetch deposits
     if (!user) {
       setLoading(false);
       setDeposits([]);
@@ -67,7 +63,6 @@ const FDPage = () => {
     fetchAllDeposits();
   }, [isUpdate, user]);
 
-  // Safe calculation with fallbacks
   const calculateStats = () => {
     try {
       if (!Array.isArray(deposits) || deposits.length === 0) {
@@ -93,7 +88,6 @@ const FDPage = () => {
         totalDeposits: deposits.length
       }
     } catch (error) {
-      console.error('Error calculating stats:', error)
       return {
         totalFDAmount: 0,
         activeFDs: 0,
@@ -125,63 +119,6 @@ const FDPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="container py-6 md:py-10 px-4 md:px-6">
         <HeaderName/>
-
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white bg-opacity-20 p-3 rounded-xl">
-              <FaCoins className="text-2xl md:text-3xl" />
-            </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold">Fixed Deposit Portfolio</h2>
-              <p className="text-green-100">Grow your wealth with guaranteed returns</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdAccountBalance className="text-xl" />
-                <span className="text-sm opacity-90">Total FDs</span>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                {stats.totalDeposits}
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdTrendingUp className="text-xl" />
-                <span className="text-sm opacity-90">Total Amount</span>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                ₹{stats.totalFDAmount.toLocaleString()}
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <FaChartLine className="text-xl" />
-                <span className="text-sm opacity-90">Active FDs</span>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                {stats.activeFDs}
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdSavings className="text-xl" />
-                <span className="text-sm opacity-90">Interest Rate</span>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                0.1% <span className="text-sm font-normal">daily</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
 
         {/* Error State */}
         {error && (
@@ -216,12 +153,7 @@ const FDPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 <Suspense fallback={<CustomLoader/>}>
                   {deposits.map((deposit, index) => {
-                    // Validate deposit data before rendering
-                    if (!deposit || !deposit._id) {
-                      console.warn('Invalid deposit data at index:', index, deposit)
-                      return null
-                    }
-                    
+                    if (!deposit || !deposit._id) return null;
                     return (
                       <FDCard 
                         key={deposit._id} 
@@ -287,4 +219,3 @@ const FDPage = () => {
 }
 
 export default FDPage
-
