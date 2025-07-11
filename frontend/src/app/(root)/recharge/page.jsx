@@ -47,11 +47,7 @@ const RechargePage = () => {
     { id: 'jio', name: 'Jio', logo: '🔵', color: '#0066cc' },
     { id: 'airtel', name: 'Airtel', logo: '🔴', color: '#dc2626' },
     { id: 'vi', name: 'Vi (Vodafone Idea)', logo: '🟣', color: '#7c3aed' },
-    { id: 'bsnl', name: 'BSNL', logo: '🟡', color: '#eab308' },
-    { id: 'mtnl', name: 'MTNL', logo: '🟠', color: '#ea580c' },
-    { id: 'reliance', name: 'Reliance', logo: '🟢', color: '#16a34a' },
-    { id: 'tata', name: 'Tata Docomo', logo: '⚫', color: '#374151' },
-    { id: 'telenor', name: 'Telenor', logo: '🔵', color: '#2563eb' }
+    //add more 
   ];
 
   // Bill payment types
