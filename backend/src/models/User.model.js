@@ -17,7 +17,7 @@ const schema = new mongoose.Schema({
         type:String,
         required:true
     },
-    // Array of linked bank accounts for the user. This enables
+    // good Array of linked bank accounts for the user. This enables
     // `.populate('account_no')` queries used throughout the
     // services (TransferService, RechargeService, etc.)
     // Each element references a document from the `account` collection.
