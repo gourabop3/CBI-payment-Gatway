@@ -69,7 +69,7 @@ export default function KYCPage() {
           return;
         }
 
-        await axiosClient.post('/auth/verify-email-otp', { token: otpToken, otp }, {
+        await axiosClient.post('/auth/verify-email', { token: otpToken, otp }, {
           headers: { Authorization: 'Bearer ' + token },
         });
         toast.success('Email verified');
