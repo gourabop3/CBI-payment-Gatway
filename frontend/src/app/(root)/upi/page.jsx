@@ -1,166 +1,457 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderName from '@/components/HeaderName';
-import { MdQrCode, MdTransferWithinAStation, MdPhoneAndroid } from 'react-icons/md';
-import { FaArrowRight, FaCode, FaShieldAlt, FaRocket } from 'react-icons/fa';
+import { MdQrCode, MdSend, MdHistory, MdAccountBalance, MdPayment } from 'react-icons/md';
+import { FaDownload, FaShare, FaCopy, FaCheck } from 'react-icons/fa';
 import Card from '@/components/ui/Card';
+import { useAuthContext } from '@/context/AuthProvider';
 
-const TestingPage = () => {
-  const features = [
-    {
-      icon: <MdQrCode className="text-4xl md:text-5xl text-blue-600" />,
-      title: "QR Code Payments",
-      description: "Generate and scan QR codes for instant payments. Secure, fast, and convenient payment solution.",
-      gradient: "from-blue-500 to-cyan-500"
-    },
-    {
-      icon: <MdTransferWithinAStation className="text-4xl md:text-5xl text-green-600" />,
-      title: "Instant Transfers",
-      description: "Real-time money transfers with UPI. Send and receive money instantly across all banks.",
-      gradient: "from-green-500 to-emerald-500"
-    },
-    {
-      icon: <MdPhoneAndroid className="text-4xl md:text-5xl text-purple-600" />,
-      title: "Mobile First",
-      description: "Optimized for mobile devices with responsive design and intuitive user interface.",
-      gradient: "from-purple-500 to-pink-500"
-    }
-  ];
+const UPIPage = () => {
+  const { token } = useAuthContext();
+  const [activeTab, setActiveTab] = useState('pay');
+  const [upiInfo, setUpiInfo] = useState(null);
+  const [qrCode, setQrCode] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const apiFeatures = [
-    {
-      icon: <FaCode className="text-2xl text-blue-600" />,
-      title: "REST APIs",
-      description: "RESTful API endpoints for seamless integration"
-    },
-    {
-      icon: <FaShieldAlt className="text-2xl text-green-600" />,
-      title: "Secure Authentication",
-      description: "OAuth 2.0 and JWT token-based security"
-    },
-    {
-      icon: <FaRocket className="text-2xl text-purple-600" />,
-      title: "Real-time Processing",
-      description: "Instant transaction processing and notifications"
+  // Payment form states
+  const [paymentForm, setPaymentForm] = useState({
+    recipient_upi: '',
+    amount: '',
+    note: ''
+  });
+
+  // QR generation form states
+  const [qrForm, setQrForm] = useState({
+    amount: '',
+    note: ''
+  });
+
+  const [validationResult, setValidationResult] = useState(null);
+
+  useEffect(() => {
+    fetchUPIInfo();
+    fetchTransactions();
+  }, []);
+
+  const fetchUPIInfo = async () => {
+    try {
+      const response = await fetch('/api/upi/info', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUpiInfo(data.upi_info);
+      }
+    } catch (error) {
+      console.error('Error fetching UPI info:', error);
     }
-  ];
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch('/api/upi/transactions?page=1&limit=10', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setTransactions(data.transactions || []);
+      }
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
+  const generateQR = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/upi/qr?amount=${qrForm.amount}&note=${qrForm.note}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setQrCode(data);
+      }
+    } catch (error) {
+      console.error('Error generating QR:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const validateUPI = async (upi_id) => {
+    if (!upi_id) return;
+    try {
+      const response = await fetch(`/api/upi/validate/${upi_id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setValidationResult(data);
+    } catch (error) {
+      console.error('Error validating UPI:', error);
+    }
+  };
+
+  const processPayment = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/upi/pay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(paymentForm)
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('Payment successful!');
+        setPaymentForm({ recipient_upi: '', amount: '', note: '' });
+        fetchTransactions();
+        fetchUPIInfo();
+      } else {
+        alert(data.msg || 'Payment failed');
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      alert('Payment failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyUPIId = () => {
+    navigator.clipboard.writeText(upiInfo?.upi_id || '');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR'
+    }).format(amount);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      <div className="container py-6 md:py-10 px-4 md:px-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="container py-6 px-4">
         <HeaderName />
         
-        {/* Hero Section */}
-        <div className="text-center mb-12 md:mb-16">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4 md:mb-6">
-            Testing
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            CBI Bank UPI
           </h1>
-          <p className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Secure access to CBI Bank's developer APIs
+          <p className="text-lg text-gray-600">
+            Fast, Secure & Instant Payments
           </p>
-          <div className="mt-8 md:mt-12 bg-white rounded-2xl shadow-xl p-6 md:p-8 max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 rounded-xl">
-                <FaCode className="text-2xl md:text-3xl text-white" />
-              </div>
-              <div className="text-center md:text-left">
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">Developer Portal</h3>
-                <p className="text-gray-600">Build powerful financial applications with our comprehensive API suite</p>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* Main Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
-          {features.map((feature, index) => (
-            <Card key={index} className="p-0 overflow-hidden group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className={`h-2 bg-gradient-to-r ${feature.gradient}`}></div>
-              <div className="p-6 md:p-8">
-                <div className="mb-6 flex justify-center">
-                  <div className="bg-gray-50 p-4 rounded-full group-hover:scale-110 transition-transform duration-300">
-                    {feature.icon}
-                  </div>
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 text-center leading-relaxed mb-6">
-                  {feature.description}
-                </p>
-                <div className="text-center">
-                  <button className={`inline-flex items-center gap-2 bg-gradient-to-r ${feature.gradient} text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105`}>
-                    Explore
-                    <FaArrowRight className="text-sm" />
+        {/* UPI Info Card */}
+        {upiInfo && (
+          <Card className="mb-6 p-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Your UPI ID</h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-mono">{upiInfo.upi_id}</span>
+                  <button
+                    onClick={copyUPIId}
+                    className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
+                  >
+                    {copied ? <FaCheck className="text-green-400" /> : <FaCopy />}
                   </button>
                 </div>
               </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* API Features Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-12 mb-12">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              API Features
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Our robust API infrastructure provides everything you need to build modern banking applications
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {apiFeatures.map((feature, index) => (
-              <div key={index} className="text-center p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-all duration-300">
-                <div className="bg-gray-50 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  {feature.icon}
-                </div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 text-sm md:text-base">
-                  {feature.description}
-                </p>
+              <div className="text-right">
+                <p className="text-sm opacity-90">Available Balance</p>
+                <p className="text-2xl font-bold">{formatCurrency(upiInfo.balance)}</p>
               </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Navigation Tabs */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-white rounded-lg p-1 shadow-md">
+            {[
+              { id: 'pay', label: 'Pay', icon: MdSend },
+              { id: 'receive', label: 'Receive', icon: MdQrCode },
+              { id: 'history', label: 'History', icon: MdHistory }
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                  activeTab === id
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <Icon />
+                {label}
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Getting Started Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 md:p-12 text-white text-center">
-          <h2 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6">
-            Ready to Get Started?
-          </h2>
-          <p className="text-lg md:text-xl mb-6 md:mb-8 opacity-90 max-w-2xl mx-auto">
-            Join thousands of developers building the future of banking with our secure and scalable APIs
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-blue-600 px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors duration-300 transform hover:scale-105">
-              View Documentation
-            </button>
-            <button className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105">
-              Get API Keys
-            </button>
-          </div>
+        {/* Tab Content */}
+        <div className="max-w-2xl mx-auto">
+          {/* Pay Tab */}
+          {activeTab === 'pay' && (
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <MdSend className="text-blue-600" />
+                Send Money
+              </h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Recipient UPI ID
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="example@cbibank"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={paymentForm.recipient_upi}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setPaymentForm(prev => ({ ...prev, recipient_upi: value }));
+                      if (value.includes('@')) {
+                        validateUPI(value);
+                      }
+                    }}
+                  />
+                  {validationResult && (
+                    <div className={`mt-2 text-sm ${validationResult.valid ? 'text-green-600' : 'text-red-600'}`}>
+                      {validationResult.valid 
+                        ? `Valid UPI ID - ${validationResult.user?.name}`
+                        : validationResult.message
+                      }
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Amount (₹)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={paymentForm.amount}
+                    onChange={(e) => setPaymentForm(prev => ({ ...prev, amount: e.target.value }))}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Note (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Payment for..."
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={paymentForm.note}
+                    onChange={(e) => setPaymentForm(prev => ({ ...prev, note: e.target.value }))}
+                  />
+                </div>
+
+                <button
+                  onClick={processPayment}
+                  disabled={loading || !paymentForm.recipient_upi || !paymentForm.amount}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {loading ? 'Processing...' : 'Send Money'}
+                </button>
+              </div>
+            </Card>
+          )}
+
+          {/* Receive Tab */}
+          {activeTab === 'receive' && (
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <MdQrCode className="text-blue-600" />
+                Receive Money
+              </h2>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Amount (₹) - Optional
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={qrForm.amount}
+                    onChange={(e) => setQrForm(prev => ({ ...prev, amount: e.target.value }))}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Note - Optional
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Payment for..."
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={qrForm.note}
+                    onChange={(e) => setQrForm(prev => ({ ...prev, note: e.target.value }))}
+                  />
+                </div>
+
+                <button
+                  onClick={generateQR}
+                  disabled={loading}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {loading ? 'Generating...' : 'Generate QR Code'}
+                </button>
+              </div>
+
+              {qrCode && (
+                <div className="text-center">
+                  <div className="bg-white p-4 rounded-lg border-2 border-gray-200 inline-block">
+                    <img 
+                      src={qrCode.qr} 
+                      alt="UPI QR Code" 
+                      className="w-64 h-64 mx-auto"
+                    />
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm text-gray-600">
+                      Scan with any UPI app to pay {upiInfo?.name}
+                    </p>
+                    {qrCode.amount && (
+                      <p className="text-lg font-semibold text-blue-600">
+                        Amount: {formatCurrency(qrCode.amount)}
+                      </p>
+                    )}
+                    <div className="flex justify-center gap-2 mt-4">
+                      <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        <FaDownload />
+                        Download
+                      </button>
+                      <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        <FaShare />
+                        Share
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          )}
+
+          {/* History Tab */}
+          {activeTab === 'history' && (
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <MdHistory className="text-blue-600" />
+                Transaction History
+              </h2>
+
+              <div className="space-y-4">
+                {transactions.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <MdPayment className="text-4xl mx-auto mb-2 opacity-50" />
+                    <p>No UPI transactions yet</p>
+                  </div>
+                ) : (
+                  transactions.map((transaction, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-full ${
+                          transaction.type === 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                        }`}>
+                          {transaction.type === 'credit' ? '+' : '-'}
+                        </div>
+                        <div>
+                          <p className="font-medium">{transaction.remark}</p>
+                          <p className="text-sm text-gray-500">
+                            {formatDate(transaction.createdAt)}
+                          </p>
+                          {transaction.sender_upi && (
+                            <p className="text-xs text-gray-400">From: {transaction.sender_upi}</p>
+                          )}
+                          {transaction.recipient_upi && (
+                            <p className="text-xs text-gray-400">To: {transaction.recipient_upi}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className={`font-semibold ${
+                          transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {transaction.type === 'credit' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                        </p>
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          transaction.isSuccess 
+                            ? 'bg-green-100 text-green-600' 
+                            : 'bg-red-100 text-red-600'
+                        }`}>
+                          {transaction.isSuccess ? 'Success' : 'Failed'}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
+          )}
         </div>
 
-        {/* Stats Section */}
-        <div className="mt-12 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+        {/* Features Section */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { number: "99.9%", label: "Uptime" },
-            { number: "50M+", label: "API Calls/Month" },
-            { number: "500ms", label: "Average Response" },
-            { number: "24/7", label: "Support" }
-          ].map((stat, index) => (
-            <div key={index} className="text-center p-4 md:p-6 bg-white rounded-xl shadow-lg">
-              <div className="text-2xl md:text-3xl font-bold text-blue-600 mb-2">
-                {stat.number}
+            {
+              icon: <MdQrCode className="text-3xl text-blue-600" />,
+              title: "QR Payments",
+              description: "Generate and scan QR codes for instant payments"
+            },
+            {
+              icon: <MdSend className="text-3xl text-green-600" />,
+              title: "Instant Transfers",
+              description: "Send money instantly using UPI ID"
+            },
+            {
+              icon: <MdAccountBalance className="text-3xl text-purple-600" />,
+              title: "24/7 Available",
+              description: "Transfer money anytime, anywhere"
+            }
+          ].map((feature, index) => (
+            <Card key={index} className="p-6 text-center">
+              <div className="mb-4 flex justify-center">
+                {feature.icon}
               </div>
-              <div className="text-gray-600 text-sm md:text-base">
-                {stat.label}
-              </div>
-            </div>
+              <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+              <p className="text-gray-600 text-sm">{feature.description}</p>
+            </Card>
           ))}
         </div>
       </div>
@@ -168,4 +459,4 @@ const TestingPage = () => {
   );
 };
 
-export default TestingPage;
+export default UPIPage;

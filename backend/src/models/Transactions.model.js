@@ -22,7 +22,7 @@ const Schema = new mongoose.Schema({
     },
     type:{
         type:String,
-        enum:['credit','debit','fix_deposit', 'atm_withdrawal', 'atm_deposit'],
+        enum:['credit','debit','fix_deposit', 'atm_withdrawal', 'atm_deposit', 'upi_transfer'],
         required:true
     },
     razorpayPaymentId:{
@@ -52,7 +52,7 @@ const Schema = new mongoose.Schema({
     },
     transferType: {
         type: String,
-        enum: ['NEFT', 'RTGS', 'IMPS']
+        enum: ['NEFT', 'RTGS', 'IMPS', 'UPI']
     },
     recipientAccount: {
         type: mongoose.Schema.Types.ObjectId,
@@ -61,6 +61,19 @@ const Schema = new mongoose.Schema({
     senderAccount: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'account'
+    },
+    // UPI related fields
+    sender_upi: {
+        type: String,
+        trim: true
+    },
+    recipient_upi: {
+        type: String,
+        trim: true
+    },
+    upi_transaction_id: {
+        type: String,
+        trim: true
     },
     // ATM related fields
     atmId: {
