@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react'
 import NotValidUser from './+__(components)/NotValidUser';
 import HeaderName from '@/components/HeaderName';
 import RenGenerateModal from './+__(components)/RenGenerateModal';
-import { FaCopy, FaKey, FaShieldAlt, FaCode, FaLock, FaEye, FaEyeSlash, FaSync, FaInfoCircle, FaCreditCard, FaChartLine } from 'react-icons/fa';
-import { MdSecurity, MdVpnKey, MdDeveloperMode, MdPayment } from 'react-icons/md';
+import { FaCopy, FaKey, FaShieldAlt, FaCode, FaLock, FaEye, FaEyeSlash, FaSync, FaInfoCircle, FaCreditCard, FaChartLine, FaCog, FaToggleOn, FaToggleOff } from 'react-icons/fa';
+import { MdSecurity, MdVpnKey, MdDeveloperMode, MdPayment, MdSwapHoriz } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { axiosClient } from '@/utils/AxiosClient';
 import VerifiedEMailModel from '../profile/+__(components)/VerifiedEMailModel';
@@ -31,6 +31,8 @@ const ApiKeyPage = () => {
   const [isEmailVerified, setIsEmailVerified] = useState(false)
   const [apiKeys, setApiKeys] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [webhookUrl, setWebhookUrl] = useState('')
+  const [isUpdatingWebhook, setIsUpdatingWebhook] = useState(false)
 
   useEffect(() => {
     if (user && user.isEmailVerifed) {
@@ -59,6 +61,7 @@ const ApiKeyPage = () => {
 
       const data = response.data
       setApiKeys(data)
+      setWebhookUrl(data.webhook_config?.url || '')
 
     } catch (error) {
       console.error('Error fetching API keys:', error)
@@ -66,6 +69,51 @@ const ApiKeyPage = () => {
       toast.error(errorMessage)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleEnvironmentSwitch = async (environment) => {
+    try {
+      const token = localStorage.getItem("token")
+      const response = await axiosClient.put('/api-keys/environment/switch', 
+        { environment }, 
+        {
+          headers: { 'Authorization': 'Bearer ' + token }
+        }
+      )
+      
+      toast.success(response.data.msg)
+      fetchAPIKeys()
+    } catch (error) {
+      toast.error(error?.response?.data?.msg || 'Failed to switch environment')
+    }
+  }
+
+  const handleWebhookSave = async () => {
+    try {
+      setIsUpdatingWebhook(true)
+      const token = localStorage.getItem("token")
+      
+      const response = await axiosClient.put('/api-keys/webhook/config', 
+        { 
+          url: webhookUrl,
+          events: {
+            payment_success: true,
+            payment_failed: true,
+            refund_processed: true
+          }
+        }, 
+        {
+          headers: { 'Authorization': 'Bearer ' + token }
+        }
+      )
+      
+      toast.success(response.data.msg)
+      fetchAPIKeys()
+    } catch (error) {
+      toast.error(error?.response?.data?.msg || 'Failed to update webhook configuration')
+    } finally {
+      setIsUpdatingWebhook(false)
     }
   }
 
@@ -108,14 +156,45 @@ const ApiKeyPage = () => {
 
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white bg-opacity-20 p-3 rounded-xl">
-              <FaKey className="text-2xl md:text-3xl" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-white bg-opacity-20 p-3 rounded-xl">
+                <FaKey className="text-2xl md:text-3xl" />
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold">CBI Payment Gateway</h2>
+                <p className="text-indigo-100">Professional API Management & Integration Platform</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold">CBI Payment Gateway</h2>
-              <p className="text-indigo-100">Professional API Management & Integration Platform</p>
-            </div>
+            
+            {/* Environment Switch */}
+            {apiKeys?.hasAPIKey && (
+              <div className="flex items-center gap-3">
+                <span className="text-sm opacity-90">Environment:</span>
+                <div className="flex items-center gap-2 bg-white bg-opacity-20 rounded-lg p-2">
+                  <button
+                    onClick={() => handleEnvironmentSwitch('test')}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+                      apiKeys.environment === 'test' 
+                        ? 'bg-white text-indigo-600' 
+                        : 'text-white hover:bg-white hover:bg-opacity-10'
+                    }`}
+                  >
+                    Test
+                  </button>
+                  <button
+                    onClick={() => handleEnvironmentSwitch('live')}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+                      apiKeys.environment === 'live' 
+                        ? 'bg-white text-indigo-600' 
+                        : 'text-white hover:bg-white hover:bg-opacity-10'
+                    }`}
+                  >
+                    Live
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
@@ -130,9 +209,11 @@ const ApiKeyPage = () => {
             <div className="bg-white bg-opacity-10 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
                 <FaShieldAlt className="text-xl" />
-                <span className="text-sm opacity-90">Uptime</span>
+                <span className="text-sm opacity-90">Success Rate</span>
               </div>
-              <div className="text-lg font-semibold">99.9%</div>
+              <div className="text-lg font-semibold">
+                {apiKeys?.usage_analytics?.success_rate || '100.0'}%
+              </div>
             </div>
             
             <div className="bg-white bg-opacity-10 rounded-xl p-4">
@@ -140,7 +221,9 @@ const ApiKeyPage = () => {
                 <MdDeveloperMode className="text-xl" />
                 <span className="text-sm opacity-90">Environment</span>
               </div>
-              <div className="text-lg font-semibold">Production</div>
+              <div className="text-lg font-semibold capitalize">
+                {apiKeys?.environment || 'Test'}
+              </div>
             </div>
             
             <div className="bg-white bg-opacity-10 rounded-xl p-4">
@@ -156,30 +239,69 @@ const ApiKeyPage = () => {
         {/* API Keys Section */}
         {apiKeys?.hasAPIKey ? (
           <>
-            {/* API Usage Statistics */}
+            {/* Real-time API Usage Statistics */}
             <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
               <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                 <FaChartLine className="text-blue-600" />
-                API Usage & Performance
+                API Usage & Performance Analytics
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
-                  <div className="text-2xl font-bold text-blue-600">0</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {apiKeys.usage_analytics?.today_requests || 0}
+                  </div>
                   <div className="text-sm text-blue-700">API Calls Today</div>
                 </div>
                 <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
-                  <div className="text-2xl font-bold text-green-600">99.9%</div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {apiKeys.usage_analytics?.success_rate || '100.0'}%
+                  </div>
                   <div className="text-sm text-green-700">Success Rate</div>
                 </div>
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
-                  <div className="text-2xl font-bold text-purple-600">150ms</div>
-                  <div className="text-sm text-purple-700">Avg Response</div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {apiKeys.usage_analytics?.total_requests || 0}
+                  </div>
+                  <div className="text-sm text-purple-700">Total Requests</div>
                 </div>
                 <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
-                  <div className="text-2xl font-bold text-orange-600">10,000</div>
+                  <div className="text-2xl font-bold text-orange-600">
+                    {apiKeys.rate_limits?.requests_per_day?.toLocaleString() || '10,000'}
+                  </div>
                   <div className="text-sm text-orange-700">Daily Limit</div>
                 </div>
               </div>
+
+              {/* Rate Limits Configuration */}
+              <div className="mt-6 bg-gray-50 rounded-xl p-4">
+                <h4 className="font-semibold text-gray-800 mb-3">Current Rate Limits</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-gray-800">
+                      {apiKeys.rate_limits?.requests_per_minute?.toLocaleString() || '1,000'}
+                    </div>
+                    <div className="text-sm text-gray-600">Per Minute</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-gray-800">
+                      {apiKeys.rate_limits?.requests_per_day?.toLocaleString() || '10,000'}
+                    </div>
+                    <div className="text-sm text-gray-600">Per Day</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-gray-800">
+                      {apiKeys.rate_limits?.requests_per_month?.toLocaleString() || '300,000'}
+                    </div>
+                    <div className="text-sm text-gray-600">Per Month</div>
+                  </div>
+                </div>
+              </div>
+
+              {apiKeys.usage_analytics?.last_used && (
+                <div className="mt-4 text-sm text-gray-600">
+                  Last API call: {new Date(apiKeys.usage_analytics.last_used).toLocaleString()}
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -226,11 +348,18 @@ const ApiKeyPage = () => {
               />
             </div>
 
-            {/* Integration Guide Section */}
+            {/* Enhanced Integration Guide Section */}
             <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
               <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                 <FaCode className="text-green-600" />
                 Quick Integration Guide
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  apiKeys.environment === 'live' 
+                    ? 'bg-red-100 text-red-800' 
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {apiKeys.environment === 'live' ? 'LIVE' : 'TEST'}
+                </span>
               </h3>
               
               <div className="bg-gray-50 rounded-xl p-6">
@@ -238,12 +367,12 @@ const ApiKeyPage = () => {
                   <h4 className="font-semibold text-gray-800 mb-2">Basic Payment Request</h4>
                   <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
                     <pre className="text-green-400 text-sm">
-{`curl -X POST https://api.cbibank.com/v1/payments \\
-  -H "Authorization: Bearer YOUR_API_SECRET" \\
+{`curl -X POST ${apiKeys.environment === 'live' ? 'https://api.cbibank.com' : 'https://sandbox.cbibank.com'}/v1/payments \\
+  -H "Authorization: Bearer ${truncateString(apiKeys.api_secret, 8, 8)}" \\
   -H "Content-Type: application/json" \\
-  -H "X-API-Hash: YOUR_API_HASH" \\
+  -H "X-API-Hash: ${truncateString(apiKeys.api_hash, 8, 8)}" \\
   -d '{
-    "merchant_id": "YOUR_MERCHANT_ID",
+    "merchant_id": "${apiKeys.merchant_id}",
     "amount": 100.00,
     "currency": "INR",
     "callback_url": "https://yoursite.com/callback"
@@ -255,11 +384,18 @@ const ApiKeyPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <h5 className="font-semibold text-blue-800 mb-2">Base URL</h5>
-                    <code className="text-blue-700 text-sm">https://api.cbibank.com/v1</code>
+                    <code className="text-blue-700 text-sm">
+                      {apiKeys.environment === 'live' 
+                        ? 'https://api.cbibank.com/v1' 
+                        : 'https://sandbox.cbibank.com/v1'
+                      }
+                    </code>
                   </div>
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <h5 className="font-semibold text-green-800 mb-2">Rate Limit</h5>
-                    <code className="text-green-700 text-sm">10,000 requests/day</code>
+                    <code className="text-green-700 text-sm">
+                      {apiKeys.rate_limits?.requests_per_day?.toLocaleString() || '10,000'} requests/day
+                    </code>
                   </div>
                 </div>
               </div>
@@ -322,12 +458,17 @@ const ApiKeyPage = () => {
           </div>
         </div>
 
-        {/* Webhook Configuration Section */}
+        {/* Enhanced Webhook Configuration Section */}
         {apiKeys?.hasAPIKey && (
           <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
             <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-3">
               <MdSecurity className="text-purple-600" />
               Webhook Configuration
+              {apiKeys.webhook_config?.is_active && (
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                  Active
+                </span>
+              )}
             </h3>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -336,21 +477,41 @@ const ApiKeyPage = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <input 
                     type="url" 
+                    value={webhookUrl}
+                    onChange={(e) => setWebhookUrl(e.target.value)}
                     placeholder="https://yoursite.com/webhook/payment" 
                     className="flex-1 px-4 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    Save
+                  <button 
+                    onClick={handleWebhookSave}
+                    disabled={isUpdatingWebhook}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors disabled:bg-purple-400"
+                  >
+                    {isUpdatingWebhook ? 'Saving...' : 'Save'}
                   </button>
                 </div>
                 <p className="text-purple-700 text-sm">
                   Receive real-time payment status updates and notifications
                 </p>
+                
+                <div className="mt-4">
+                  <h5 className="font-medium text-purple-800 mb-2">Webhook Events</h5>
+                  <div className="space-y-2">
+                    {Object.entries(apiKeys.webhook_config?.events || {}).map(([event, enabled]) => (
+                      <div key={event} className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${enabled ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                        <span className="text-sm text-purple-700 capitalize">
+                          {event.replace('_', ' ')}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
               
               <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-                <h4 className="font-semibold text-orange-800 mb-3">Webhook Security</h4>
-                <div className="space-y-2 mb-4">
+                <h4 className="font-semibold text-orange-800 mb-3">Security & Validation</h4>
+                <div className="space-y-3 mb-4">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className="text-sm text-orange-700">HMAC-SHA256 Signature</span>
@@ -363,10 +524,23 @@ const ApiKeyPage = () => {
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className="text-sm text-orange-700">IP Whitelist Available</span>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-orange-700">Retry Logic Included</span>
+                  </div>
                 </div>
                 <p className="text-orange-700 text-sm">
-                  All webhooks are signed with your API secret for security
+                  All webhooks are signed with your API secret for verification
                 </p>
+                
+                {apiKeys.webhook_config?.url && (
+                  <div className="mt-4 bg-white rounded-lg p-3 border">
+                    <h6 className="text-xs font-medium text-gray-600 mb-1">Webhook Secret</h6>
+                    <code className="text-xs text-gray-800 break-all">
+                      {truncateString(apiKeys.webhook_config.secret || '', 12, 8)}
+                    </code>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -433,16 +607,30 @@ const ApiKeyPage = () => {
             ))}
           </div>
           
-          {/* API Status */}
+          {/* Enhanced API Status */}
           <div className="mt-8 bg-green-50 border border-green-200 rounded-xl p-6">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-semibold text-green-800 mb-1">API Status</h4>
-                <p className="text-green-700 text-sm">All systems operational</p>
+                <p className="text-green-700 text-sm">
+                  All systems operational • {apiKeys?.environment || 'Test'} Environment
+                </p>
+                {apiKeys?.expires_at && (
+                  <p className="text-green-600 text-xs mt-1">
+                    API keys expire: {new Date(apiKeys.expires_at).toLocaleDateString()}
+                  </p>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-green-700 font-medium">Online</span>
+              <div className="text-right">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-green-700 font-medium">Online</span>
+                </div>
+                {apiKeys?.hasAPIKey && (
+                  <div className="text-xs text-green-600">
+                    Created: {new Date(apiKeys.created_at).toLocaleDateString()}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -498,39 +686,25 @@ const APICredentialCard = ({
             <button
               onClick={() => setIsVisible(!isVisible)}
               className="text-gray-500 hover:text-gray-700 transition-colors text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 rounded"
-              title={isVisible ? "Hide" : "Show"}
-              aria-label={isVisible ? `Hide ${copyLabel}` : `Show ${copyLabel}`}
-              tabIndex={0}
-              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setIsVisible(!isVisible); }}
             >
               {isVisible ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
-          <div className="flex items-center gap-3">
-            <code className="bg-white px-3 py-2 rounded border text-gray-800 font-mono text-sm flex-1">
-              {isVisible ? value : truncateString(value, truncateFront, truncateBack)}
-            </code>
-            <button
-              onClick={handleCopy}
-              className={`bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${copied ? 'ring-2 ring-green-400' : ''}`}
-              title={`Copy ${copyLabel}`}
-              aria-label={`Copy ${copyLabel}`}
-              tabIndex={0}
-              onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !copied) handleCopy(); }}
-              disabled={copied}
-            >
-              {copied ? (
-                <span className="text-xs font-semibold">Copied!</span>
-              ) : (
-                <FaCopy />
-              )}
-            </button>
+          <div className="bg-white p-3 rounded border font-mono text-sm">
+            {isVisible ? value : truncateString(value, truncateFront, truncateBack)}
           </div>
         </div>
-        <div className="flex items-center gap-2 text-green-600 text-sm">
-          <FaShieldAlt />
-          <span>Secure & Encrypted</span>
-        </div>
+        <button
+          onClick={handleCopy}
+          className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
+            copied 
+              ? 'bg-green-500 text-white' 
+              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+          }`}
+        >
+          <FaCopy className="text-sm" />
+          {copied ? `${copyLabel} Copied!` : `Copy ${copyLabel}`}
+        </button>
       </div>
     </div>
   );
