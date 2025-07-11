@@ -14,6 +14,20 @@ const kycSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
+  // New fields for enhanced KYC
+  name: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  mobileNumber: {
+    type: String,
+    required: true,
+  },
   documents: {
     aadhaarImage: {
       type: String, // URL
