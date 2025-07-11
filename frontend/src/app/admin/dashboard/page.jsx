@@ -11,6 +11,7 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
   const [pending, setPending] = useState([]);
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -55,6 +56,11 @@ export default function AdminDashboardPage() {
   if (!stats) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
+
+  const filteredUsers = users.filter((u) =>
+    u.name.toLowerCase().includes(search.toLowerCase()) ||
+    u.email.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 to-purple-100">
@@ -123,11 +129,20 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Users table */}
-      <div className="mb-10">
+      <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold mb-4 text-blue-800 flex items-center gap-2">
           <FaUserEdit className="text-amber-500" /> Users
         </h2>
-        {users.length === 0 ? <p className="text-gray-500">No users.</p> : (
+
+        <input
+          type="text"
+          placeholder="Search by name or email..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="px-3 py-2 rounded border shadow-sm focus:ring-blue-500 ml-auto w-full md:w-80"
+        />
+      </div>
+      {filteredUsers.length === 0 ? <p className="text-gray-500">No users found.</p> : (
           <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
             <table className="min-w-full text-sm text-left">
               <thead className="border-b bg-purple-50">
@@ -140,7 +155,7 @@ export default function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {users.map(u => (
+                {filteredUsers.map(u => (
                   <tr key={u._id} className="border-b hover:bg-purple-50 transition">
                     <td className="px-4 py-3 font-semibold text-blue-900">{u.name}</td>
                     <td className="px-4 py-3">{u.email}</td>
