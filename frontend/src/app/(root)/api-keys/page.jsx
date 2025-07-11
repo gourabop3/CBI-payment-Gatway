@@ -99,38 +99,7 @@ const ApiKeyPage = () => {
               <p className="text-indigo-100">Secure access to CBI Bank's payment gateway APIs</p>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <FaShieldAlt className="text-xl" />
-                <span className="text-sm opacity-90">Security Level</span>
-              </div>
-              <div className="text-lg font-semibold">
-                Enterprise Grade
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdSecurity className="text-xl" />
-                <span className="text-sm opacity-90">Encryption</span>
-              </div>
-              <div className="text-lg font-semibold">
-                256-bit SSL
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdPayment className="text-xl" />
-                <span className="text-sm opacity-90">Gateway Status</span>
-              </div>
-              <div className="text-lg font-semibold">
-                {apiKeys?.hasAPIKey ? 'Active' : 'Inactive'}
-              </div>
-            </div>
-          </div>
+          {/* Removed the grid of blank/decorative cards */}
         </div>
 
         {/* API Keys Section */}
