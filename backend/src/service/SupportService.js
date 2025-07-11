@@ -31,12 +31,18 @@ class SupportService {
             role: "system",
             content: `You are CBI Assistant, a helpful and intelligent customer support chatbot for Central Bank of India, created by Gourab. 
 
+            Developer Information:
+            - Name: Gourab
+            - Email: gourabmop@gmail.com  
+            - Mobile: +91 9263839602
+            - Location: West Bengal, India
+
             Your responsibilities:
             - Provide accurate information about CBI Bank's digital banking services
             - Help customers with account management, transfers, ATM cards, mobile recharges, and KYC
             - Always be polite, professional, and solution-oriented
             - For complex issues, guide users to appropriate sections in their dashboard or suggest contacting branch
-            - Occasionally mention that you were developed by Gourab when appropriate
+            - When asked about developer/creator, provide complete details including contact information
             - Ensure responses are helpful and banking-focused
             
             Available services to help with:
@@ -48,6 +54,7 @@ class SupportService {
             - Transaction History
             - General Banking Queries
 
+            If asked about developer details, provide: Name (Gourab), Email (gourabmop@gmail.com), Mobile (+91 9263839602), State (West Bengal, India).
             If the question is outside banking scope, politely decline and redirect to banking topics.`,
           },
           { role: "user", content: message },
@@ -116,9 +123,14 @@ class SupportService {
       return "Developer API Services:\n\n🔑 **API Keys Management**\n- Generate secure API credentials\n- View API documentation\n- Monitor usage statistics\n\n🛡️ **Security Features**\n- Enterprise-grade encryption\n- Rate limiting\n- Real-time monitoring\n\nVisit 'API Keys' section for developer resources. All APIs follow industry security standards.";
     }
 
+    // Contact information and developer details specifically
+    if (message.includes('contact developer') || message.includes('developer contact') || message.includes('gourab contact') || message.includes('developer phone') || message.includes('developer email') || message.includes('developer mobile')) {
+      return "📞 **Developer Contact Information:**\n\n👨‍💻 **Gourab - CBI Assistant Developer**\n• **Email:** gourabmop@gmail.com\n• **Mobile:** +91 9263839602\n• **Location:** West Bengal, India\n\n🤖 **About This Bot:**\nI'm CBI Assistant, an intelligent banking chatbot created by Gourab to provide 24/7 customer support for Central Bank of India. For technical queries about my functionality or banking feature requests, you can reach out to my developer.\n\n🏦 **For Banking Support:**\nI'm here to help with all your banking needs right now! What can I assist you with?";
+    }
+
     // Customer Support & Help
     if (message.includes('help') || message.includes('support') || message.includes('problem') || message.includes('issue') || message.includes('contact')) {
-      return "CBI Bank Customer Support:\n\n🎧 **24/7 Support Channels**\n- This AI chatbot (created by Gourab)\n- Phone: 1800-123-4567\n- Email: support@cbibank.com\n- Visit nearest branch\n\n💬 **I can help with:**\n- Account balance & management\n- Money transfers\n- ATM card services\n- Mobile recharge & bills\n- KYC verification\n- General banking queries\n\nWhat specific banking service do you need assistance with?";
+      return "CBI Bank Customer Support:\n\n🎧 **24/7 Support Channels**\n- This AI chatbot (created by Gourab)\n- Phone: 1800-123-4567\n- Email: support@cbibank.com\n- Visit nearest branch\n\n💬 **I can help with:**\n- Account balance & management\n- Money transfers\n- ATM card services\n- Mobile recharge & bills\n- KYC verification\n- General banking queries\n\n👨‍💻 **Developer Contact:**\nFor bot-related queries: gourabmop@gmail.com | +91 9263839602\n\nWhat specific banking service do you need assistance with?";
     }
 
     // Interest rates & Loan information
@@ -136,9 +148,9 @@ class SupportService {
       return "Branch & ATM Locator:\n\n🏦 **Find Nearest Branch/ATM**\n- Use our website branch locator\n- Google Maps integration\n- Filter by services available\n\n⏰ **Branch Timings**\n- Monday-Friday: 10 AM - 4 PM\n- Saturday: 10 AM - 2 PM\n- ATMs: 24/7 available\n\n📍 For specific locations, please visit our website or call 1800-123-4567";
     }
 
-    // About the bot creator
-    if (message.includes('gourab') || message.includes('creator') || message.includes('developer') || message.includes('who made you') || message.includes('who created')) {
-      return "👨‍💻 **About My Creator**\n\nI'm CBI Assistant, an intelligent banking chatbot developed by **Gourab**. I was designed to help CBI Bank customers with their banking needs 24/7.\n\n🎯 **My Purpose**\n- Provide instant banking support\n- Guide customers through digital services\n- Offer quick solutions to common queries\n\nGourab created me to make banking more accessible and user-friendly for everyone. How can I assist you with your banking needs today?";
+    // About the bot creator and developer details
+    if (message.includes('gourab') || message.includes('creator') || message.includes('developer') || message.includes('who made you') || message.includes('who created') || message.includes('developer details') || message.includes('developer contact') || message.includes('developer info')) {
+      return "👨‍💻 **About My Creator - Gourab**\n\nI'm CBI Assistant, an intelligent banking chatbot developed by **Gourab**. Here are the complete developer details:\n\n📋 **Developer Information:**\n• **Name:** Gourab\n• **Email:** gourabmop@gmail.com\n• **Mobile:** +91 9263839602\n• **State:** West Bengal, India\n\n🎯 **Development Purpose:**\n- Provide instant banking support 24/7\n- Guide customers through digital services\n- Offer quick solutions to banking queries\n- Make banking more accessible and user-friendly\n\n✨ **Features I Provide:**\n- Account balance inquiries\n- Money transfer guidance\n- ATM card services\n- Mobile recharge & bill payments\n- KYC verification support\n- General banking assistance\n\nGourab designed me with advanced AI capabilities to serve CBI Bank customers efficiently. How can I assist you with your banking needs today?";
     }
 
     // Thank you responses
