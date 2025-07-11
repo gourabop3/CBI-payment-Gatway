@@ -1,9 +1,9 @@
-THIS SHOULD BE A LINTER ERROR.credit-card {
-  background-color: #000000;
+.credit-card {
+  background: linear-gradient(135deg, #0f0f0f 0%, #1b1b1b 100%);
   color: #ffff;
-  padding: 30px 30px;
-  border-radius: 0.5rem;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  padding: 30px;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
   width: 100%;
   max-width: 340px;
   height: 215px;
@@ -11,7 +11,19 @@ THIS SHOULD BE A LINTER ERROR.credit-card {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  transition: all 0.5s ease-in-out;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  animation: fadeInUp 0.6s ease both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 /* .credit-card:hover {
@@ -29,19 +41,18 @@ THIS SHOULD BE A LINTER ERROR.credit-card {
 }
 
 .head {
-  font-size: 1.3rem;
-  font-weight: bold;
+  font-size: clamp(1rem, 1vw + 0.8rem, 1.25rem);
 }
 
 .number {
   margin-top: auto;
-  font-size: 2.1rem;
+  font-size: clamp(1.2rem, 1.6vw + 0.6rem, 1.8rem);
   font-weight: bold;
   margin-bottom: 0.3rem; 
 }
 
 .exp {
-  font-size: 0.8rem;
+  font-size: clamp(0.6rem, 0.4vw + 0.5rem, 0.85rem);
 }
 
 .exp-date {
@@ -52,21 +63,37 @@ THIS SHOULD BE A LINTER ERROR.credit-card {
 .circle1 {
   position: absolute;
   width: 250px;
-  height: 250px; 
-  border-radius: 100%;
+  height: 250px;
+  border-radius: 50%;
   transform: translateY(-60%) translateX(100%);
+  filter: blur(64px);
 }
 
 .circle2 {
   position: absolute;
   width: 100px;
-  height: 100px; 
-  border-radius: 100%;
+  height: 100px;
+  border-radius: 50%;
   transform: translateY(190%);
+  filter: blur(32px);
 }
 
 .credit-card:hover {
-  transform: scale(1.05);
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Responsive font sizes */
+.head {
+  font-size: clamp(1rem, 1vw + 0.8rem, 1.25rem);
+}
+
+.number {
+  font-size: clamp(1.2rem, 1.6vw + 0.6rem, 1.8rem);
+}
+
+.exp {
+  font-size: clamp(0.6rem, 0.4vw + 0.5rem, 0.85rem);
 }
 
 @media (max-width: 768px) {
