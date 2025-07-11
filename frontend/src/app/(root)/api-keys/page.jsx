@@ -32,7 +32,7 @@ const ApiKeyPage = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (user && user.isEmailVerifed) {
+    if (user && user.isEmailVerified) {
       setIsEmailVerified(true)
       fetchAPIKeys()
     } else {

@@ -18,7 +18,7 @@ class APIKEYService{
             }
 
             // Check if user email is verified
-            if (!userd.isEmailVerifed) {
+            if (!userd.isEmailVerified) {
                 throw new ApiError(400, "Please verify your email first to generate API keys")
             }
 

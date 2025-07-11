@@ -1,13 +1,47 @@
 import Link from 'next/link'
 import React from 'react'
+import { MdEmail, MdVerifiedUser } from 'react-icons/md'
+import { FaExclamationTriangle } from 'react-icons/fa'
 
 const NotValidUser = () => {
   return (
-    <div className='w-full py-10 rounded-md shadow border my-10 flex flex-col justify-center items-center'>
-        <img src="https://cdn2.iconfinder.com/data/icons/security-382/999/Not_Verified_Unverified_Status_Verify_Pending-512.png" alt="" className='w-[300px] h-[300px] object-cover' />
-        <h1 className='text-center text-4xl font-black pb-4 pt-2'>Please Complete Your Profile</h1>
-      <div className="flex justify-center">
-          <Link href={'/profile'} className='text-white text-center px-6 py-3 rounded-sm bg-rose-700 hover:bg-rose-800 transition-all duration-300 '>Click Here </Link>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-lg w-full text-center">
+        <div className="bg-amber-100 p-6 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+          <FaExclamationTriangle className="text-4xl text-amber-600" />
+        </div>
+        
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+          Email Verification Required
+        </h1>
+        
+        <p className="text-gray-600 mb-6 leading-relaxed">
+          To access API keys for payment gateway integration, you need to verify your email address first. 
+          This ensures secure access to your sensitive credentials.
+        </p>
+        
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-3 text-blue-800">
+            <MdEmail className="text-xl" />
+            <span className="text-sm font-medium">
+              Verify your email in the Profile section to continue
+            </span>
+          </div>
+        </div>
+        
+        <div className="space-y-3">
+          <Link 
+            href="/profile" 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <MdVerifiedUser className="text-lg" />
+            Verify Email Address
+          </Link>
+          
+          <p className="text-xs text-gray-500">
+            After verification, return here to generate your API credentials
+          </p>
+        </div>
       </div>
     </div>
   )
