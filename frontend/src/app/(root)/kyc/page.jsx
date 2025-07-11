@@ -54,28 +54,7 @@ export default function KYCPage() {
 
       const token = localStorage.getItem('token');
 
-      // Step 1: If email not verified, send OTP and verify first
-      if (!user?.isEmailVerified) {
-        const otpRes = await axiosClient.post('/auth/send-email-otp', {}, {
-          headers: { Authorization: 'Bearer ' + token },
-        });
-        const { token: otpToken } = await otpRes.data;
-        toast.info('We sent an OTP to your email');
-
-        const otp = window.prompt('Enter the OTP sent to your email');
-        if (!otp) {
-          toast.error('OTP verification cancelled');
-          setLoading(false);
-          return;
-        }
-
-        await axiosClient.post('/auth/verify-email', { token: otpToken, otp }, {
-          headers: { Authorization: 'Bearer ' + token },
-        });
-        toast.success('Email verified');
-      }
-
-      // Step 2: Submit KYC application
+      // Submit KYC application (OTP no longer required)
       await axiosClient.post('/kyc/apply', form, {
         headers: { Authorization: 'Bearer ' + localStorage.getItem('token') },
       });

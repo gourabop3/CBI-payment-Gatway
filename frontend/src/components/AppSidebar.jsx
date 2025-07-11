@@ -9,6 +9,7 @@ import { GiReceiveMoney, GiFalloutShelter } from 'react-icons/gi';
 import { IoCardSharp } from 'react-icons/io5';
 import { PiNewspaperClipping } from 'react-icons/pi';
 import { FaKey } from 'react-icons/fa';
+import { AiOutlineRobot, AiOutlineInfoCircle } from 'react-icons/ai';
 
 const links = [
   { href: '/', label: 'Home', Icon: MdDashboard },
@@ -20,6 +21,8 @@ const links = [
   { href: '/transactions', label: 'Transactions', Icon: PiNewspaperClipping },
   { href: '/atm-cards', label: 'ATM Cards', Icon: IoCardSharp },
   { href: '/api-keys', label: 'API Keys', Icon: FaKey },
+  { href: '/customer-service', label: 'Customer Service', Icon: AiOutlineRobot },
+  { href: '/about', label: 'About', Icon: AiOutlineInfoCircle },
   { href: '/profile', label: 'Profile', Icon: GiFalloutShelter },
 ];
 

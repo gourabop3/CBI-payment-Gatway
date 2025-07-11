@@ -13,6 +13,10 @@ router.post('/user/:id/update-profile',AdminAuthMiddleware,AdminController.updat
 // list users
 router.get('/users',AdminAuthMiddleware,AdminController.listUsers);
 
+// Transactions
+router.get('/transactions',AdminAuthMiddleware,AdminController.listTransactions);
+router.post('/transactions/:id/refund',AdminAuthMiddleware,AdminController.refundTransaction);
+
 // Example protected route (placeholder for dashboard APIs)
 router.get('/stats', AdminAuthMiddleware, (req, res)=>{
     res.send({msg:'Protected admin stats endpoint', userCount:0});

@@ -39,7 +39,7 @@ export default function RenGenerateModal() {
         
           
       setLoader(true)
-      const response =await axiosClient.post('/api-key/verify-email-otp',e,{
+      const response =await axiosClient.post('/api-keys/verify-email-otp',e,{
         headers:{
           'Authorization':'Bearer '+ localStorage.getItem("token")
         }
@@ -62,7 +62,7 @@ export default function RenGenerateModal() {
 
     try {
       setIsLoading(true)
-      const response =await axiosClient.post('/api-key/send-email-otp',{},{
+      const response =await axiosClient.post('/api-keys/send-email-otp',{},{
         headers:{
           'Authorization':'Bearer '+ localStorage.getItem("token")
         }
