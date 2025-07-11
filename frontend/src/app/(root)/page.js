@@ -111,7 +111,6 @@ const BankingDetailsCard = ({ user }) => {
     ifscCode: generateIFSCCode(),
     branchName: "Central Bank of India - Main Branch",
     branchCode: "001234",
-    username: user?.name || "User",
     accountType: primaryAccount ? getAccountTypeDisplayName(primaryAccount.ac_type) : "Savings Account"
   };
 
