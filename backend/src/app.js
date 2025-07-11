@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: false, limit: '25mb' }))
 app.use(cors())
 app.use(morgan("dev"))
 app.use("/api/v1",require("./router"))
-
+//get
 app.get('/', (req, res) => {
   res.send({msg:'Hello World!'})
 })
