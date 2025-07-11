@@ -7,7 +7,15 @@ import HeaderName from '@/components/HeaderName';
 
 export default function KYCPage() {
   const { user, fetchUserProfile } = useMainContext();
-  const [form, setForm] = useState({ aadhaarNumber: '', panNumber: '', aadhaarImage: null, panImage: null });
+  const [form, setForm] = useState({
+    name: '',
+    address: '',
+    mobileNumber: '',
+    aadhaarNumber: '',
+    panNumber: '',
+    aadhaarImage: null,
+    panImage: null,
+  });
   const [preview, setPreview] = useState({ aadhaarImage: '', panImage: '' });
   const [loading, setLoading] = useState(false);
   const [statusObj, setStatusObj] = useState(null);
@@ -43,6 +51,31 @@ export default function KYCPage() {
     e.preventDefault();
     try {
       setLoading(true);
+
+      const token = localStorage.getItem('token');
+
+      // Step 1: If email not verified, send OTP and verify first
+      if (!user?.isEmailVerified) {
+        const otpRes = await axiosClient.post('/auth/send-email-otp', {}, {
+          headers: { Authorization: 'Bearer ' + token },
+        });
+        const { token: otpToken } = await otpRes.data;
+        toast.info('We sent an OTP to your email');
+
+        const otp = window.prompt('Enter the OTP sent to your email');
+        if (!otp) {
+          toast.error('OTP verification cancelled');
+          setLoading(false);
+          return;
+        }
+
+        await axiosClient.post('/auth/verify-email-otp', { token: otpToken, otp }, {
+          headers: { Authorization: 'Bearer ' + token },
+        });
+        toast.success('Email verified');
+      }
+
+      // Step 2: Submit KYC application
       await axiosClient.post('/kyc/apply', form, {
         headers: { Authorization: 'Bearer ' + localStorage.getItem('token') },
       });
@@ -68,6 +101,21 @@ export default function KYCPage() {
 
       {(currentStatus === 'not_submitted' || currentStatus === 'rejected') && (
         <form onSubmit={onSubmit} className="max-w-lg space-y-4 mt-6">
+          <div>
+            <label className="block mb-1">Full Name</label>
+            <input name="name" value={form.name} onChange={onChange} required className="w-full px-3 py-2 border rounded" />
+          </div>
+
+          <div>
+            <label className="block mb-1">Address</label>
+            <textarea name="address" value={form.address} onChange={onChange} required className="w-full px-3 py-2 border rounded" rows="2" />
+          </div>
+
+          <div>
+            <label className="block mb-1">Mobile Number</label>
+            <input name="mobileNumber" value={form.mobileNumber} onChange={onChange} required maxLength={15} className="w-full px-3 py-2 border rounded" />
+          </div>
+
           <div>
             <label className="block mb-1">Aadhaar Number</label>
             <input name="aadhaarNumber" value={form.aadhaarNumber} onChange={onChange} required maxLength={12} className="w-full px-3 py-2 border rounded" />
