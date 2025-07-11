@@ -7,12 +7,6 @@ class KYCService {
   static async applyForKYC(userId, body) {
     const { name, address, mobileNumber, aadhaarNumber, panNumber, aadhaarImage, panImage } = body;
 
-    // Ensure the user has verified their email before allowing KYC application
-    const profile = await ProfileModel.findOne({ user: userId });
-    if (!profile || !profile.isEmailVerified) {
-      throw new ApiError(400, 'Please verify your email before submitting KYC application');
-    }
-
     // check existing pending
     const existPending = await KYCApplicationModel.findOne({ user: userId, status: 'pending' });
     if (existPending) {
