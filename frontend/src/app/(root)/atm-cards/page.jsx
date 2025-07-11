@@ -3,9 +3,8 @@ import HeaderName from '@/components/HeaderName'
 import React from 'react'
 import { FaCreditCard, FaPlus, FaShieldAlt } from 'react-icons/fa'
 import { MdSecurity, MdContactless } from 'react-icons/md'
-import SelectCard from './+__(components)/SelectCard'
 import AddNewCardDialog from './+__(components)/AddNewCard'
-import ViewATMCard from './+__(components)/ViewATMCard'
+import AllATMCards from './+__(components)/AllATMCards'
 
 const AtmCards = () => {
   return (
@@ -58,50 +57,35 @@ const AtmCards = () => {
           </div>
         </div>
 
-        {/* Card Selection and Add New Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <FaCreditCard className="text-blue-600" />
-                Your ATM Cards
-              </h3>
-              <SelectCard/>
+        {/* Add New Card Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+          <div className="text-center">
+            <div className="bg-blue-50 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <FaPlus className="text-2xl text-blue-600" />
             </div>
-          </div>
-          
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6 h-full flex flex-col justify-center">
-              <div className="text-center">
-                <div className="bg-blue-50 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <FaPlus className="text-2xl text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  Add New Card
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Request a new ATM card
-                </p>
-                <AddNewCardDialog/>
-              </div>
-            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
+              Request New ATM Card
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Need a new debit card? Request one instantly
+            </p>
+            <AddNewCardDialog/>
           </div>
         </div>
 
-        {/* Card Display Section */}
+        {/* Cards Display Section */}
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-              Card Details
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
+              <FaCreditCard className="text-blue-600" />
+              Your ATM Cards
             </h2>
             <p className="text-gray-600">
-              View and manage your ATM card information
+              View and manage all your ATM cards
             </p>
           </div>
           
-          <div className="flex justify-center">
-            <ViewATMCard/>
-          </div>
+          <AllATMCards/>
         </div>
 
         {/* Features Section */}

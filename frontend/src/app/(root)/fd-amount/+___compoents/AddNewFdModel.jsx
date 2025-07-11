@@ -9,51 +9,81 @@ import { LiaPlusSolid } from "react-icons/lia";
 import { toast } from 'react-toastify';
 import { RiCloseLargeLine } from "react-icons/ri";
 import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
-
 import * as yup from 'yup'
-export default function AddNewFdModel({isUpdate,setIsUpdate}) {
-  let [isOpen, setIsOpen] = useState(false)
-  const { user,fetchUserProfile} = useMainContext()
-  const [loading,setLoading] = useState(false)
+
+export default function AddNewFdModel({ isUpdate, setIsUpdate }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const { user, fetchUserProfile } = useMainContext()
+  const [loading, setLoading] = useState(false)
 
   const initialStates = {
-    amount:0,
-    account:'',
-    apply_for:''
+    amount: '',
+    account: '',
+    apply_for: ''
   }
 
   const validationSchema = yup.object({
-    amount:yup.number().min(1,"Minium 1 Rs ").required("Amount is Required"),
-    account:yup.string().required("Account is Required"),
-    apply_for:yup.string().required("Purpose is Required"),
+    amount: yup.number()
+      .min(1, "Minimum 1 Rs required")
+      .max(1000000, "Maximum 10,00,000 Rs allowed")
+      .required("Amount is Required"),
+    account: yup.string().required("Account is Required"),
+    apply_for: yup.string()
+      .min(3, "Purpose must be at least 3 characters")
+      .max(50, "Purpose must be less than 50 characters")
+      .required("Purpose is Required"),
   })
 
-  const onSubmitHandler =async (values,{resetForm})=>{
+  const onSubmitHandler = async (values, { resetForm }) => {
     try {
       setLoading(true)
-      // req
-      const response = await axiosClient.post('/fd/add-new',values,{
-        headers:{
-          'Authorization':'Bearer '+localStorage.getItem("token")
+      
+      const token = localStorage.getItem("token")
+      if (!token) {
+        toast.error('Please login to continue')
+        return
+      }
+
+      // Validate amount against account balance
+      const selectedAccount = user?.account_no?.find(acc => acc._id === values.account)
+      if (selectedAccount && parseInt(values.amount) >= selectedAccount.amount) {
+        toast.error('Insufficient balance. Amount must be less than account balance.')
+        return
+      }
+
+      const response = await axiosClient.post('/fd/add-new', {
+        amount: parseInt(values.amount),
+        account: values.account,
+        apply_for: values.apply_for.trim()
+      }, {
+        headers: {
+          'Authorization': 'Bearer ' + token
         }
       })
 
       const data = await response.data
-      // console.log(data);
       
-      await fetchUserProfile()
-      toast.success(data.msg)
+      // Update user profile and parent state
+      if (fetchUserProfile && typeof fetchUserProfile === 'function') {
+        await fetchUserProfile()
+      }
+      
+      if (setIsUpdate && typeof setIsUpdate === 'function') {
+        setIsUpdate(prev => !prev)
+      }
+      
+      toast.success(data.msg || 'Fixed Deposit created successfully!')
+      resetForm()
       closeModal()
 
-      
     } catch (error) {
-      toast.error(error.response.data.msg || error.message)
-    }finally{
+      console.error('Error creating FD:', error)
+      const errorMessage = error?.response?.data?.msg || error?.message || 'Failed to create Fixed Deposit'
+      toast.error(errorMessage)
+    } finally {
       setLoading(false)
-      setIsUpdate(!isUpdate)
     }
   }
-
 
   function closeModal() {
     setIsOpen(false)
@@ -63,22 +93,18 @@ export default function AddNewFdModel({isUpdate,setIsUpdate}) {
     setIsOpen(true)
   }
 
+  // Check if user has accounts
+  const hasAccounts = user?.account_no && user.account_no.length > 0
+
   return (
-    <> 
-        {/* <button
-          type="button"
-          onClick={openModal}
-          className="rounded-md bg-black/20 px-4 py-2 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
-        >
-          Open dialog
-        </button> */}
-
-
-        <div       onClick={openModal} className="w-full  border border-dashed border-rose-700 rounded shadow px-4 py-3 flex items-center justify-center flex-col hover:bg-rose-700 hover:text-white transition-all duration-300 cursor-pointer text-rose-700  ">
-                <LiaPlusSolid className="text-5xl  transition-all duration-300" />
-                <p className="  transition-all duration-300 font-medium">Add New +</p>
-        </div>
-   
+    <>
+      <div 
+        onClick={openModal} 
+        className="w-full border border-dashed border-green-600 rounded shadow px-4 py-6 flex items-center justify-center flex-col hover:bg-green-600 hover:text-white transition-all duration-300 cursor-pointer text-green-600 group"
+      >
+        <LiaPlusSolid className="text-5xl transition-all duration-300 group-hover:scale-110" />
+        <p className="transition-all duration-300 font-medium mt-2">Create Fixed Deposit</p>
+      </div>
 
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -110,69 +136,138 @@ export default function AddNewFdModel({isUpdate,setIsUpdate}) {
                     as="div"
                     className="text-lg flex items-center justify-between font-medium leading-6 text-gray-900"
                   >
-                    <p>Apply New Fix Deposit</p>
-                    <button  onClick={closeModal} type='button' className='text-xl p-2 bg-rose-100 rounded-full text-rose-700 cursor-pointer'>
+                    <p className="text-xl font-bold text-green-600">Create Fixed Deposit</p>
+                    <button 
+                      onClick={closeModal} 
+                      type='button' 
+                      className='text-xl p-2 bg-green-100 hover:bg-green-200 rounded-full text-green-700 cursor-pointer transition-colors'
+                    >
                       <RiCloseLargeLine/>
                     </button>
                   </Dialog.Title>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                    Get Per day <b>0.1%</b> interest by Kono Bank Application
-                    </p>
+                  
+                  <div className="mt-4">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-green-800">
+                        <strong>Daily Interest Rate:</strong> 0.1% per day<br/>
+                        <strong>Minimum Amount:</strong> ₹1<br/>
+                        <strong>Note:</strong> Interest is calculated daily and can be claimed anytime
+                      </p>
+                    </div>
+
+                    {!hasAccounts ? (
+                      <div className="text-center py-8">
+                        <p className="text-gray-600 mb-4">No accounts available to create Fixed Deposit</p>
+                        <button 
+                          onClick={closeModal}
+                          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    ) : (
+                      <Formik 
+                        validationSchema={validationSchema} 
+                        onSubmit={onSubmitHandler} 
+                        initialValues={initialStates}
+                      >
+                        {({ values, setFieldValue }) => (
+                          <Form className='space-y-4'>
+                            <div>
+                              <label htmlFor="apply_for" className="block text-sm font-medium text-gray-700 mb-1">
+                                Purpose <span className="text-red-500">*</span>
+                              </label>
+                              <Field 
+                                type="text" 
+                                name='apply_for' 
+                                id='apply_for' 
+                                className='w-full bg-transparent border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 rounded-md py-3 px-4 outline-none transition-all' 
+                                placeholder='Enter FD Purpose (e.g., Savings, Emergency Fund)...' 
+                              />
+                              <ErrorMessage className='text-red-500 text-sm mt-1' component={'p'} name='apply_for' />
+                            </div>
+
+                            <div>
+                              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+                                Amount <span className="text-red-500">*</span>
+                              </label>
+                              <Field 
+                                type="number" 
+                                name='amount' 
+                                id='amount' 
+                                className='w-full bg-transparent border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 rounded-md py-3 px-4 outline-none transition-all' 
+                                placeholder='Enter FD Amount (₹)' 
+                                min="1"
+                                max="1000000"
+                              />
+                              <ErrorMessage className='text-red-500 text-sm mt-1' component={'p'} name='amount' />
+                              
+                              {values.account && values.amount && (
+                                <div className="mt-2 text-sm">
+                                  {(() => {
+                                    const selectedAccount = user?.account_no?.find(acc => acc._id === values.account);
+                                    const availableBalance = selectedAccount?.amount || 0;
+                                    const fdAmount = parseInt(values.amount) || 0;
+                                    const remainingBalance = availableBalance - fdAmount;
+                                    
+                                    return (
+                                      <p className={remainingBalance >= 0 ? 'text-green-600' : 'text-red-600'}>
+                                        Available: ₹{availableBalance.toLocaleString()} | 
+                                        After FD: ₹{remainingBalance.toLocaleString()}
+                                      </p>
+                                    );
+                                  })()}
+                                </div>
+                              )}
+                            </div>
+
+                            <div>
+                              <label htmlFor="account" className="block text-sm font-medium text-gray-700 mb-1">
+                                Select Account <span className="text-red-500">*</span>
+                              </label>
+                              <Field  
+                                as="select" 
+                                name='account' 
+                                id='account' 
+                                className='w-full bg-transparent border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 rounded-md py-3 px-4 outline-none transition-all'
+                              >
+                                <option value="">-- Select Account --</option>
+                                {user.account_no.map((account, index) => {
+                                  try {
+                                    const accountNumber = generateAccountNumber(user._id, account._id, account.ac_type);
+                                    const formattedAccountNumber = formatAccountNumber(accountNumber);
+                                    const accountType = getAccountTypeDisplayName(account.ac_type);
+                                    
+                                    return (
+                                      <option key={index} value={account._id}>
+                                        {`${formattedAccountNumber} - ${accountType} - ₹${account.amount?.toLocaleString() || 0}`}
+                                      </option>
+                                    );
+                                  } catch (error) {
+                                    console.error('Error formatting account:', error);
+                                    return (
+                                      <option key={index} value={account._id}>
+                                        {`Account ${index + 1} - ₹${account.amount?.toLocaleString() || 0}`}
+                                      </option>
+                                    );
+                                  }
+                                })}
+                              </Field>
+                              <ErrorMessage className='text-red-500 text-sm mt-1' component={'p'} name='account' />
+                            </div>
+
+                            <div className="pt-4">
+                              <CustomAuthButton 
+                                isLoading={loading} 
+                                text={loading ? 'Creating...' : 'Create Fixed Deposit'} 
+                                className="w-full bg-green-600 hover:bg-green-700"
+                              />
+                            </div>
+                          </Form>
+                        )}
+                      </Formik>
+                    )}
                   </div>
-            <Formik validationSchema={validationSchema} onSubmit={onSubmitHandler} initialValues={initialStates}>
-
-            <Form className='py-5'>
-              <div className="mb-3">
-                <label htmlFor="apply_for">Purpose</label>
-                <Field type="text" name='apply_for' id='apply_for' className='w-full bg-transparent border border-rose-500 rounded-md py-3 px-4 outline-none' placeholder='Enter FD Purpose...' />
-                <ErrorMessage className='text-red-500' component={'p'} name='apply_for' />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="amount">Amount</label>
-                <Field type="number" name='amount' id='amount' className='w-full bg-transparent border border-rose-500 rounded-md py-3 px-4 outline-none' placeholder='Enter FD Amount' />
-                <ErrorMessage className='text-red-500' component={'p'} name='amount' />
-              </div>
-
-
-              <div className="mb-3">
-                <label htmlFor="account">Account</label>
-                <Field  as="select" name='account' id='account' className='w-full bg-transparent border border-rose-500 rounded-md py-3 px-4 outline-none'   >
-                 {
-                  user && user.account_no && user.account_no.length>0 ? <>
-                  <option value="">Select Account</option>
-                   { user.account_no.map((cur,i)=>{
-                    const accountNumber = generateAccountNumber(user._id, cur._id, cur.ac_type);
-                    const formattedAccountNumber = formatAccountNumber(accountNumber);
-                    const accountType = getAccountTypeDisplayName(cur.ac_type);
-                    return (
-                      <option key={i} className='' value={cur._id}>
-                        {`${formattedAccountNumber} - ${accountType} - ₹${cur.amount}`}
-                      </option>
-                    );
-                  })}
-                  </>:
-                  <option value="">No Account Available</option>
-                 }
-                </Field>
-                <ErrorMessage className='text-red-500' component={'p'} name='account' />
-              </div>
-
-              <div className="mb-3">
-                <CustomAuthButton  isLoading={loading} text={'Add FD'} />
-              </div>
-              
-
-
-            </Form>
-
-            </Formik>
-
-
-
-
-
-                 
                 </Dialog.Panel>
               </Transition.Child>
             </div>

@@ -139,7 +139,25 @@ const BankingDetailsCard = ({ user }) => {
       </div>
 
       {showDetails && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+          {/* Account Holder Name */}
+          <div className="bg-white rounded-lg p-4 border border-gray-200">
+            <div className="flex items-center gap-2 mb-2">
+              <FaUser className="text-indigo-600" />
+              <span className="font-semibold text-gray-700">Account Holder</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-semibold text-gray-800">{user?.name || 'N/A'}</span>
+              <button
+                onClick={() => copyToClipboard(user?.name || '', 'Account Holder Name')}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <MdContentCopy />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Primary Account Holder</p>
+          </div>
+
           {/* Account Type */}
           <div className="bg-white rounded-lg p-4 border border-gray-200">
             <div className="flex items-center gap-2 mb-2">

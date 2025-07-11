@@ -10,39 +10,98 @@ import CustomLoader from '@/components/reuseable/CustomLoader'
 import { toast } from 'react-toastify';
 
 const FDPage = () => {
-  const[deposits,setDeposists] = useState([])
-  const [loading,setLoading] = useState(true)
-  const [isUpdate,setIsUpdate] = useState(false)
+  const [deposits, setDeposits] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [isUpdate, setIsUpdate] = useState(false)
+  const [error, setError] = useState(null)
 
-  const fetchAllDeposits = async()=>{
+  const fetchAllDeposits = async () => {
     try {
       setLoading(true)
-      const response = await axiosClient.get('/fd/get-all',{
-        headers:{
-          'Authorization':'Bearer '+localStorage.getItem("token")
+      setError(null)
+      
+      const token = localStorage.getItem("token")
+      if (!token) {
+        toast.error('Please login to continue')
+        setDeposits([])
+        return
+      }
+
+      const response = await axiosClient.get('/fd/get-all', {
+        headers: {
+          'Authorization': 'Bearer ' + token
         }
       })
-      const data =await response.data 
-      setDeposists(data)
+      
+      const data = response.data || []
+      
+      // Ensure data is an array and validate structure
+      if (Array.isArray(data)) {
+        setDeposits(data)
+      } else {
+        console.warn('Unexpected data format received:', data)
+        setDeposits([])
+      }
+
     } catch (error) {
-      toast.error(error.data.response.msg || error.message)
-    }finally{
+      console.error('Error fetching deposits:', error)
+      const errorMessage = error?.response?.data?.msg || error?.message || 'Failed to fetch fixed deposits'
+      toast.error(errorMessage)
+      setError(errorMessage)
+      setDeposits([])
+    } finally {
       setLoading(false)
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchAllDeposits()
-  },[isUpdate])
+  }, [isUpdate])
 
-  if(loading){
-    return <div className="w-full min-h-screen flex justify-center items-center bg-gradient-to-br from-gray-50 to-blue-50">
-      <CustomLoader/>
-    </div>
+  // Safe calculation with fallbacks
+  const calculateStats = () => {
+    try {
+      if (!Array.isArray(deposits) || deposits.length === 0) {
+        return {
+          totalFDAmount: 0,
+          activeFDs: 0,
+          totalDeposits: 0
+        }
+      }
+
+      const totalFDAmount = deposits.reduce((total, deposit) => {
+        const amount = deposit?.amount || 0
+        return total + (typeof amount === 'number' ? amount : 0)
+      }, 0)
+
+      const activeFDs = deposits.filter(deposit => 
+        deposit && !deposit.isClaimed
+      ).length
+
+      return {
+        totalFDAmount,
+        activeFDs,
+        totalDeposits: deposits.length
+      }
+    } catch (error) {
+      console.error('Error calculating stats:', error)
+      return {
+        totalFDAmount: 0,
+        activeFDs: 0,
+        totalDeposits: 0
+      }
+    }
   }
 
-  const totalFDAmount = deposits.reduce((total, deposit) => total + deposit.amount, 0);
-  const activeFDs = deposits.filter(deposit => deposit.status !== 'matured').length;
+  const stats = calculateStats()
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex justify-center items-center bg-gradient-to-br from-gray-50 to-blue-50">
+        <CustomLoader/>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -68,7 +127,7 @@ const FDPage = () => {
                 <span className="text-sm opacity-90">Total FDs</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold">
-                {deposits.length}
+                {stats.totalDeposits}
               </div>
             </div>
             
@@ -78,7 +137,7 @@ const FDPage = () => {
                 <span className="text-sm opacity-90">Total Amount</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold">
-                ₹{totalFDAmount.toLocaleString()}
+                ₹{stats.totalFDAmount.toLocaleString()}
               </div>
             </div>
             
@@ -88,7 +147,7 @@ const FDPage = () => {
                 <span className="text-sm opacity-90">Active FDs</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold">
-                {activeFDs}
+                {stats.activeFDs}
               </div>
             </div>
             
@@ -98,7 +157,7 @@ const FDPage = () => {
                 <span className="text-sm opacity-90">Interest Rate</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold">
-                7.5%
+                0.1% <span className="text-sm font-normal">daily</span>
               </div>
             </div>
           </div>
@@ -120,35 +179,71 @@ const FDPage = () => {
           </div>
         </div>
 
-        {/* FD Cards Grid */}
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-            <FaCoins className="text-green-600" />
-            Your Fixed Deposits
-          </h2>
-          
-          {deposits.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              <Suspense fallback={<CustomLoader/>}>
-                {deposits.map((cur, i) => (
-                  <FDCard key={i} isUpdate={isUpdate} setIsUpdate={setIsUpdate} data={cur} />
-                ))}
-              </Suspense>
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="bg-gray-50 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-                <FaCoins className="text-4xl text-gray-400" />
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-8">
+            <div className="text-center">
+              <div className="bg-red-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <FaCoins className="text-2xl text-red-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                No Fixed Deposits Found
+              <h3 className="text-xl font-semibold text-red-800 mb-2">
+                Unable to Load Fixed Deposits
               </h3>
-              <p className="text-gray-600">
-                Create your first fixed deposit to start earning guaranteed returns
-              </p>
+              <p className="text-red-600 mb-4">{error}</p>
+              <button 
+                onClick={fetchAllDeposits}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                Retry
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* FD Cards Grid */}
+        {!error && (
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+              <FaCoins className="text-green-600" />
+              Your Fixed Deposits
+            </h2>
+            
+            {deposits.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <Suspense fallback={<CustomLoader/>}>
+                  {deposits.map((deposit, index) => {
+                    // Validate deposit data before rendering
+                    if (!deposit || !deposit._id) {
+                      console.warn('Invalid deposit data at index:', index, deposit)
+                      return null
+                    }
+                    
+                    return (
+                      <FDCard 
+                        key={deposit._id} 
+                        isUpdate={isUpdate} 
+                        setIsUpdate={setIsUpdate} 
+                        data={deposit} 
+                      />
+                    )
+                  })}
+                </Suspense>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="bg-gray-50 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                  <FaCoins className="text-4xl text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  No Fixed Deposits Found
+                </h3>
+                <p className="text-gray-600">
+                  Create your first fixed deposit to start earning guaranteed returns
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Benefits Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -156,17 +251,17 @@ const FDPage = () => {
             {
               icon: <FaTrendingUp className="text-2xl text-green-600" />,
               title: "Guaranteed Returns",
-              description: "Earn fixed interest rates with assured returns on maturity"
+              description: "Earn fixed daily interest rate of 0.1% with assured returns"
             },
             {
               icon: <FaCalendarAlt className="text-2xl text-blue-600" />,
-              title: "Flexible Tenure",
-              description: "Choose from multiple tenure options ranging from 7 days to 10 years"
+              title: "Flexible Claim",
+              description: "Claim your FD anytime with accumulated interest calculated daily"
             },
             {
               icon: <MdSavings className="text-2xl text-purple-600" />,
-              title: "Tax Benefits",
-              description: "Enjoy tax benefits under Section 80C up to ₹1.5 lakhs annually"
+              title: "Compound Growth",
+              description: "Watch your money grow with daily compounding interest"
             }
           ].map((benefit, index) => (
             <div key={index} className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow">

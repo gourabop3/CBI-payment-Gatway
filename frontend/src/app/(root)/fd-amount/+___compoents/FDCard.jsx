@@ -4,32 +4,41 @@ import React, { useState } from 'react'
 import { FaEye, FaEyeSlash, FaCoins, FaCalendarAlt, FaPercentage } from 'react-icons/fa'; 
 import { MdTrendingUp } from 'react-icons/md';
 import ClaimFDModel from './ClaimFDModel';
+import moment from 'moment';
 
-const FDCard = ({data,isUpdate,setIsUpdate}) => {
-    const [isShow,setIsShow] = useState(false)
-    const amount = `${data.amount}`
+const FDCard = ({data, isUpdate, setIsUpdate}) => {
+    const [isShow, setIsShow] = useState(false)
 
-    const getStatusColor = (status) => {
-        switch(status) {
-            case 'active': return 'from-green-500 to-emerald-500';
-            case 'matured': return 'from-blue-500 to-cyan-500';
-            default: return 'from-gray-500 to-gray-600';
-        }
+    // Safely access data properties with fallbacks
+    if (!data) {
+        return (
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-6 md:p-8">
+                <div className="text-center text-gray-500">Loading...</div>
+            </div>
+        );
     }
 
-    const getStatusBadge = (status) => {
-        switch(status) {
-            case 'active': return { color: 'bg-green-100 text-green-800', text: 'Active' };
-            case 'matured': return { color: 'bg-blue-100 text-blue-800', text: 'Matured' };
-            default: return { color: 'bg-gray-100 text-gray-800', text: 'Pending' };
-        }
+    const amount = `${data.amount || 0}`
+    const applyFor = data.apply_for || 'Fixed Deposit'
+    const isActive = !data.isClaimed
+    const depositDate = data.date ? moment(data.date) : moment()
+    const daysSinceDeposit = moment().diff(depositDate, 'days')
+
+    const getStatusColor = () => {
+        return isActive ? 'from-green-500 to-emerald-500' : 'from-blue-500 to-cyan-500';
     }
 
-    const statusBadge = getStatusBadge(data.status);
+    const getStatusBadge = () => {
+        return isActive 
+            ? { color: 'bg-green-100 text-green-800', text: 'Active' }
+            : { color: 'bg-blue-100 text-blue-800', text: 'Claimed' };
+    }
+
+    const statusBadge = getStatusBadge();
 
     return (
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className={`h-2 bg-gradient-to-r ${getStatusColor(data.status)}`}></div>
+            <div className={`h-2 bg-gradient-to-r ${getStatusColor()}`}></div>
             
             <div className="p-6 md:p-8">
                 <div className="flex items-center justify-between mb-6">
@@ -39,7 +48,7 @@ const FDCard = ({data,isUpdate,setIsUpdate}) => {
                         </div>
                         <div>
                             <h3 className="text-lg md:text-xl font-bold text-gray-800">
-                                {data?.apply_for || 'Fixed Deposit'}
+                                {applyFor}
                             </h3>
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusBadge.color}`}>
                                 {statusBadge.text}
@@ -71,39 +80,45 @@ const FDCard = ({data,isUpdate,setIsUpdate}) => {
                     <div className="bg-gray-50 p-3 rounded-lg">
                         <div className="flex items-center gap-2 mb-1">
                             <FaPercentage className="text-green-600 text-sm" />
-                            <span className="text-xs text-gray-600">Interest Rate</span>
+                            <span className="text-xs text-gray-600">Daily Interest Rate</span>
                         </div>
                         <div className="text-lg font-semibold text-gray-800">
-                            {data.interestRate || '7.5'}%
+                            0.1%
                         </div>
                     </div>
                     
                     <div className="bg-gray-50 p-3 rounded-lg">
                         <div className="flex items-center gap-2 mb-1">
                             <FaCalendarAlt className="text-blue-600 text-sm" />
-                            <span className="text-xs text-gray-600">Tenure</span>
+                            <span className="text-xs text-gray-600">Days Active</span>
                         </div>
                         <div className="text-lg font-semibold text-gray-800">
-                            {data.tenure || '12'} months
+                            {daysSinceDeposit} days
                         </div>
                     </div>
                 </div>
 
-                {data.maturityAmount && (
-                    <div className="bg-green-50 p-4 rounded-lg mb-6">
-                        <div className="flex items-center gap-2 mb-2">
-                            <MdTrendingUp className="text-green-600" />
-                            <span className="text-sm font-medium text-green-800">Maturity Amount</span>
-                        </div>
-                        <div className="text-xl font-bold text-green-700">
-                            ₹{parseInt(data.maturityAmount).toLocaleString()}
-                        </div>
+                <div className="bg-blue-50 p-4 rounded-lg mb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                        <FaCalendarAlt className="text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">Deposit Date</span>
+                    </div>
+                    <div className="text-lg font-bold text-blue-700">
+                        {depositDate.format('MMMM DD, YYYY')}
+                    </div>
+                </div>
+
+                {isActive && (
+                    <div className="flex justify-end">
+                        <ClaimFDModel methods={{isUpdate, setIsUpdate}} id={data?._id} />
                     </div>
                 )}
 
-                <div className="flex justify-end">
-                    <ClaimFDModel methods={{isUpdate,setIsUpdate}} id={data?._id} />
-                </div>
+                {!isActive && (
+                    <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-gray-600 text-sm">This Fixed Deposit has been claimed</span>
+                    </div>
+                )}
             </div>
         </div>
     )

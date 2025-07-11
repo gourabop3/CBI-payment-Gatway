@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react'
 import NotValidUser from './+__(components)/NotValidUser';
 import HeaderName from '@/components/HeaderName';
 import RenGenerateModal from './+__(components)/RenGenerateModal';
-import { FaCopy, FaKey, FaShieldAlt, FaCode, FaLock, FaEye, FaEyeSlash, FaSync, FaInfoCircle } from 'react-icons/fa';
-import { MdSecurity, MdVpnKey, MdDeveloperMode } from 'react-icons/md';
+import { FaCopy, FaKey, FaShieldAlt, FaCode, FaLock, FaEye, FaEyeSlash, FaSync, FaInfoCircle, FaCreditCard } from 'react-icons/fa';
+import { MdSecurity, MdVpnKey, MdDeveloperMode, MdPayment } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { axiosClient } from '@/utils/AxiosClient';
 
 // Helper function to truncate long strings like API keys/hashes for cleaner UI
 const truncateString = (str, front = 6, back = 4) => {
@@ -25,22 +26,62 @@ const copy = (text) => {
 };
 
 const ApiKeyPage = () => {
+  const { user } = useMainContext()
+  const [isEmailVerified, setIsEmailVerified] = useState(false)
+  const [apiKeys, setApiKeys] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-        const {user} = useMainContext()
-        const [isEmailVerified,setIsEmailVerified] = useState(false)
-
-    useEffect(()=>{
-        if(user && user.isEmailVerifed){
-            setIsEmailVerified(true)
-        }
-    },[user])
-
-        if( !isEmailVerified){
-        return <>
-                 <NotValidUser/> 
-                 </>
+  useEffect(() => {
+    if (user && user.isEmailVerifed) {
+      setIsEmailVerified(true)
+      fetchAPIKeys()
+    } else {
+      setLoading(false)
     }
+  }, [user])
 
+  const fetchAPIKeys = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem("token")
+      
+      if (!token) {
+        toast.error('Please login to continue')
+        return
+      }
+
+      const response = await axiosClient.get('/api-keys/get-keys', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+
+      const data = response.data
+      setApiKeys(data)
+
+    } catch (error) {
+      console.error('Error fetching API keys:', error)
+      const errorMessage = error?.response?.data?.msg || error?.message || 'Failed to fetch API keys'
+      toast.error(errorMessage)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!isEmailVerified) {
+    return <NotValidUser/>
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading API keys...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -55,7 +96,7 @@ const ApiKeyPage = () => {
             </div>
             <div>
               <h2 className="text-xl md:text-2xl font-bold">API Key Management</h2>
-              <p className="text-indigo-100">Secure access to CBI Bank's developer APIs</p>
+              <p className="text-indigo-100">Secure access to CBI Bank's payment gateway APIs</p>
             </div>
           </div>
           
@@ -82,75 +123,114 @@ const ApiKeyPage = () => {
             
             <div className="bg-white bg-opacity-10 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
-                <MdDeveloperMode className="text-xl" />
-                <span className="text-sm opacity-90">API Version</span>
+                <MdPayment className="text-xl" />
+                <span className="text-sm opacity-90">Gateway Status</span>
               </div>
               <div className="text-lg font-semibold">
-                v2.1.0
+                {apiKeys?.hasAPIKey ? 'Active' : 'Inactive'}
               </div>
             </div>
           </div>
         </div>
 
         {/* API Keys Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* API Secret Card */}
-          <APICredentialCard
-            title="API Secret"
-            description="Your private API secret key for authentication"
-            value={user?.api_keys?.api_secret}
-            icon={<FaLock className="text-2xl text-blue-600" />}
-            bgGradient="from-blue-500 to-cyan-500"
-            copyLabel="API Secret"
-          />
+        {apiKeys?.hasAPIKey ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* API Secret Card */}
+            <APICredentialCard
+              title="API Secret"
+              description="Your private API secret key for authentication"
+              value={apiKeys.api_secret}
+              icon={<FaLock className="text-2xl text-blue-600" />}
+              bgGradient="from-blue-500 to-cyan-500"
+              copyLabel="API Secret"
+            />
 
-          {/* API Hash Card */}
-          <APICredentialCard
-            title="API Hash"
-            description="Unique hash identifier for your application"
-            value={user?.api_keys?.api_hash}
-            icon={<FaCode className="text-2xl text-purple-600" />}
-            bgGradient="from-purple-500 to-pink-500"
-            copyLabel="API Hash"
-            truncateFront={8}
-            truncateBack={6}
-          />
+            {/* API Hash Card */}
+            <APICredentialCard
+              title="API Hash"
+              description="Unique hash identifier for your application"
+              value={apiKeys.api_hash}
+              icon={<FaCode className="text-2xl text-purple-600" />}
+              bgGradient="from-purple-500 to-pink-500"
+              copyLabel="API Hash"
+              truncateFront={8}
+              truncateBack={6}
+            />
 
-          {/* Action Card */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300">
-            <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500"></div>
-            <div className="p-6 md:p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-green-50 p-3 rounded-xl">
-                  <FaSync className="text-2xl text-green-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg md:text-xl font-bold text-gray-800">
-                    API Management
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    Regenerate your API credentials
-                  </p>
-                </div>
+            {/* Payment Gateway Key Card */}
+            <APICredentialCard
+              title="Payment Gateway Key"
+              description="Dedicated key for payment processing"
+              value={apiKeys.payment_gateway_key}
+              icon={<FaCreditCard className="text-2xl text-green-600" />}
+              bgGradient="from-green-500 to-emerald-500"
+              copyLabel="Payment Gateway Key"
+            />
+
+            {/* Merchant ID Card */}
+            <APICredentialCard
+              title="Merchant ID"
+              description="Your unique merchant identifier"
+              value={apiKeys.merchant_id}
+              icon={<MdPayment className="text-2xl text-orange-600" />}
+              bgGradient="from-orange-500 to-red-500"
+              copyLabel="Merchant ID"
+            />
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+            <div className="text-center">
+              <div className="bg-gray-50 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                <FaKey className="text-4xl text-gray-400" />
               </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                No API Keys Generated
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Generate your first set of API keys for payment gateway integration
+              </p>
+            </div>
+          </div>
+        )}
 
-              <div className="space-y-4">
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <FaInfoCircle className="text-amber-600 mt-1" />
-                    <div>
-                      <p className="text-amber-800 text-sm font-medium">
-                        Important Notice
-                      </p>
-                      <p className="text-amber-700 text-xs mt-1">
-                        Regenerating will invalidate current keys
-                      </p>
-                    </div>
+        {/* Action Card */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 mb-8">
+          <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+          <div className="p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-green-50 p-3 rounded-xl">
+                <FaSync className="text-2xl text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-lg md:text-xl font-bold text-gray-800">
+                  API Management
+                </h3>
+                <p className="text-gray-500 text-sm">
+                  {apiKeys?.hasAPIKey ? 'Regenerate your API credentials' : 'Generate your first API credentials'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <FaInfoCircle className="text-amber-600 mt-1" />
+                  <div>
+                    <p className="text-amber-800 text-sm font-medium">
+                      Important Notice
+                    </p>
+                    <p className="text-amber-700 text-xs mt-1">
+                      {apiKeys?.hasAPIKey 
+                        ? 'Regenerating will invalidate current keys' 
+                        : 'These keys will be required for payment gateway integration'
+                      }
+                    </p>
                   </div>
                 </div>
-                
-                <RenGenerateModal />
               </div>
+              
+              <RenGenerateModal onSuccess={fetchAPIKeys} />
             </div>
           </div>
         </div>
@@ -165,7 +245,7 @@ const ApiKeyPage = () => {
               Developer Resources
             </h2>
             <p className="text-gray-600">
-              Everything you need to integrate with our API
+              Everything you need to integrate with our payment gateway
             </p>
           </div>
 
@@ -173,18 +253,18 @@ const ApiKeyPage = () => {
             {[
               {
                 icon: <FaCode className="text-2xl text-blue-600" />,
-                title: "API Documentation",
-                description: "Complete guide for all available endpoints and methods"
+                title: "Payment Gateway API",
+                description: "Complete documentation for payment processing endpoints"
               },
               {
                 icon: <FaShieldAlt className="text-2xl text-green-600" />,
                 title: "Security Guidelines",
-                description: "Best practices for secure API implementation"
+                description: "Best practices for secure payment gateway implementation"
               },
               {
                 icon: <MdSecurity className="text-2xl text-purple-600" />,
-                title: "Rate Limits",
-                description: "Understanding API usage limits and quotas"
+                title: "Webhook Integration",
+                description: "Real-time payment notifications and status updates"
               }
             ].map((resource, index) => (
               <div key={index} className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors">
