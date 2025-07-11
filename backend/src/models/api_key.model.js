@@ -13,6 +13,14 @@ const schema = new mongoose.Schema({
         type:String,
         required:true
     },
+    payment_gateway_key:{
+        type:String,
+        required:false
+    },
+    merchant_id:{
+        type:String,
+        required:false
+    },
     isOnWorking:{
         type:Boolean,
         default:true

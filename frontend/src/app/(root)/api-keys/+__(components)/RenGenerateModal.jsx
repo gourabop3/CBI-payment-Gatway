@@ -9,11 +9,12 @@ import { toast } from 'react-toastify';
 import CustomAuthButton from '@/components/reuseable/CustomAuthButton';
 import { axiosClient } from '@/utils/AxiosClient';
 import { useMainContext } from '@/context/MainContext'; 
-export default function RenGenerateModal() {
-  const {fetchUserProfile} = useMainContext()
+
+export default function RenGenerateModal({ onSuccess }) {
+  const { fetchUserProfile } = useMainContext()
   let [isOpen, setIsOpen] = useState(false)
-  const [loader,setLoader] = useState(false)
-  const [isLoading,setIsLoading] = useState(false)
+  const [loader, setLoader] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   function closeModal() {
     setIsOpen(false)
@@ -23,78 +24,103 @@ export default function RenGenerateModal() {
     setIsOpen(true)
   }
 
-  const [initialValues,setInitialValues] =useState({
-    token:'',
-    otp:''
+  const [initialValues, setInitialValues] = useState({
+    token: '',
+    otp: ''
   })
 
   const validationSchema = yup.object({
-    otp:yup.string().required("OTP is required")
-    .min(6,"OTP Should be equal to 6 digit")
-    .max(6,"OTP Should be equal to 6 digit")
+    otp: yup.string().required("OTP is required")
+      .min(6, "OTP Should be equal to 6 digit")
+      .max(6, "OTP Should be equal to 6 digit")
   })
 
-  const onSubmitHandler = async(e)=>{
+  const onSubmitHandler = async(e) => {
     try {
-        
-          
       setLoader(true)
-      const response =await axiosClient.post('/api-keys/verify-email-otp',e,{
-        headers:{
-          'Authorization':'Bearer '+ localStorage.getItem("token")
+      
+      const token = localStorage.getItem("token")
+      if (!token) {
+        toast.error('Please login to continue')
+        return
+      }
+
+      const response = await axiosClient.post('/api-keys/verify-email-otp', e, {
+        headers: {
+          'Authorization': 'Bearer ' + token
         }
       })
-      const data  = await response.data 
+      
+      const data = await response.data 
       toast.success(data.msg)
-    console.log(data)
-      await fetchUserProfile()
-        closeModal()
+      
+      // Refresh user profile
+      if (fetchUserProfile && typeof fetchUserProfile === 'function') {
+        await fetchUserProfile()
+      }
+      
+      // Call success callback to refresh API keys
+      if (onSuccess && typeof onSuccess === 'function') {
+        await onSuccess()
+      }
+      
+      closeModal()
 
     } catch (error) {
-        toast.error(error.response.data.msg || error.message)
-    }finally{
+      console.error('Error verifying OTP:', error)
+      const errorMessage = error?.response?.data?.msg || error?.message || 'Failed to verify OTP'
+      toast.error(errorMessage)
+    } finally {
       setLoader(false)
-
     }
   }
 
-  const ClickHandler = async()=>{
-
+  const ClickHandler = async() => {
     try {
       setIsLoading(true)
-      const response =await axiosClient.post('/api-keys/send-email-otp',{},{
-        headers:{
-          'Authorization':'Bearer '+ localStorage.getItem("token")
+      
+      const token = localStorage.getItem("token")
+      if (!token) {
+        toast.error('Please login to continue')
+        return
+      }
+
+      const response = await axiosClient.post('/api-keys/send-email-otp', {}, {
+        headers: {
+          'Authorization': 'Bearer ' + token
         }
       })
+      
       const data = await response.data 
       setInitialValues({
         ...initialValues,
-        token:data.token
+        token: data.token
       })
 
-        openModal()
+      toast.success('OTP sent to your email')
+      openModal()
+      
     } catch (error) {
-      toast.error(error.response.data.msg || error.message)
-    }finally{
+      console.error('Error sending OTP:', error)
+      const errorMessage = error?.response?.data?.msg || error?.message || 'Failed to send OTP'
+      toast.error(errorMessage)
+    } finally {
       setIsLoading(false)
     }
   }
 
   return (
     <>
-     
       <div className="flex justify-center items-center">
-          <button
+        <button
           disabled={isLoading}
           type="button"
           onClick={ClickHandler}
-          className="bg-rose-700 hover:bg-rose-800 transition-all duration-300 text-white rounded-sm py-3 px-10 disabled:bg-rose-900"
+          className="w-full bg-green-600 hover:bg-green-700 transition-all duration-300 text-white rounded-lg py-3 px-6 disabled:bg-green-400 disabled:cursor-not-allowed font-medium"
         >
-        {isLoading?'loading...':'Regenerate'}
+          {isLoading ? 'Sending OTP...' : 'Generate API Keys'}
         </button>
       </div>
-  
 
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -126,49 +152,65 @@ export default function RenGenerateModal() {
                     as="div"
                     className="text-lg font-medium leading-6 text-gray-900 flex justify-between items-center"
                   >
-                    <h3>Verify Email</h3>
-
+                    <h3 className="text-xl font-bold text-green-600">Verify Email</h3>
                     <button 
-                    onClick={closeModal}
-                    className='text-3xl text-rose-700 bg-rose-50 rounded-full outline-none p-2 cursor-pointer'><IoMdClose/></button>
-
+                      onClick={closeModal}
+                      className='text-2xl text-green-700 bg-green-50 hover:bg-green-100 rounded-full outline-none p-2 cursor-pointer transition-colors'
+                    >
+                      <IoMdClose/>
+                    </button>
                   </Dialog.Title>
-                  <div className="mt-2">
+                  
+                  <div className="mt-4">
+                    <div className="w-full py-3 flex justify-center items-center">
+                      <img src="/logo.svg" alt="CBI Bank Logo" className='w-1/2 mx-auto' />
+                    </div> 
 
-        
-                  <div className="w-full py-3 flex justify-center items-center ">
-                                <img src="/logo.svg" alt="" className='w-1/2 mx-auto' />
-                            </div> 
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-green-800">
+                        <strong>Security Notice:</strong> We've sent a 6-digit OTP to your registered email address. 
+                        Enter it below to generate your API keys.
+                      </p>
+                    </div>
 
+                    <Formik 
+                      initialValues={initialValues}
+                      onSubmit={onSubmitHandler}
+                      validationSchema={validationSchema}
+                    >
+                      <Form className="space-y-4">
+                        <div>
+                          <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-1">
+                            Enter OTP <span className="text-red-500">*</span> 
+                          </label>
+                          <Field 
+                            id="otp"  
+                            onInput={onlyInputNumber} 
+                            type="text" 
+                            className="w-full py-3 text-center text-xl outline-none border border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 px-3 rounded-lg transition-all font-mono tracking-widest" 
+                            name="otp" 
+                            placeholder='••••••'
+                            maxLength="6"
+                          />
+                          <ErrorMessage name='otp' className='text-red-500 text-sm mt-1' component={'p'} />
+                        </div>
+                        
+                        <div className="pt-2">
+                          <CustomAuthButton 
+                            isLoading={loader} 
+                            text={loader ? 'Verifying...' : 'Generate API Keys'} 
+                            className="w-full bg-green-600 hover:bg-green-700"
+                          />
+                        </div>
+                      </Form>
+                    </Formik>
 
-            <div className="mb-3">
-
-
-                
-                   <Formik 
-                   initialValues={initialValues}
-                   onSubmit={onSubmitHandler}
-                   validationSchema={validationSchema}
-                   >
-                    <Form>
-                       <div className="mb-3">
-                        <label htmlFor="otp">OTP <span className="text-red-500">*</span> </label>
-                          <Field id="otp"  onInput={onlyInputNumber} type="text" className="w-full py-2 text-xl outline-none border px-3 rounded "  name="otp" placeholder='Enter OTP'  />
-                         <ErrorMessage name='otp' className='text-red-500' component={'p'} />
-                       </div>
-                       <div className="mb-3">
-                        <CustomAuthButton className='' isLoading={loader} text={'Submit OTP'} />
-                       </div>
-
-                    </Form>
-                   </Formik>
-            </div>
-
-
-
+                    <div className="mt-4 text-center">
+                      <p className="text-xs text-gray-500">
+                        Didn't receive the OTP? Check your spam folder or try again.
+                      </p>
+                    </div>
                   </div>
-
-                 
                 </Dialog.Panel>
               </Transition.Child>
             </div>
