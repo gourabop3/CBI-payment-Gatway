@@ -52,6 +52,7 @@ const ViewATMCard = () => {
     {/* Footer */}
     <div className="flex items-center justify-between text-sm text-gray-700 z-10">
       <span className='capitalize'>Cardholder</span>
+      <span className='font-semibold'>{user?.name || 'CARDHOLDER'}</span>
       <div className='flex items-center gap-2'>
         <span className='font-medium'>CVV: {isShowCVV? atm.cvv: '***' }</span>
         <button onClick={()=>setIsShowCVV(!isShowCVV)} className='text-base text-gray-600 hover:text-gray-800'> 
