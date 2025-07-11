@@ -1,10 +1,10 @@
 "use client";
 import HeaderName from '@/components/HeaderName'
 import React, { Suspense, useEffect, useState } from 'react'
-import { FaCoins, FaPlus, FaTrendingUp, FaCalendarAlt, FaChartLine } from 'react-icons/fa'
-import { MdSavings, MdAccountBalance } from 'react-icons/md'
-import AddNewFdModel from './+___compoents/AddNewFdModel'
-import FDCard from './+___compoents/FDCard'
+import { FaCoins, FaPlus, FaCalendarAlt, FaChartLine } from 'react-icons/fa'
+import { MdSavings, MdAccountBalance, MdTrendingUp } from 'react-icons/md'
+import AddNewFdModel from './components/AddNewFdModel'
+import FDCard from './components/FDCard'
 import { axiosClient } from '@/utils/AxiosClient'
 import CustomLoader from '@/components/reuseable/CustomLoader'
 import { toast } from 'react-toastify';
@@ -133,7 +133,7 @@ const FDPage = () => {
             
             <div className="bg-white bg-opacity-10 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
-                <FaTrendingUp className="text-xl" />
+                <MdTrendingUp className="text-xl" />
                 <span className="text-sm opacity-90">Total Amount</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold">
@@ -249,7 +249,7 @@ const FDPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
-              icon: <FaTrendingUp className="text-2xl text-green-600" />,
+              icon: <MdTrendingUp className="text-2xl text-green-600" />,
               title: "Guaranteed Returns",
               description: "Earn fixed daily interest rate of 0.1% with assured returns"
             },

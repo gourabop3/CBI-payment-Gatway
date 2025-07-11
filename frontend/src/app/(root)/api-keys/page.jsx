@@ -1,9 +1,9 @@
 "use client";
 import { useMainContext } from '@/context/MainContext';
 import React, { useEffect, useState } from 'react'
-import NotValidUser from './+__(components)/NotValidUser';
+import NotValidUser from './components/NotValidUser';
 import HeaderName from '@/components/HeaderName';
-import RenGenerateModal from './+__(components)/RenGenerateModal';
+import RenGenerateModal from './components/RenGenerateModal';
 import { FaCopy, FaKey, FaShieldAlt, FaCode, FaLock, FaEye, FaEyeSlash, FaSync, FaInfoCircle, FaCreditCard } from 'react-icons/fa';
 import { MdSecurity, MdVpnKey, MdDeveloperMode, MdPayment } from 'react-icons/md';
 import { toast } from 'react-toastify';
