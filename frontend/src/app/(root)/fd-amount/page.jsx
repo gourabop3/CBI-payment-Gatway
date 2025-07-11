@@ -1,9 +1,9 @@
 "use client";
 import HeaderName from '@/components/HeaderName'
 import React, { Suspense, useEffect, useState } from 'react'
-import { FaCoins, FaPlus, FaCalendarAlt, FaChartLine } from 'react-icons/fa'
+import { FaCoins, FaCalendarAlt, FaChartLine } from 'react-icons/fa'
 import { MdSavings, MdAccountBalance, MdTrendingUp } from 'react-icons/md'
-import AddNewFdModel from './+___compoents/AddNewFdModel'
+
 import FDCard from './+___compoents/FDCard'
 import { axiosClient } from '@/utils/AxiosClient'
 import CustomLoader from '@/components/reuseable/CustomLoader'
@@ -181,21 +181,7 @@ const FDPage = () => {
           </div>
         </div>
 
-        {/* Add New FD Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
-          <div className="text-center">
-            <div className="bg-green-50 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <FaPlus className="text-2xl text-green-600" />
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
-              Create New Fixed Deposit
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Start investing for guaranteed returns with competitive interest rates
-            </p>
-            <AddNewFdModel isUpdate={isUpdate} setIsUpdate={setIsUpdate} />
-          </div>
-        </div>
+
 
         {/* Error State */}
         {error && (
@@ -256,7 +242,7 @@ const FDPage = () => {
                   No Fixed Deposits Found
                 </h3>
                 <p className="text-gray-600">
-                  Create your first fixed deposit to start earning guaranteed returns
+                  Contact customer service to learn more about fixed deposit options
                 </p>
               </div>
             )}

@@ -3,9 +3,9 @@ import HeaderName from '@/components/HeaderName'
 import React, { Suspense, useState } from 'react'
 import AddAmountModel from '@/components/Amount/AddAmountModel'
 import { useMainContext } from '@/context/MainContext'
-import { FaEye, FaEyeSlash, FaWallet, FaPlus, FaUniversity } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaWallet, FaUniversity } from 'react-icons/fa';
 import { MdAccountBalance, MdTrendingUp } from 'react-icons/md';
-import AddAccountModal from './+__(components)/AddAccountModal';
+
 import CustomLoader from '@/components/reuseable/CustomLoader';
 import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
 
@@ -91,7 +91,6 @@ const AmountPage = () => {
             {user.account_no.map((cur, i) => (
               <AccountCard key={cur._id || i} cur={cur} user={user} />
             ))}
-            <AddAccountCard />
           </div>
         ) : (
           <div className="text-center py-12">
@@ -103,9 +102,8 @@ const AmountPage = () => {
                 No Accounts Found
               </h3>
               <p className="text-gray-600 mb-6">
-                Create your first banking account to get started
+                Contact customer service to create your first banking account
               </p>
-              <AddAccountModal />
             </div>
           </div>
         )}
@@ -203,21 +201,3 @@ const AccountCard = ({cur, user}) => {
   )
 }
 
-const AddAccountCard = () => {
-  return (
-    <div className="bg-white rounded-2xl shadow-xl border-2 border-dashed border-gray-200 hover:border-blue-300 transition-all duration-300 flex items-center justify-center min-h-[300px]">
-      <div className="text-center p-6">
-        <div className="bg-blue-50 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-          <FaPlus className="text-2xl text-blue-600" />
-        </div>
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">
-          Add New Account
-        </h3>
-        <p className="text-gray-600 mb-6">
-          Create a new banking account
-        </p>
-        <AddAccountModal />
-      </div>
-    </div>
-  )
-}

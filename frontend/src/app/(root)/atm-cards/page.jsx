@@ -1,9 +1,9 @@
 "use client";
 import HeaderName from '@/components/HeaderName'
 import React from 'react'
-import { FaCreditCard, FaPlus, FaShieldAlt } from 'react-icons/fa'
+import { FaCreditCard, FaShieldAlt } from 'react-icons/fa'
 import { MdSecurity, MdContactless } from 'react-icons/md'
-import AddNewCardDialog from './+__(components)/AddNewCard'
+
 import AllATMCards from './+__(components)/AllATMCards'
 
 const AtmCards = () => {
@@ -26,21 +26,7 @@ const AtmCards = () => {
           {/* Removed the grid of blank/decorative cards */}
         </div>
 
-        {/* Add New Card Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
-          <div className="text-center">
-            <div className="bg-blue-50 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <FaPlus className="text-2xl text-blue-600" />
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
-              Request New ATM Card
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Need a new debit card? Request one instantly
-            </p>
-            <AddNewCardDialog/>
-          </div>
-        </div>
+
 
         {/* Cards Display Section */}
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
