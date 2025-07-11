@@ -72,10 +72,7 @@ const AmountPage = () => {
           {user?.account_no?.map((cur, i) => (
             <AccountCard key={i} cur={cur} user={user} />
           ))}
-          
-          <Suspense fallback={<CustomLoader/>}>
-            <AddAccountCard />
-          </Suspense>
+          {/* Removed AddAccountCard blank card */}
         </div>
       </div>       
     </div>

@@ -210,7 +210,7 @@ class AuthService{
       }
 
 
-      const atms = await ATMmodel.find({user}).select("_id card_type")
+      const atms = await ATMmodel.find({user}).select("_id card_type card_no cvv expiry account")
         
       
 

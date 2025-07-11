@@ -94,7 +94,14 @@ export default function AddNewFdModel({ isUpdate, setIsUpdate }) {
   }
 
   // Check if user has accounts
-  const hasAccounts = user?.account_no && user.account_no.length > 0
+  const hasAccounts = user && user.account_no && user.account_no.length > 0
+  if (!user) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-600 mb-4">Please login to create a Fixed Deposit.</p>
+      </div>
+    );
+  }
 
   return (
     <>

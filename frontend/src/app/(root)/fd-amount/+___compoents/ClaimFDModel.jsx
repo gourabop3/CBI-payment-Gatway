@@ -135,6 +135,14 @@ const ClaimFDModel = ({ id, methods }) => {
         )
     }
 
+    if (!user) {
+        return (
+            <button disabled className="px-4 py-2 rounded border text-gray-400 border-gray-400 cursor-not-allowed">
+                Please login to claim
+            </button>
+        )
+    }
+
     return (
         <>
             <button 
