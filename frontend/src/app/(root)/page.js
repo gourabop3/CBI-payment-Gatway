@@ -140,16 +140,16 @@ const BankingDetailsCard = ({ user }) => {
 
       {showDetails && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Account Holder Name */}
+          {/* Account Type */}
           <div className="bg-white rounded-lg p-4 border border-gray-200">
             <div className="flex items-center gap-2 mb-2">
               <FaUser className="text-green-600" />
-              <span className="font-semibold text-gray-700">Account Holder</span>
+              <span className="font-semibold text-gray-700">Account Type</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-lg font-mono text-gray-800">{bankingInfo.username}</span>
+              <span className="text-lg font-mono text-gray-800">{bankingInfo.accountType}</span>
               <button
-                onClick={() => copyToClipboard(bankingInfo.username, 'Account Holder Name')}
+                onClick={() => copyToClipboard(bankingInfo.accountType, 'Account Type')}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <MdContentCopy />
