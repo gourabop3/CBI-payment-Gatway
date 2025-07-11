@@ -1,6 +1,6 @@
-THIS SHOULD BE A LINTER ERROR"use client";
+"use client";
 import React, { useState } from 'react'
-import './Card.css'
+// Using Tailwind CSS for styling; removed external CSS import
 import { useMainContext } from '@/context/MainContext'
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import UseCardModel from './UseCard';
@@ -17,42 +17,43 @@ const ViewATMCard = () => {
     </>
   }
 
-  const circl1 = atm.card_type ==="basic"? "bg-teal-600": atm.card_type ==="classic"?"bg-indigo-600":"bg-rose-600"
-  const circl2 = atm.card_type ==="basic"? "bg-amber-600": atm.card_type ==="classic"?"bg-rose-600":"bg-indigo-600"
+  const circl1 = atm.card_type ==="basic"? "bg-teal-500": atm.card_type ==="classic"?"bg-indigo-500":"bg-rose-500"
+  const circl2 = atm.card_type ==="basic"? "bg-amber-500": atm.card_type ==="classic"?"bg-rose-500":"bg-indigo-500"
 
   return (
         <>
 <div className='flex flex-col'>
   <h1 className='text-white'> Copied from GeeksforGeeks</h1>
  
-  <div className="credit-card bg-zinc-950">
-    <div className={`circle1 ${circl1}`} />
-    <div className={`circle2 ${circl2}`} />
-    <div className="head">
-      <div>
-        <i className="fa-solid fa-credit-card fa-2xl" />
-      </div>
-      <div className='capitalize text-white'>{atm.card_type} Card</div>
-    </div>
-    <div className="number text-white">
-      <div>{atm.card_no.slice(0,4)}</div>
-      <div>{atm.card_no.slice(4,8)}</div>
-      <div>{atm.card_no.slice(8,12)}</div>
-      <div>{atm.card_no.slice(12,16)}</div>
-    </div>
-    <div className="tail">
-      <div className='capitalize'>Cardholder</div>
-      <div className=' flex items-center justify-center gap-x-2'>
-        <span>CVV: {isSHow? atm.cvv: ``.padStart(3,'x') }</span> 
+  <div className="relative w-full max-w-sm aspect-[16/9] bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-xl shadow-lg p-6">
+    {/* Decorative circles */}
+    <div className={`absolute w-64 h-64 rounded-full -top-20 -right-20 opacity-30 ${circl1}`} />
+    <div className={`absolute w-24 h-24 rounded-full -bottom-10 -right-10 opacity-30 ${circl2}`} />
 
-            <button onClick={()=>setISShow(!isSHow)} className='text-xl text-white cursor-pointer'> 
-             { isSHow? <FaEyeSlash/> :<FaEye/>}
-            </button>
+    {/* Header */}
+    <div className="flex items-center justify-between text-lg font-semibold text-white z-10">
+      <i className="fa-solid fa-credit-card text-2xl" />
+      <span className='capitalize'>{atm.card_type} Card</span>
+    </div>
 
+    {/* Card Number (masked) */}
+    <div className="mt-auto mb-3 text-2xl font-mono tracking-widest text-white z-10">
+      **** **** **** {atm.card_no.slice(12,16)}
+    </div>
+
+    {/* Footer */}
+    <div className="flex items-center justify-between text-sm text-gray-300 z-10">
+      <span className='capitalize'>Cardholder</span>
+      <div className='flex items-center gap-2'>
+        <span>CVV: {isSHow? atm.cvv: '***' }</span>
+        <button onClick={()=>setISShow(!isSHow)} className='text-base text-white hover:text-gray-400'> 
+         { isSHow? <FaEyeSlash/> :<FaEye/>}
+        </button>
       </div>
-      <div className="exp">Exp: &nbsp; 
-        <span className="exp-date">{new Date(atm.expiry).getMonth()+1}/{new Date(atm.expiry).getUTCFullYear().toString().slice(-2)}</span>
-      </div>
+      <span>
+        Exp:&nbsp;
+        {new Date(atm.expiry).getMonth()+1}/{new Date(atm.expiry).getUTCFullYear().toString().slice(-2)}
+      </span>
     </div>
   </div>
   <div className="mb-3 flex justify-center py-3">
