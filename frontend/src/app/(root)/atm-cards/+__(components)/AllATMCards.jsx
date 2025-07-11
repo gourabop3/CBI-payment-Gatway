@@ -87,10 +87,10 @@ const AllATMCards = () => {
           <div key={atm._id} className="flex flex-col items-center">
             {/* Account Info */}
             <div className="mb-4 text-center">
-              <h4 className="text-lg font-semibold text-gray-800 capitalize">
+              <h4 className="text-lg font-semibold text-gray-800 capitalize drop-shadow-md">
                 {atm.card_type} Card
               </h4>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 drop-shadow-sm">
                 Account: {getFormattedAccountNumber(atm)}
               </p>
             </div>
@@ -100,7 +100,7 @@ const AllATMCards = () => {
               {/* Card Header */}
               <div className="flex items-center justify-between text-lg font-semibold mb-4 drop-shadow-md">
                 <i className="fa-solid fa-credit-card text-2xl" />
-                <span className="capitalize">{atm.card_type} Card</span>
+                <span className="capitalize drop-shadow-md">{atm.card_type} Card</span>
               </div>
 
               {/* Card Number */}
@@ -115,7 +115,7 @@ const AllATMCards = () => {
                 <button
                   onClick={() => toggleNumber(atm._id)}
                   aria-label="Toggle card number visibility"
-                  className="text-white"
+                  className="text-white hover:text-gray-300 transition-colors"
                 >
                   {isShowNumber ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -123,18 +123,18 @@ const AllATMCards = () => {
 
               {/* Card Footer */}
               <div className="flex items-center justify-between text-sm font-semibold drop-shadow-md">
-                <span className="capitalize">Cardholder</span>
+                <span className="capitalize drop-shadow-sm">Cardholder</span>
                 <div className="flex items-center gap-2">
-                  <span>CVV: {isShowCVV ? atm.cvv : '***'}</span>
+                  <span className="drop-shadow-sm">CVV: {isShowCVV ? atm.cvv : '***'}</span>
                   <button
                     onClick={() => toggleCVV(atm._id)}
                     aria-label="Toggle CVV visibility"
-                    className="text-white"
+                    className="text-white hover:text-gray-300 transition-colors"
                   >
                     {isShowCVV ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
-                <span>Exp: {formatExpiry(atm.expiry)}</span>
+                <span className="drop-shadow-sm">Exp: {formatExpiry(atm.expiry)}</span>
               </div>
 
               {/* Warm highlight for Basic card */}
