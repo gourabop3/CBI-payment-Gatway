@@ -108,60 +108,62 @@ const FDPage = () => {
       <div className="container py-6 md:py-10 px-4 md:px-6">
         <HeaderName/>
 
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white bg-opacity-20 p-3 rounded-xl">
-              <FaCoins className="text-2xl md:text-3xl" />
+        {/* Hero Section - Only show when user has deposits */}
+        {deposits.length > 0 && (
+          <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="bg-white bg-opacity-20 p-3 rounded-xl">
+                <FaCoins className="text-2xl md:text-3xl" />
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold">Fixed Deposit Portfolio</h2>
+                <p className="text-green-100">Grow your wealth with guaranteed returns</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold">Fixed Deposit Portfolio</h2>
-              <p className="text-green-100">Grow your wealth with guaranteed returns</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <MdAccountBalance className="text-xl" />
+                  <span className="text-sm opacity-90">Total FDs</span>
+                </div>
+                <div className="text-2xl md:text-3xl font-bold">
+                  {stats.totalDeposits}
+                </div>
+              </div>
+              
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <MdTrendingUp className="text-xl" />
+                  <span className="text-sm opacity-90">Total Amount</span>
+                </div>
+                <div className="text-2xl md:text-3xl font-bold">
+                  ₹{stats.totalFDAmount.toLocaleString()}
+                </div>
+              </div>
+              
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <FaChartLine className="text-xl" />
+                  <span className="text-sm opacity-90">Active FDs</span>
+                </div>
+                <div className="text-2xl md:text-3xl font-bold">
+                  {stats.activeFDs}
+                </div>
+              </div>
+              
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <MdSavings className="text-xl" />
+                  <span className="text-sm opacity-90">Interest Rate</span>
+                </div>
+                <div className="text-2xl md:text-3xl font-bold">
+                  0.1% <span className="text-sm font-normal">daily</span>
+                </div>
+              </div>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdAccountBalance className="text-xl" />
-                <span className="text-sm opacity-90">Total FDs</span>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                {stats.totalDeposits}
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdTrendingUp className="text-xl" />
-                <span className="text-sm opacity-90">Total Amount</span>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                ₹{stats.totalFDAmount.toLocaleString()}
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <FaChartLine className="text-xl" />
-                <span className="text-sm opacity-90">Active FDs</span>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                {stats.activeFDs}
-              </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdSavings className="text-xl" />
-                <span className="text-sm opacity-90">Interest Rate</span>
-              </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                0.1% <span className="text-sm font-normal">daily</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Add New FD Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">

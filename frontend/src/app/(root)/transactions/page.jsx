@@ -120,55 +120,57 @@ const Transactions = () => {
       <div className="container py-6 md:py-10 px-4 md:px-6">
         <HeaderName />
 
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white bg-opacity-20 p-3 rounded-xl">
-              <FaHistory className="text-2xl md:text-3xl" />
+        {/* Hero Section - Only show when user has transactions */}
+        {transaction.length > 0 && (
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="bg-white bg-opacity-20 p-3 rounded-xl">
+                <FaHistory className="text-2xl md:text-3xl" />
+              </div>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">Transaction History</h1>
+                <p className="text-blue-100">Track all your financial activities</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold">Transaction History</h1>
-              <p className="text-blue-100">Track all your financial activities</p>
+            
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <MdAccountBalance className="text-lg" />
+                  <span className="text-sm opacity-90">Total</span>
+                </div>
+                <div className="text-xl md:text-2xl font-bold">{stats.totalTransactions}</div>
+              </div>
+              
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <BiTrendingUp className="text-lg text-green-300" />
+                  <span className="text-sm opacity-90">Credit</span>
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-green-300">₹{stats.totalCredit.toLocaleString()}</div>
+              </div>
+              
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <BiTrendingDown className="text-lg text-red-300" />
+                  <span className="text-sm opacity-90">Debit</span>
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-red-300">₹{stats.totalDebit.toLocaleString()}</div>
+              </div>
+              
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <MdCreditCard className="text-lg" />
+                  <span className="text-sm opacity-90">Net</span>
+                </div>
+                <div className={`text-xl md:text-2xl font-bold ${stats.netAmount >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                  {stats.netAmount >= 0 ? '+' : ''}₹{stats.netAmount.toLocaleString()}
+                </div>
+              </div>
             </div>
           </div>
-          
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <MdAccountBalance className="text-lg" />
-                <span className="text-sm opacity-90">Total</span>
-              </div>
-              <div className="text-xl md:text-2xl font-bold">{stats.totalTransactions}</div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <BiTrendingUp className="text-lg text-green-300" />
-                <span className="text-sm opacity-90">Credit</span>
-              </div>
-              <div className="text-xl md:text-2xl font-bold text-green-300">₹{stats.totalCredit.toLocaleString()}</div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <BiTrendingDown className="text-lg text-red-300" />
-                <span className="text-sm opacity-90">Debit</span>
-              </div>
-              <div className="text-xl md:text-2xl font-bold text-red-300">₹{stats.totalDebit.toLocaleString()}</div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <MdCreditCard className="text-lg" />
-                <span className="text-sm opacity-90">Net</span>
-              </div>
-              <div className={`text-xl md:text-2xl font-bold ${stats.netAmount >= 0 ? 'text-green-300' : 'text-red-300'}`}>
-                {stats.netAmount >= 0 ? '+' : ''}₹{stats.netAmount.toLocaleString()}
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
           <MessageShow />

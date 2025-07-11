@@ -30,50 +30,52 @@ const AmountPage = () => {
       <div className="container py-6 md:py-10 px-4 md:px-6">
         <HeaderName/>
 
-        {/* Account Summary Card */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-white bg-opacity-20 p-3 rounded-xl">
-              <FaWallet className="text-2xl md:text-3xl" />
-            </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold">Account Overview</h2>
-              <p className="text-blue-100">Manage your banking accounts</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdAccountBalance className="text-xl" />
-                <span className="text-sm opacity-90">Total Accounts</span>
+        {/* Account Summary Card - Only show when user has accounts */}
+        {validAccounts.length > 0 && (
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="bg-white bg-opacity-20 p-3 rounded-xl">
+                <FaWallet className="text-2xl md:text-3xl" />
               </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                {validAccounts.length}
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold">Account Overview</h2>
+                <p className="text-blue-100">Manage your banking accounts</p>
               </div>
             </div>
             
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <MdTrendingUp className="text-xl" />
-                <span className="text-sm opacity-90">Total Balance</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <MdAccountBalance className="text-xl" />
+                  <span className="text-sm opacity-90">Total Accounts</span>
+                </div>
+                <div className="text-2xl md:text-3xl font-bold">
+                  {validAccounts.length}
+                </div>
               </div>
-              <div className="text-2xl md:text-3xl font-bold">
-                ₹{totalBalance.toLocaleString()}
+              
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <MdTrendingUp className="text-xl" />
+                  <span className="text-sm opacity-90">Total Balance</span>
+                </div>
+                <div className="text-2xl md:text-3xl font-bold">
+                  ₹{totalBalance.toLocaleString()}
+                </div>
               </div>
-            </div>
-            
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-2">
-                <FaUniversity className="text-xl" />
-                <span className="text-sm opacity-90">Account Type</span>
-              </div>
-              <div className="text-lg font-semibold">
-                CBI Digital Banking
+              
+              <div className="bg-white bg-opacity-10 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <FaUniversity className="text-xl" />
+                  <span className="text-sm opacity-90">Account Type</span>
+                </div>
+                <div className="text-lg font-semibold">
+                  CBI Digital Banking
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Accounts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
