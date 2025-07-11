@@ -9,7 +9,7 @@ const socials = [
     Icon: AiOutlineGithub,
   },
   {
-    href: 'https://instagram.com/gourab__mullick',
+    href: 'https://instagram.com/gourab_op_84',
     label: 'Instagram',
     Icon: AiOutlineInstagram,
   },
