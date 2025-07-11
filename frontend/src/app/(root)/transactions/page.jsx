@@ -2,16 +2,20 @@
 
 import HeaderName from '@/components/HeaderName';
 import React, { useEffect, useState } from 'react';
-import TableCard from './+___compoents/TableCard';
+import TransactionCard from './+___compoents/TransactionCard';
 import MessageShow from './+___compoents/MessageShow';
 import { toast } from 'react-toastify';
 import { axiosClient } from '@/utils/AxiosClient';
 import CustomLoader from '@/components/reuseable/CustomLoader';
+import { FaHistory, FaFilter, FaDownload, FaSearch } from 'react-icons/fa';
+import { MdAccountBalance, MdCreditCard, MdMobileScreenShare } from 'react-icons/md';
+import { BiTrendingUp, BiTrendingDown } from 'react-icons/bi';
 
 const Transactions = () => {
   const [transaction, setTransaction] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all'); // 'all', 'deposits', 'recharges'
+  const [activeTab, setActiveTab] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchAllTransaction = async () => {
     try {
@@ -62,98 +66,198 @@ const Transactions = () => {
   };
 
   const getFilteredTransactions = () => {
+    let filtered = transaction;
+    
+    // Filter by tab
     switch (activeTab) {
       case 'deposits':
-        return transaction.filter(t => t.type === 'credit' || t.type === 'debit');
+        filtered = transaction.filter(t => t.type === 'credit' || t.type === 'debit');
+        break;
       case 'recharges':
-        return transaction.filter(t => t.type === 'recharge');
+        filtered = transaction.filter(t => t.type === 'recharge');
+        break;
       default:
-        return transaction;
+        filtered = transaction;
     }
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(t => 
+        t._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.remark.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.type.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    return filtered;
   };
+
+  const getTransactionStats = () => {
+    const filteredTxns = getFilteredTransactions();
+    const totalCredit = filteredTxns
+      .filter(t => t.type === 'credit')
+      .reduce((sum, t) => sum + t.amount, 0);
+    const totalDebit = filteredTxns
+      .filter(t => t.type === 'debit')
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    return {
+      totalTransactions: filteredTxns.length,
+      totalCredit,
+      totalDebit,
+      netAmount: totalCredit - totalDebit
+    };
+  };
+
+  const stats = getTransactionStats();
 
   useEffect(() => {
     fetchAllTransaction();
   }, []);
 
   return (
-    <div className="container py-10">
-      <HeaderName />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="container py-6 md:py-10 px-4 md:px-6">
+        <HeaderName />
 
-      <div className="relative overflow-x-auto py-10">
-        <div className="px-3">
-          <MessageShow />
-        </div>
-
-        {/* Tab Navigation */}
-        <div className="mb-6">
-          <div className="flex bg-gray-100 rounded-lg p-1 max-w-md">
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'all'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              All Transactions
-            </button>
-            <button
-              onClick={() => setActiveTab('deposits')}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'deposits'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Deposits/Withdrawals
-            </button>
-            <button
-              onClick={() => setActiveTab('recharges')}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                activeTab === 'recharges'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Recharges & Bills
-            </button>
+        {/* Hero Section */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="bg-white bg-opacity-20 p-3 rounded-xl">
+              <FaHistory className="text-2xl md:text-3xl" />
+            </div>
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold">Transaction History</h1>
+              <p className="text-blue-100">Track all your financial activities</p>
+            </div>
+          </div>
+          
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <MdAccountBalance className="text-lg" />
+                <span className="text-sm opacity-90">Total</span>
+              </div>
+              <div className="text-xl md:text-2xl font-bold">{stats.totalTransactions}</div>
+            </div>
+            
+            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <BiTrendingUp className="text-lg text-green-300" />
+                <span className="text-sm opacity-90">Credit</span>
+              </div>
+              <div className="text-xl md:text-2xl font-bold text-green-300">₹{stats.totalCredit.toLocaleString()}</div>
+            </div>
+            
+            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <BiTrendingDown className="text-lg text-red-300" />
+                <span className="text-sm opacity-90">Debit</span>
+              </div>
+              <div className="text-xl md:text-2xl font-bold text-red-300">₹{stats.totalDebit.toLocaleString()}</div>
+            </div>
+            
+            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <MdCreditCard className="text-lg" />
+                <span className="text-sm opacity-90">Net</span>
+              </div>
+              <div className={`text-xl md:text-2xl font-bold ${stats.netAmount >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                {stats.netAmount >= 0 ? '+' : ''}₹{stats.netAmount.toLocaleString()}
+              </div>
+            </div>
           </div>
         </div>
 
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th className="px-6 py-3 capitalize">Txn ID</th>
-              <th className="px-6 py-3 capitalize">Type</th>
-              <th className="px-6 py-3 capitalize">Amount</th>
-              <th className="px-6 py-3 capitalize">Date</th>
-              <th className="px-6 py-3 capitalize hidden lg:table-cell">Remark</th>
-            </tr>
-          </thead>
+        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+          <MessageShow />
 
-          {!loading && (
-            <tbody>
+          {/* Controls Section */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Tab Navigation */}
+            <div className="flex bg-gray-100 rounded-lg p-1 flex-1 max-w-lg">
+              <button
+                onClick={() => setActiveTab('all')}
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-2 ${
+                  activeTab === 'all'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <MdAccountBalance className="text-lg" />
+                All
+              </button>
+              <button
+                onClick={() => setActiveTab('deposits')}
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-2 ${
+                  activeTab === 'deposits'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <MdCreditCard className="text-lg" />
+                Banking
+              </button>
+              <button
+                onClick={() => setActiveTab('recharges')}
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-2 ${
+                  activeTab === 'recharges'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <MdMobileScreenShare className="text-lg" />
+                Recharges
+              </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative">
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search transactions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              />
+            </div>
+
+            {/* Download Button */}
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+              <FaDownload />
+              Export
+            </button>
+          </div>
+
+          {/* Transactions List */}
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <CustomLoader />
+            </div>
+          ) : (
+            <div className="space-y-4">
               {getFilteredTransactions().length > 0 ? (
-                getFilteredTransactions().map((cur, i) => (
-                  <TableCard key={i} id={i} data={cur} />
+                getFilteredTransactions().map((transaction, index) => (
+                  <TransactionCard key={index} data={transaction} />
                 ))
               ) : (
-                <tr>
-                  <td colSpan={5} className="py-6 text-center text-gray-500">
-                    No transactions found.
-                  </td>
-                </tr>
+                <div className="text-center py-20">
+                  <div className="bg-gray-50 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                    <FaHistory className="text-4xl text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    No Transactions Found
+                  </h3>
+                  <p className="text-gray-600">
+                    {searchTerm ? 'Try adjusting your search terms' : 'Your transactions will appear here'}
+                  </p>
+                </div>
               )}
-            </tbody>
+            </div>
           )}
-        </table>
-
-        {loading && (
-          <div className="flex justify-center items-center py-10">
-            <CustomLoader />
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
