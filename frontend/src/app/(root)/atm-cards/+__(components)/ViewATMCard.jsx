@@ -1,4 +1,4 @@
-"use client";
+THIS SHOULD BE A LINTER ERROR"use client";
 import React, { useState } from 'react'
 import './Card.css'
 import { useMainContext } from '@/context/MainContext'
