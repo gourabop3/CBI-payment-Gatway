@@ -63,3 +63,14 @@
   border-radius: 100%;
   transform: translateY(190%);
 }
+
+.credit-card:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .credit-card {
+    width: 100%;
+    height: 200px;
+  }
+}

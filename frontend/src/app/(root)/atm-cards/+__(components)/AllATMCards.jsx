@@ -51,7 +51,7 @@ const AllATMCards = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {validAtms.map((atm, index) => {
+      {validAtms.slice(0,3).map((atm, index) => {
         const circl1 = atm.card_type === "basic" ? "bg-teal-600" : atm.card_type === "classic" ? "bg-indigo-600" : "bg-rose-600"
         const circl2 = atm.card_type === "basic" ? "bg-amber-600" : atm.card_type === "classic" ? "bg-rose-600" : "bg-indigo-600"
         const isShowCVV = visibleCVVs[atm._id] || false
@@ -80,8 +80,8 @@ const AllATMCards = () => {
               </div>
               <div className="number text-white">
                 <div>{atm.card_no.slice(0, 4)}</div>
-                <div>{atm.card_no.slice(4, 8)}</div>
-                <div>{atm.card_no.slice(8, 12)}</div>
+                <div>****</div>
+                <div>****</div>
                 <div>{atm.card_no.slice(12, 16)}</div>
               </div>
               <div className="tail">
