@@ -36,6 +36,12 @@ const HomePage=()=>{
       "Icon":<IoCardSharp className="text-6xl text-black" />,
       "value":`${user?.atms?.length ??0}`,
       link:'/atm-cards'
+    },
+    {
+      title:"UPI",
+      "Icon":<MdQrCode className="text-6xl text-green-600" />,
+      "value":user?.upi_id ? "Active" : "Setup",
+      link:'/upi'
     }
   ]
 
