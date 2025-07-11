@@ -231,8 +231,14 @@ export default function AddAmountModel({id}) {
 
   return (
     <> 
-        <button type="button"
-          onClick={openModal} className='text-3xl text-rose-700 cursor-pointer'> <CiSquarePlus/> </button>
+        <button 
+          type="button"
+          onClick={openModal} 
+          className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200 font-medium'
+        > 
+          <CiSquarePlus className="text-lg"/> 
+          <span>Add Money</span>
+        </button>
         
  
 
