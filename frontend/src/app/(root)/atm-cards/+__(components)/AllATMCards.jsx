@@ -30,7 +30,10 @@ const AllATMCards = () => {
     return formatAccountNumber(accNum);
   }
 
-  if (!user || atms.length === 0) {
+  // Filter out invalid cards
+  const validAtms = atms.filter(atm => atm && atm._id && atm.card_type && atm.card_no && atm.card_no.length >= 16 && atm.cvv && atm.expiry && atm.account);
+
+  if (!user || validAtms.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="bg-gray-50 p-6 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
@@ -40,7 +43,7 @@ const AllATMCards = () => {
           No ATM Cards Found
         </h3>
         <p className="text-gray-600">
-          {user ? 'Request your first ATM card to get started' : 'User data not available. Please log in.'}
+          {user ? 'No valid ATM cards available. Please request a new card or contact support.' : 'User data not available. Please log in.'}
         </p>
       </div>
     )
@@ -48,7 +51,7 @@ const AllATMCards = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {atms.map((atm, index) => {
+      {validAtms.map((atm, index) => {
         const circl1 = atm.card_type === "basic" ? "bg-teal-600" : atm.card_type === "classic" ? "bg-indigo-600" : "bg-rose-600"
         const circl2 = atm.card_type === "basic" ? "bg-amber-600" : atm.card_type === "classic" ? "bg-rose-600" : "bg-indigo-600"
         const isShowCVV = visibleCVVs[atm._id] || false
