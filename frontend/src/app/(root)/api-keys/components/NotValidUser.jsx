@@ -23,9 +23,12 @@ const NotValidUser = () => {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
           <div className="flex items-center gap-3 text-blue-800">
             <MdEmail className="text-xl" />
-            <span className="text-sm font-medium">
-              Verify your email in the Profile section to continue
-            </span>
+            <div>
+              <p className="text-sm font-medium">Email verification required</p>
+              <p className="text-xs text-blue-600 mt-1">
+                Go to Profile section and click the "Verify" button to verify your email address
+              </p>
+            </div>
           </div>
         </div>
         

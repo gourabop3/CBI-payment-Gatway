@@ -7,7 +7,7 @@ import * as yup from 'yup'
 import { toast } from 'react-toastify';
 import { onlyInputNumber } from '@/utils/constant';
 import CustomAuthButton from '@/components/reuseable/CustomAuthButton';
-import VerifiedEMailModel from './+__(components)/VerifiedEMailModel';
+import VerifiedEMailModel from './components/VerifiedEMailModel';
 import { useMainContext } from '@/context/MainContext';
 import { CgSpinner } from 'react-icons/cg';
 import { axiosClient } from '@/utils/AxiosClient';

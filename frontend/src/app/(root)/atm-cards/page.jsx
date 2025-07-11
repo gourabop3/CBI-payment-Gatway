@@ -3,8 +3,8 @@ import HeaderName from '@/components/HeaderName'
 import React from 'react'
 import { FaCreditCard, FaPlus, FaShieldAlt } from 'react-icons/fa'
 import { MdSecurity, MdContactless } from 'react-icons/md'
-import AddNewCardDialog from './+__(components)/AddNewCard'
-import AllATMCards from './+__(components)/AllATMCards'
+import AddNewCardDialog from './components/AddNewCard'
+import AllATMCards from './components/AllATMCards'
 
 const AtmCards = () => {
   return (

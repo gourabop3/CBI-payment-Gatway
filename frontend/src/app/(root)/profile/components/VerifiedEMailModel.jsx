@@ -45,7 +45,7 @@ export default function VerifiedEMailModel() {
         }
       })
       const data  = await response.data 
-      toast.success(data.msg)
+      toast.success(data.msg + ' You can now access API Keys!')
       await fetchUserProfile()
         closeModal()
 
