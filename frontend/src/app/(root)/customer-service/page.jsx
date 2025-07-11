@@ -259,21 +259,7 @@ export default function CustomerServicePage() {
           </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-6 bg-white rounded-2xl shadow-lg p-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <FaRobot className="text-blue-600" />
-              <span className="font-semibold text-gray-800">CBI Assistant</span>
-            </div>
-            <p className="text-sm text-gray-600">
-              Intelligent Banking Chatbot developed by <span className="font-semibold text-blue-600">Gourab</span>
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Powered by AI • Available 24/7 • Secure & Confidential
-            </p>
-          </div>
-        </div>
+
       </div>
     </div>
   );
