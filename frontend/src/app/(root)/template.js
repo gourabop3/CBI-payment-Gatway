@@ -5,8 +5,9 @@ import { setIsToggle, SidebarSlicePath } from '@/redux/slice/sidebarSlice';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import AppSidebar from '@/components/AppSidebar';
 import { useDispatch, useSelector } from 'react-redux';
+import PageFade from '@/components/ui/PageFade';
 import {MdDashboard} from 'react-icons/md'
 import { GiFalloutShelter } from 'react-icons/gi';
 import { GrCurrency } from "react-icons/gr";
@@ -61,25 +62,14 @@ const CustomMenu = ({link,text,Icon})=>{
 
   return (
     <>  
-        <section className="flex item-start">
-        <Sidebar breakPoint='lg' toggled={isToggle} onBackdropClick={()=>dispatch(setIsToggle())}>
-  <Menu className='!bg-white !min-h-screen lg:!min-h-[90vh] px-3 py-10'>
-      <CustomMenu link={'/'} text={'Home'} Icon={MdDashboard} />
-      <CustomMenu link={'/amount'} text={'Account'} Icon={GrCurrency} />
-      <CustomMenu link={'/transfer'} text={'Transfer'} Icon={MdTransferWithinAStation} />
-      <CustomMenu link={'/recharge'} text={'Mobile & Bills'} Icon={MdPhoneAndroid} />
-      <CustomMenu link={'/upi'} text={'UPI'} Icon={MdQrCode} />
-      <CustomMenu link={'/fd-amount'} text={'Fix Deposit'} Icon={GiReceiveMoney} />
-      <CustomMenu link={'/transactions'} text={'Transactions'} Icon={PiNewspaperClipping} />
-      <CustomMenu link={'/atm-cards'} text={'ATM Cards'} Icon={IoCardSharp} />
-      <CustomMenu link={'/api-keys'} text={'API Keys'} Icon={FaKey} />
-      <CustomMenu link={'/profile'} text={'Profile'} Icon={GiFalloutShelter} />
-  
-  </Menu>
-</Sidebar> 
-<main className='px-1 md:px-3 w-full'>
-     {children}
-  </main>
+        <section className="flex items-start">
+          {/* Sidebar */}
+          <AppSidebar isOpen={isToggle} onClose={() => dispatch(setIsToggle())} />
+
+          {/* Content */}
+          <main className='px-1 md:px-3 w-full lg:ml-0'>
+            <PageFade>{children}</PageFade>
+          </main>
         </section>
     </>
   )

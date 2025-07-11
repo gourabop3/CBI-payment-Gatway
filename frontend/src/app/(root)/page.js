@@ -11,6 +11,7 @@ import { FaEye,FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
 import { toast } from 'react-toastify';
 import { generateAccountNumber, generateIFSCCode, formatAccountNumber, getAccountTypeDisplayName, maskAccountNumber } from '@/utils/accountUtils';
+import Card from '@/components/ui/Card';
 
 const HomePage=()=>{
 
@@ -65,19 +66,33 @@ const DashboardCard = ({data})=>{
 
   const [isShow,setIsShow] = useState(false)
 
-  return <Link href={data.link}  className="flex items-center justify-between border py-3 px-10">
-       {data.Icon  }
-      <div className="flex flex-col gap-y-2 justify-end">
-        <p className="text-3xl font-semibold">{data.title}</p> 
-          <div className="flex items-center justify-end gap-x-2">  <h3 className="text-4xl font-bold text-end">  {isShow?data.value:``.padStart(`${data.value}`.length,`x`.repeat(`${data.value}`.length))}</h3>
-          <button onClick={(e)=>{
-            e.preventDefault()
-            e.stopPropagation()
-            setIsShow(!isShow)
-          }} className="text-2xl pt-2 text-black"> {isShow?<FaEyeSlash/>:<FaEye/>} </button> </div>
-
-      </div>
-  </Link>
+  return (
+    <Card hover className="p-0">
+      <Link href={data.link} className="flex items-center justify-between px-10 py-6">
+        {data.Icon}
+        <div className="flex flex-col gap-y-2 justify-end">
+          <p className="text-3xl font-semibold">{data.title}</p>
+          <div className="flex items-center justify-end gap-x-2">
+            <h3 className="text-4xl font-bold text-end">
+              {isShow
+                ? data.value
+                : ''.padStart(`${data.value}`.length, 'x')}
+            </h3>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsShow(!isShow);
+              }}
+              className="text-2xl pt-2 text-black"
+            >
+              {isShow ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+        </div>
+      </Link>
+    </Card>
+  );
 }
 
 const BankingDetailsCard = ({ user }) => {
