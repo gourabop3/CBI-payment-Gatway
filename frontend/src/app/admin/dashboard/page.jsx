@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { axiosClient } from '@/utils/AxiosClient';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
-import { FaCheckCircle, FaTimesCircle, FaUserEdit, FaUserSlash, FaUserCheck } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaUserEdit, FaUserSlash, FaUserCheck, FaMoneyBillWave } from 'react-icons/fa';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -12,6 +12,8 @@ export default function AdminDashboardPage() {
   const [pending, setPending] = useState([]);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
+  const [transactions,setTransactions] = useState([]);
+  const [txnSearch,setTxnSearch] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -39,6 +41,12 @@ export default function AdminDashboardPage() {
           headers: { Authorization: 'Bearer ' + token },
         });
         setUsers(await userRes.data);
+
+        // fetch transactions
+        const txnRes = await axiosClient.get('/admin/transactions', {
+          headers: { Authorization: 'Bearer ' + token },
+        });
+        setTransactions(await txnRes.data);
       } catch (error) {
         toast.error('Session expired, please login again');
         localStorage.removeItem('admin_token');
@@ -60,6 +68,12 @@ export default function AdminDashboardPage() {
   const filteredUsers = users.filter((u) =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
     u.email.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const filteredTxns = transactions.filter(t=>
+    t.remark?.toLowerCase().includes(txnSearch.toLowerCase()) ||
+    t.user?.name?.toLowerCase().includes(txnSearch.toLowerCase()) ||
+    t.user?.email?.toLowerCase().includes(txnSearch.toLowerCase())
   );
 
   return (
@@ -177,7 +191,65 @@ export default function AdminDashboardPage() {
             </table>
           </div>
         )}
+
+      {/* Transactions table */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-blue-800 flex items-center gap-2">
+            <FaMoneyBillWave className="text-green-500" /> Transactions
+          </h2>
+          <input
+            type="text"
+            placeholder="Search transactions..."
+            value={txnSearch}
+            onChange={(e)=>setTxnSearch(e.target.value)}
+            className="px-3 py-2 border rounded shadow-sm focus:ring-blue-500 w-full md:w-80"
+          />
+        </div>
+        {filteredTxns.length === 0 ? <p className="text-gray-500">No transactions.</p> : (
+          <div className="overflow-x-auto bg-white shadow-lg rounded-xl">
+            <table className="min-w-full text-sm text-left">
+              <thead className="border-b bg-teal-50">
+                <tr>
+                  <th className="px-4 py-3">User</th>
+                  <th className="px-4 py-3">Amount</th>
+                  <th className="px-4 py-3">Type</th>
+                  <th className="px-4 py-3">Remark</th>
+                  <th className="px-4 py-3">Date</th>
+                  <th className="px-4 py-3">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTxns.map(tx => (
+                  <tr key={tx._id} className="border-b hover:bg-teal-50 transition">
+                    <td className="px-4 py-3">
+                      <span className="font-semibold text-blue-900">{tx.user?.name}</span><br/>
+                      <span className="text-xs text-gray-500">{tx.user?.email}</span>
+                    </td>
+                    <td className="px-4 py-3">₹{tx.amount}</td>
+                    <td className="px-4 py-3 capitalize">{tx.type}</td>
+                    <td className="px-4 py-3 max-w-xs truncate" title={tx.remark}>{tx.remark}</td>
+                    <td className="px-4 py-3">{new Date(tx.createdAt).toLocaleString()}</td>
+                    <td className="px-4 py-3">
+                      {tx.isRefunded ? (
+                        <span className="text-green-600 font-medium">Refunded</span>
+                      ) : (
+                        <button
+                          onClick={()=>handleRefund(tx._id)}
+                          className="px-3 py-1 bg-rose-600 hover:bg-rose-700 transition text-white rounded text-sm"
+                        >
+                          Refund
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
+
     </div>
   );
 }
@@ -233,4 +305,16 @@ function editProfile(user) {
       window.location.reload();
     })
     .catch(err => toast.error(err.response?.data?.msg || err.message));
+}
+
+function handleRefund(id){
+  const token = localStorage.getItem('admin_token');
+  if(!token) return;
+  if(!confirm('Are you sure you want to refund this transaction?')) return;
+  axiosClient.post(`/admin/transactions/${id}/refund`,{},{
+    headers:{Authorization:'Bearer '+token}
+  }).then(()=>{
+    toast.success('Refund processed');
+    window.location.reload();
+  }).catch(err=> toast.error(err.response?.data?.msg || err.message));
 }

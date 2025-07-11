@@ -41,6 +41,10 @@ const Schema = new mongoose.Schema({
         type:String,
         default:'Payment Processing'
     },
+    isRefunded:{
+        type:Boolean,
+        default:false
+    },
     // Transfer related fields
     transferId: {
         type: mongoose.Schema.Types.ObjectId,
