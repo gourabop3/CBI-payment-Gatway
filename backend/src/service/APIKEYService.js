@@ -10,60 +10,15 @@ const api_key_Jwt_secret = process.env.EMAIL_VERIFIED_HASH_API || "!@&*@#$%^&*#$
 
 class APIKEYService{
 
-    static SendEmailOTP = async(user)=>{
+    static GenerateAPIKeys = async(user)=>{
         try {
             const userd = await UserModel.findById(user)
             if(!userd){
                 throw new ApiError(404,"User Not Found")
-            }
-
-            // Check if user email is verified
-            if (!userd.isEmailVerifed) {
-                throw new ApiError(400, "Please verify your email first to generate API keys")
-            }
-
-            const otp = random(100000,999999)
-            const token = jwt.sign({userId:userd._id}, api_key_Jwt_secret+otp, {
-                expiresIn:'10m'
-            })
-
-            // Send verification email 
-            await NodeMailerService.SendVerificationEmail(userd.name, otp, userd.email)
-            
-            return {
-                token: token,
-                msg: "OTP sent to your registered email address for API key generation"
-            }
-        } catch (error) {
-            console.error("Error sending API key verification email:", error);
-            if (error instanceof ApiError) {
-                throw error;
-            }
-            throw new ApiError(500, "Failed to send verification email")
-        }
-    }
-
-    static VerifyEmailOTP = async(user, {otp, token})=>{
-        try {
-            const userd = await UserModel.findById(user)
-            if(!userd){
-                throw new ApiError(404,"User Not Found")
-            }
-
-            if (!otp || !token) {
-                throw new ApiError(400, "OTP and token are required")
-            }
-
-            // Verify OTP and token
-            const payload = jwt.verify(token, api_key_Jwt_secret + Number(otp))
-            const userId = payload.userId 
-
-            if (!userId || userId !== userd._id.toString()) {
-                throw new ApiError(400, "Invalid token or OTP")
             }
 
             // Check for existing active API key and deactivate it
-            const existAPIDoc = await APIKEYModel.findOne({user: userId, isOnWorking: true})
+            const existAPIDoc = await APIKEYModel.findOne({user: user, isOnWorking: true})
             if(existAPIDoc){
                 await APIKEYModel.findByIdAndUpdate(existAPIDoc._id, {
                     isOnWorking: false
@@ -115,20 +70,15 @@ class APIKEYService{
                 note: "These credentials are for payment gateway integration. Store them securely."
             }
         } catch (error) {
-            console.error("Error verifying API key email OTP:", error);
-            
-            if (error.name === 'JsonWebTokenError') {
-                throw new ApiError(400, "Invalid OTP or token")
-            }
-            if (error.name === 'TokenExpiredError') {
-                throw new ApiError(400, "OTP has expired. Please request a new one")
-            }
+            console.error("Error generating API keys:", error);
             if (error instanceof ApiError) {
                 throw error;
             }
             throw new ApiError(500, "API key generation failed")
         }
     }
+
+
 
     // Enhanced method to get user's active API keys with professional features
     static GetUserAPIKeys = async(user) => {

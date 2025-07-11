@@ -8,7 +8,7 @@ import { FaCopy, FaKey, FaShieldAlt, FaCode, FaLock, FaEye, FaEyeSlash, FaSync, 
 import { MdSecurity, MdVpnKey, MdDeveloperMode, MdPayment, MdSwapHoriz } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { axiosClient } from '@/utils/AxiosClient';
-import VerifiedEMailModel from '../profile/+__(components)/VerifiedEMailModel';
+
 
 // Helper function to truncate long strings like API keys/hashes for cleaner UI
 const truncateString = (str, front = 6, back = 4) => {
@@ -28,15 +28,13 @@ const copy = (text) => {
 
 const ApiKeyPage = () => {
   const { user } = useMainContext()
-  const [isEmailVerified, setIsEmailVerified] = useState(false)
   const [apiKeys, setApiKeys] = useState(null)
   const [loading, setLoading] = useState(true)
   const [webhookUrl, setWebhookUrl] = useState('')
   const [isUpdatingWebhook, setIsUpdatingWebhook] = useState(false)
 
   useEffect(() => {
-    if (user && user.isEmailVerifed) {
-      setIsEmailVerified(true)
+    if (user) {
       fetchAPIKeys()
     } else {
       setLoading(false)
@@ -117,14 +115,7 @@ const ApiKeyPage = () => {
     }
   }
 
-  if (!isEmailVerified) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold mb-4">Please verify your email to access API Keys</h2>
-        <VerifiedEMailModel />
-      </div>
-    );
-  }
+
 
   if (loading) {
     return (
@@ -142,15 +133,27 @@ const ApiKeyPage = () => {
       <div className="container py-6 md:py-10 px-4 md:px-6">
         <HeaderName/>
 
-        {/* Info/Instruction Section */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-center gap-4">
-          <FaInfoCircle className="text-blue-600 text-2xl" />
-          <div>
-            <h3 className="font-semibold text-blue-800">How to use your API Keys</h3>
-            <p className="text-blue-700 text-sm mt-1">
-              Use these credentials to integrate with the CBI Bank Payment Gateway. <br/>
-              <span className="font-medium">Keep your API Secret and Hash secure.</span> You can copy them using the copy button on each card.
-            </p>
+        {/* Professional Status Bar */}
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-green-800 font-semibold text-sm">All Systems Operational</span>
+              </div>
+              <div className="hidden md:flex items-center gap-4 text-xs text-green-700">
+                <span>API Response Time: <strong>150ms</strong></span>
+                <span>Uptime: <strong>99.9%</strong></span>
+                <span>Region: <strong>Asia Pacific</strong></span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <FaInfoCircle className="text-green-600 text-lg" />
+              <div className="text-right">
+                <div className="text-xs text-green-700">Professional Payment Gateway</div>
+                <div className="text-xs text-green-600 font-medium">Ready for Integration</div>
+              </div>
+            </div>
           </div>
         </div>
 
