@@ -5,7 +5,7 @@ import AddAmountModel from '@/components/Amount/AddAmountModel'
 import { useMainContext } from '@/context/MainContext'
 import { FaEye, FaEyeSlash, FaWallet, FaPlus, FaUniversity } from 'react-icons/fa';
 import { MdAccountBalance, MdTrendingUp } from 'react-icons/md';
-import AddAccountModal from './+__(components)/AddAccountModal';
+import AddAccountModal from './components/AddAccountModal';
 import CustomLoader from '@/components/reuseable/CustomLoader';
 import { generateAccountNumber, formatAccountNumber, getAccountTypeDisplayName } from '@/utils/accountUtils';
 
@@ -15,7 +15,15 @@ export const dynamic = 'force-dynamic'
 const AmountPage = () => {
   const {user} = useMainContext()
 
-  const totalBalance = user?.account_no?.reduce((total, account) => total + account.amount, 0) || 0;
+  // Filter out invalid accounts
+  const validAccounts = user?.account_no?.filter(account => 
+    account && 
+    account._id && 
+    account.ac_type && 
+    typeof account.amount === 'number'
+  ) || [];
+
+  const totalBalance = validAccounts.reduce((total, account) => total + account.amount, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -41,7 +49,7 @@ const AmountPage = () => {
                 <span className="text-sm opacity-90">Total Accounts</span>
               </div>
               <div className="text-2xl md:text-3xl font-bold">
-                {user?.account_no?.length || 0}
+                {validAccounts.length}
               </div>
             </div>
             
@@ -69,8 +77,8 @@ const AmountPage = () => {
 
         {/* Accounts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
-          {user?.account_no?.map((cur, i) => (
-            <AccountCard key={i} cur={cur} user={user} />
+          {validAccounts.map((cur, i) => (
+            <AccountCard key={cur._id || i} cur={cur} user={user} />
           ))}
           
           <Suspense fallback={<CustomLoader/>}>
@@ -86,6 +94,11 @@ export default AmountPage
 
 const AccountCard = ({cur, user}) => {
   const [isShow, setIsShow] = useState(false)
+  
+  // Validate account data
+  if (!cur || !cur._id || !cur.ac_type || typeof cur.amount !== 'number') {
+    return null; // Don't render invalid accounts
+  }
   
   // Generate realistic account number
   const accountNumber = generateAccountNumber(user?._id, cur._id, cur.ac_type);
