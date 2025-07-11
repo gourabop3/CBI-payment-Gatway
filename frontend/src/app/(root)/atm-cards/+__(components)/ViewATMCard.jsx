@@ -41,7 +41,7 @@ const ViewATMCard = () => {
       <div>{atm.card_no.slice(12,16)}</div>
     </div>
     <div className="tail">
-      <div className='capitalize'>{user.name}</div>
+      <div className='capitalize'>Cardholder</div>
       <div className=' flex items-center justify-center gap-x-2'>
         <span>CVV: {isSHow? atm.cvv: ``.padStart(3,'x') }</span> 
 
