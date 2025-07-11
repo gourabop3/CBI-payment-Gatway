@@ -24,17 +24,20 @@ const RootTemplate = ({children}) => {
   const [loading,setLoading] = useState(true)
 
 const router = useRouter()
+const pathname = usePathname()
 const isToggle = useSelector(SidebarSlicePath)
 const dispatch = useDispatch()
   
 useEffect(()=>{
   if(!user){
     router.push("/login")
-   
-  }else{
+  } else if(user.kyc_status !== 'verified' && pathname !== '/kyc'){
+    // Redirect un-verified users to KYC page so they cannot access banking features
+    router.push('/kyc')
+  } else {
     setLoading(false)
   }
-},[user, router])
+},[user, router, pathname])
 
 if(loading){
   return <div className='min-h-screen flex items-center justify-center'>
