@@ -5,7 +5,6 @@ import { FaCreditCard, FaShieldAlt, FaPlus } from 'react-icons/fa'
 import { MdSecurity, MdContactless } from 'react-icons/md'
 
 import AllATMCards from './+__(components)/AllATMCards'
-import CardDemo from './+__(components)/CardDemo'
 import AddNewCard from './+__(components)/AddNewCard'
 
 const AtmCards = () => {
@@ -36,8 +35,7 @@ const AtmCards = () => {
           </div>
         </div>
 
-        {/* Card Demo Section */}
-        <CardDemo />
+
 
         {/* Cards Display Section */}
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
