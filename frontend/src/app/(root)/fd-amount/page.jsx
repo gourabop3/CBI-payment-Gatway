@@ -8,8 +8,10 @@ import FDCard from './+___compoents/FDCard'
 import { axiosClient } from '@/utils/AxiosClient'
 import CustomLoader from '@/components/reuseable/CustomLoader'
 import { toast } from 'react-toastify';
+import { useMainContext } from '@/context/MainContext'
 
 const FDPage = () => {
+  const { user } = useMainContext();
   const [deposits, setDeposits] = useState([])
   const [loading, setLoading] = useState(true)
   const [isUpdate, setIsUpdate] = useState(false)
@@ -55,8 +57,15 @@ const FDPage = () => {
   }
 
   useEffect(() => {
-    fetchAllDeposits()
-  }, [isUpdate])
+    // If user is not loaded or not logged in, do not fetch deposits
+    if (!user) {
+      setLoading(false);
+      setDeposits([]);
+      setError('Please login to view your fixed deposits.');
+      return;
+    }
+    fetchAllDeposits();
+  }, [isUpdate, user]);
 
   // Safe calculation with fallbacks
   const calculateStats = () => {
@@ -94,6 +103,15 @@ const FDPage = () => {
   }
 
   const stats = calculateStats()
+
+  if (!user) {
+    return (
+      <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-50 to-blue-50">
+        <CustomLoader/>
+        <p className="mt-4 text-lg text-gray-600">Please login to view your fixed deposits.</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
