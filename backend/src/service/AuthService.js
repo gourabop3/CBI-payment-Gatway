@@ -342,14 +342,18 @@ class AuthService{
                 throw new ApiError(400, "Invalid token")
             }
 
-            const profile = await ProfileModel.findOneAndUpdate({
+            let profile = await ProfileModel.findOneAndUpdate({
                 user: payload.userID
             }, {
                 isEmailVerified: true
             })
 
+            // If profile not found (legacy accounts), create it on the fly
             if (!profile) {
-                throw new ApiError(404, "User profile not found")
+                profile = await ProfileModel.create({
+                    user: payload.userID,
+                    isEmailVerified: true,
+                });
             }
 
             return {
