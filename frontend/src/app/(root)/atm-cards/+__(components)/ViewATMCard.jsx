@@ -7,7 +7,8 @@ import UseCardModel from './UseCard';
 const ViewATMCard = () => {
 
   const {atm,user} = useMainContext()
-  const [isSHow,setISShow] = useState(false)
+  const [isShowCVV, setIsShowCVV] = useState(false)
+  const [isShowNumber, setIsShowNumber] = useState(false)
 
   if(!atm || !atm.card_no){
     return <>
@@ -23,31 +24,38 @@ const ViewATMCard = () => {
   return (
         <>
 <div className='flex flex-col'>
-  <h1 className='text-white'> Copied from GeeksforGeeks</h1>
+  {/* Single card view */}
  
-  <div className="relative w-full max-w-sm aspect-[16/9] bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-xl shadow-lg p-6">
+  <div className="relative w-full max-w-sm aspect-[16/9] bg-gradient-to-br from-white to-slate-100 rounded-xl shadow-lg p-6">
     {/* Decorative circles */}
     <div className={`absolute w-64 h-64 rounded-full -top-20 -right-20 opacity-30 ${circl1}`} />
     <div className={`absolute w-24 h-24 rounded-full -bottom-10 -right-10 opacity-30 ${circl2}`} />
 
     {/* Header */}
-    <div className="flex items-center justify-between text-lg font-semibold text-white z-10">
+    <div className="flex items-center justify-between text-lg font-semibold text-gray-800 z-10">
       <i className="fa-solid fa-credit-card text-2xl" />
       <span className='capitalize'>{atm.card_type} Card</span>
     </div>
 
     {/* Card Number (masked) */}
-    <div className="mt-auto mb-3 text-2xl font-mono tracking-widest text-white z-10">
-      **** **** **** {atm.card_no.slice(12,16)}
+    <div className="mt-auto mb-3 text-2xl font-mono tracking-widest text-indigo-700 flex items-center gap-2 z-10">
+      {isShowNumber ? (
+        <>{atm.card_no.slice(0,4)} {atm.card_no.slice(4,8)} {atm.card_no.slice(8,12)} {atm.card_no.slice(12,16)}</>
+      ) : (
+        <>**** **** **** {atm.card_no.slice(12,16)}</>
+      )}
+      <button onClick={()=>setIsShowNumber(!isShowNumber)} className='text-base text-gray-600 hover:text-gray-800'>
+        {isShowNumber? <FaEyeSlash/> : <FaEye/>}
+      </button>
     </div>
 
     {/* Footer */}
-    <div className="flex items-center justify-between text-sm text-gray-300 z-10">
+    <div className="flex items-center justify-between text-sm text-gray-700 z-10">
       <span className='capitalize'>Cardholder</span>
       <div className='flex items-center gap-2'>
-        <span>CVV: {isSHow? atm.cvv: '***' }</span>
-        <button onClick={()=>setISShow(!isSHow)} className='text-base text-white hover:text-gray-400'> 
-         { isSHow? <FaEyeSlash/> :<FaEye/>}
+        <span className='font-medium'>CVV: {isShowCVV? atm.cvv: '***' }</span>
+        <button onClick={()=>setIsShowCVV(!isShowCVV)} className='text-base text-gray-600 hover:text-gray-800'> 
+         { isShowCVV? <FaEyeSlash/> :<FaEye/>}
         </button>
       </div>
       <span>
