@@ -50,8 +50,8 @@ class AuthService{
             throw new ApiError(400,"Email Already Exist")
         }
 
-            // Generate unique UPI handle e.g., gourab@cbibank
-            const baseUpi = name.toLowerCase().replace(/\s+/g, '') + '@cbibank';
+            // Generate unique UPI handle e.g., gourab@mybank
+            const baseUpi = name.toLowerCase().replace(/\s+/g, '') + '@mybank';
             let upi_id = baseUpi;
             let suffix = 1;
             // Ensure uniqueness of UPI handle in DB

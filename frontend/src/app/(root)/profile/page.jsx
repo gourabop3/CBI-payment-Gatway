@@ -433,8 +433,27 @@ const ProfilePage = () => {
                       <FaCoins className="text-green-600 text-xl" />
                       <h4 className="font-semibold text-gray-800">UPI ID</h4>
                     </div>
-                    <p className="text-lg font-bold text-green-600">{user?.upi_id || 'Not Set'}</p>
-                    <p className="text-gray-600 text-sm">Digital Payment ID</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="text-lg font-bold text-green-600 font-mono">{user?.upi_id || 'Not Set'}</p>
+                      {user?.upi_id && (
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(user.upi_id);
+                            // You could add a toast notification here
+                          }}
+                          className="p-1 text-green-600 hover:bg-green-200 rounded transition-colors"
+                          title="Copy UPI ID"
+                        >
+                          📋
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-gray-600 text-sm">MyBank Digital Payment ID</p>
+                    {user?.upi_id && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Use this ID to receive instant payments
+                      </p>
+                    )}
                   </div>
 
                   <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-6">
