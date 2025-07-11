@@ -2,8 +2,8 @@
 
 import HeaderName from '@/components/HeaderName';
 import React, { useEffect, useState } from 'react';
-import TransactionCard from './+___compoents/TransactionCard';
-import MessageShow from './+___compoents/MessageShow';
+import TransactionCard from './components/TransactionCard';
+import MessageShow from './components/MessageShow';
 import { toast } from 'react-toastify';
 import { axiosClient } from '@/utils/AxiosClient';
 import CustomLoader from '@/components/reuseable/CustomLoader';
