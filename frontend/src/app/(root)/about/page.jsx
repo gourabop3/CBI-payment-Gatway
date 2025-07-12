@@ -8,17 +8,17 @@ import { RiBankCardLine } from 'react-icons/ri';
 import HeaderName from '@/components/HeaderName';
 
 const socials = [
-  { href: 'https://github.com/gourab18', label: 'GitHub', Icon: AiOutlineGithub, color: 'hover:text-gray-800', bgColor: 'hover:bg-gray-100' },
+  { href: 'https://github.com/gourabop', label: 'GitHub', Icon: AiOutlineGithub, color: 'hover:text-gray-800', bgColor: 'hover:bg-gray-100' },
   { href: 'https://instagram.com/gourab_op_84', label: 'Instagram', Icon: AiOutlineInstagram, color: 'hover:text-pink-600', bgColor: 'hover:bg-pink-50' },
-  { href: 'https://linkedin.com/in/gourab-mullick', label: 'LinkedIn', Icon: AiFillLinkedin, color: 'hover:text-blue-600', bgColor: 'hover:bg-blue-50' },
+  { href: 'https://linkedin.com/in/gourab', label: 'LinkedIn', Icon: AiFillLinkedin, color: 'hover:text-blue-600', bgColor: 'hover:bg-blue-50' },
   { href: 'mailto:gourabmullick200@gmail.com', label: 'Gmail', Icon: AiOutlineMail, color: 'hover:text-red-600', bgColor: 'hover:bg-red-50' },
-  { href: 'https://t.me/gourab_op_84', label: 'Telegram', Icon: FaTelegram, color: 'hover:text-blue-500', bgColor: 'hover:bg-blue-50' },
+  { href: 'https://t.me/its_me_gourab', label: 'Telegram', Icon: FaTelegram, color: 'hover:text-blue-500', bgColor: 'hover:bg-blue-50' },
 ];
 
 const frontendTech = [
-  { name: 'React 19.0.0', icon: FaReact, description: 'Modern UI library with hooks and functional components', why: 'Component-based architecture for reusable UI elements' },
-  { name: 'Next.js 15.2.4', icon: SiNextdotjs, description: 'React framework for production-ready applications', why: 'SSR, routing, and optimized performance out of the box' },
-  { name: 'TailwindCSS 4.0', icon: SiTailwindcss, description: 'Utility-first CSS framework for modern design', why: 'Rapid UI development with utility classes' },
+  { name: 'React Js', icon: FaReact, description: 'Modern UI library with hooks and functional components', why: 'Component-based architecture for reusable UI elements' },
+  { name: 'Next.js', icon: SiNextdotjs, description: 'React framework for production-ready applications', why: 'SSR, routing, and optimized performance out of the box' },
+  { name: 'TailwindCSS', icon: SiTailwindcss, description: 'Utility-first CSS framework for modern design', why: 'Rapid UI development with utility classes' },
   { name: 'Redux Toolkit', icon: FaCode, description: 'State management for complex application logic', why: 'Centralized state management with simplified Redux' },
   { name: 'Framer Motion', icon: FaCode, description: 'Advanced animations and transitions', why: 'Smooth, performant animations with declarative API' },
 ];
@@ -174,7 +174,7 @@ export default function AboutPage() {
           <div className="bg-gradient-to-r from-gray-100 to-slate-100 p-8 rounded-lg shadow-lg border border-gray-300 hover:shadow-xl transition-all duration-300">
             <div className="text-center mb-8">
               <h3 className="text-3xl font-bold text-gray-900 mb-2">Gourab Mullick</h3>
-              <p className="text-gray-800 text-lg font-medium">Full-Stack Developer & Banking Solutions Specialist</p>
+              <p className="text-gray-800 text-lg font-medium">Full-Stack Developer(MERN STACK)</p>
             </div>
             
             <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -194,7 +194,7 @@ export default function AboutPage() {
                   <li className="font-medium">• API Development & Integration</li>
                   <li className="font-medium">• Security & Authentication</li>
                   <li className="font-medium">• Payment Gateway Integration</li>
-                  <li className="font-medium">• AI/ML Integration</li>
+                  <li className="font-medium">• AI Integration</li>
                 </ul>
               </div>
             </div>
