@@ -49,14 +49,10 @@ class UPIService {
             throw new ApiError(400, 'UPI ID and PIN are required');
         }
 
-        // Check if user already has a UPI ID
-        const currentUser = await UserModel.findById(userId).select('upi_id');
+        // Check if user exists
+        const currentUser = await UserModel.findById(userId).select('upi_id name');
         if (!currentUser) {
             throw new ApiError(404, 'User not found');
-        }
-        
-        if (currentUser.upi_id) {
-            throw new ApiError(400, 'You already have a UPI ID. Each user can only have one UPI ID.');
         }
 
         // Basic format validation
@@ -77,10 +73,19 @@ class UPIService {
             throw new ApiError(400, 'PIN must be 4 or 6 digits');
         }
 
-        // Ensure uniqueness of the handle
+        // Check for uniqueness and provide suggestions if taken
         const existing = await UserModel.findOne({ upi_id });
-        if (existing) {
-            throw new ApiError(400, `UPI ID "${upi_id}" is already taken. Please choose a different username before @cbibank`);
+        if (existing && existing._id.toString() !== userId) {
+            // Generate suggestions for alternative UPI IDs
+            const baseName = username;
+            const suggestions = [
+                `${baseName}${Math.floor(Math.random() * 100)}@cbibank`,
+                `${baseName}${new Date().getFullYear()}@cbibank`,
+                `${baseName}.${currentUser.name.toLowerCase().split(' ')[0]}@cbibank`,
+                `${currentUser.name.toLowerCase().replace(/\s+/g, '')}@cbibank`
+            ];
+            
+            throw new ApiError(400, `UPI ID "${upi_id}" is already taken. Try these suggestions: ${suggestions.slice(0, 2).join(', ')}`);
         }
 
         // Hash the PIN before storing

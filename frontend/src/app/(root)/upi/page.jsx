@@ -335,13 +335,17 @@ const UPIPage = () => {
       <div className="container py-6 px-4">
         <HeaderName />
         
-        {/* Show registration card if user has no UPI yet */}
-        {(!upiInfo || !upiInfo.upi_id) && (
-          <Card className="mb-6 p-6 bg-white shadow-lg">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <MdQrCode className="text-blue-600" />
-              Create Your UPI ID
-            </h2>
+        {/* UPI Registration/Update Card - Show for all users */}
+        <Card className="mb-6 p-6 bg-white shadow-lg">
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+            <MdQrCode className="text-blue-600" />
+            {(!upiInfo || !upiInfo.upi_id) ? 'Create Your UPI ID' : 'Update Your UPI ID'}
+          </h2>
+          {(!upiInfo || !upiInfo.upi_id) ? (
+            <p className="text-gray-600 mb-4">Create your unique UPI ID to start making instant payments.</p>
+          ) : (
+            <p className="text-gray-600 mb-4">Current UPI ID: <span className="font-mono font-semibold text-blue-600">{upiInfo.upi_id}</span>. You can update to a new UPI ID below.</p>
+          )}
             {registrationError && (
               <p className="text-red-600 text-sm mb-2">{registrationError}</p>
             )}
@@ -418,11 +422,10 @@ const UPIPage = () => {
                 disabled={loading}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors"
               >
-                {loading ? 'Creating...' : 'Create UPI ID'}
+                {loading ? 'Creating...' : ((!upiInfo || !upiInfo.upi_id) ? 'Create UPI ID' : 'Update UPI ID')}
               </button>
             </div>
-          </Card>
-        )}
+        </Card>
 
         {/* Header Section */}
         <div className="text-center mb-8">
