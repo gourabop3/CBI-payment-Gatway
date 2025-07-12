@@ -320,29 +320,38 @@ export default function AboutPage() {
       <div className="container mx-auto max-w-7xl">
         <HeaderName />
         
-        {/* Hero Section */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
-          <div className="text-center mb-12">
-            <h1 className="text-6xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-rose-600 bg-clip-text text-transparent mb-6">
-              🏦 CBI Digital Banking Platform
-            </h1>
-            <p className="text-xl text-gray-700 leading-relaxed max-w-4xl mx-auto font-medium">
-              A comprehensive, production-ready digital banking application built with modern technologies. 
-              Featuring secure transactions, AI-powered customer service, and seamless user experience across all devices.
-            </p>
-            <div className="flex justify-center items-center gap-6 mt-8">
-              <div className="bg-gradient-to-r from-green-100 to-green-200 px-6 py-3 rounded-full">
-                <span className="text-green-800 font-bold">✅ Production Ready</span>
-              </div>
-              <div className="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-3 rounded-full">
-                <span className="text-blue-800 font-bold">🔒 Bank-Grade Security</span>
-              </div>
-              <div className="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-3 rounded-full">
-                <span className="text-purple-800 font-bold">🤖 AI-Powered</span>
-              </div>
-            </div>
-          </div>
-        </div>
+                 {/* Hero Section */}
+         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
+           <div className="text-center mb-12">
+             <h1 className="text-6xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-rose-600 bg-clip-text text-transparent mb-6">
+               🏦 CBI Digital Banking Platform
+             </h1>
+             <p className="text-xl text-gray-700 leading-relaxed max-w-4xl mx-auto font-medium">
+               A comprehensive, production-ready digital banking application built with modern technologies. 
+               Featuring secure transactions, AI-powered customer service, and seamless user experience across all devices.
+             </p>
+             <div className="flex justify-center items-center gap-6 mt-8">
+               <div className="bg-gradient-to-r from-green-100 to-green-200 px-6 py-3 rounded-full">
+                 <span className="text-green-800 font-bold">✅ Production Ready</span>
+               </div>
+               <div className="bg-gradient-to-r from-blue-100 to-blue-200 px-6 py-3 rounded-full">
+                 <span className="text-blue-800 font-bold">🔒 Bank-Grade Security</span>
+               </div>
+               <div className="bg-gradient-to-r from-purple-100 to-purple-200 px-6 py-3 rounded-full">
+                 <span className="text-purple-800 font-bold">🤖 AI-Powered</span>
+               </div>
+             </div>
+             {/* Interactive Help Text */}
+             <div className="mt-8 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl border border-yellow-200">
+               <p className="text-lg font-semibold text-yellow-800 mb-2">
+                 🎯 Interactive Technology Cards
+               </p>
+               <p className="text-sm text-yellow-700">
+                 <strong>Hover over any technology card below</strong> to see detailed explanations of why each technology was chosen for this banking project!
+               </p>
+             </div>
+           </div>
+         </div>
 
         {/* Frontend Technologies */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
@@ -350,19 +359,35 @@ export default function AboutPage() {
             <FaDesktop className="text-blue-600" />
             Frontend Technologies
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {frontendTechnologies.map(({ name, version, icon: Icon, description, category, color }) => (
-              <div key={name} className="group bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl shadow-lg border border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-blue-100 hover:to-cyan-100">
-                <div className="flex items-center justify-between mb-3">
-                  <Icon className={`text-3xl ${color} group-hover:scale-110 transition-transform duration-300`} />
-                  <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full font-semibold">{category}</span>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                <p className="text-sm text-blue-700 font-semibold mb-2">v{version}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
-              </div>
-            ))}
-          </div>
+                     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+             {frontendTechnologies.map(({ name, version, icon: Icon, description, category, color, whyUse }) => (
+               <div key={name} className="group relative bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl shadow-lg border border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-blue-100 hover:to-cyan-100 overflow-hidden">
+                 {/* Default Content */}
+                 <div className="group-hover:opacity-0 transition-opacity duration-300">
+                   <div className="flex items-center justify-between mb-3">
+                     <Icon className={`text-3xl ${color} group-hover:scale-110 transition-transform duration-300`} />
+                     <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full font-semibold">{category}</span>
+                   </div>
+                   <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
+                   <p className="text-sm text-blue-700 font-semibold mb-2">v{version}</p>
+                   <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
+                 </div>
+                 
+                 {/* Hover Content */}
+                 <div className="absolute inset-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-blue-100 to-cyan-100 flex flex-col justify-center">
+                   <div className="text-center mb-4">
+                     <Icon className={`text-4xl ${color} mx-auto mb-2`} />
+                     <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
+                     <span className="text-xs bg-blue-300 text-blue-900 px-3 py-1 rounded-full font-bold">{category}</span>
+                   </div>
+                   <div className="text-center">
+                     <h4 className="text-sm font-bold text-blue-900 mb-2">Why use this?</h4>
+                     <p className="text-xs text-gray-800 leading-relaxed">{whyUse}</p>
+                   </div>
+                 </div>
+               </div>
+             ))}
+           </div>
         </div>
 
         {/* Backend Technologies */}
@@ -371,19 +396,35 @@ export default function AboutPage() {
             <FaServer className="text-green-600" />
             Backend Technologies
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {backendTechnologies.map(({ name, version, icon: Icon, description, category, color }) => (
-              <div key={name} className="group bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl shadow-lg border border-green-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-green-100 hover:to-emerald-100">
-                <div className="flex items-center justify-between mb-3">
-                  <Icon className={`text-3xl ${color} group-hover:scale-110 transition-transform duration-300`} />
-                  <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full font-semibold">{category}</span>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                <p className="text-sm text-green-700 font-semibold mb-2">v{version}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
-              </div>
-            ))}
-          </div>
+                     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+             {backendTechnologies.map(({ name, version, icon: Icon, description, category, color, whyUse }) => (
+               <div key={name} className="group relative bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl shadow-lg border border-green-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-green-100 hover:to-emerald-100 overflow-hidden">
+                 {/* Default Content */}
+                 <div className="group-hover:opacity-0 transition-opacity duration-300">
+                   <div className="flex items-center justify-between mb-3">
+                     <Icon className={`text-3xl ${color} group-hover:scale-110 transition-transform duration-300`} />
+                     <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full font-semibold">{category}</span>
+                   </div>
+                   <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
+                   <p className="text-sm text-green-700 font-semibold mb-2">v{version}</p>
+                   <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
+                 </div>
+                 
+                 {/* Hover Content */}
+                 <div className="absolute inset-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-green-100 to-emerald-100 flex flex-col justify-center">
+                   <div className="text-center mb-4">
+                     <Icon className={`text-4xl ${color} mx-auto mb-2`} />
+                     <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
+                     <span className="text-xs bg-green-300 text-green-900 px-3 py-1 rounded-full font-bold">{category}</span>
+                   </div>
+                   <div className="text-center">
+                     <h4 className="text-sm font-bold text-green-900 mb-2">Why use this?</h4>
+                     <p className="text-xs text-gray-800 leading-relaxed">{whyUse}</p>
+                   </div>
+                 </div>
+               </div>
+             ))}
+           </div>
         </div>
 
         {/* Development Tools */}
@@ -392,16 +433,32 @@ export default function AboutPage() {
             <FaCog className="text-purple-600" />
             Development Tools & DevOps
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {developmentTools.map(({ name, version, icon: Icon, description }) => (
-              <div key={name} className="group bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-2xl shadow-lg border border-purple-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-purple-100 hover:to-indigo-100">
-                <Icon className="text-3xl text-purple-600 group-hover:scale-110 transition-transform duration-300 mb-3" />
-                <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                <p className="text-sm text-purple-700 font-semibold mb-2">v{version}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
-              </div>
-            ))}
-          </div>
+                     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+             {developmentTools.map(({ name, version, icon: Icon, description, whyUse }) => (
+               <div key={name} className="group relative bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-2xl shadow-lg border border-purple-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-purple-100 hover:to-indigo-100 overflow-hidden">
+                 {/* Default Content */}
+                 <div className="group-hover:opacity-0 transition-opacity duration-300">
+                   <Icon className="text-3xl text-purple-600 group-hover:scale-110 transition-transform duration-300 mb-3" />
+                   <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
+                   <p className="text-sm text-purple-700 font-semibold mb-2">v{version}</p>
+                   <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
+                 </div>
+                 
+                 {/* Hover Content */}
+                 <div className="absolute inset-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-purple-100 to-indigo-100 flex flex-col justify-center">
+                   <div className="text-center mb-4">
+                     <Icon className="text-4xl text-purple-600 mx-auto mb-2" />
+                     <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
+                     <span className="text-xs bg-purple-300 text-purple-900 px-3 py-1 rounded-full font-bold">DevOps</span>
+                   </div>
+                   <div className="text-center">
+                     <h4 className="text-sm font-bold text-purple-900 mb-2">Why use this?</h4>
+                     <p className="text-xs text-gray-800 leading-relaxed">{whyUse}</p>
+                   </div>
+                 </div>
+               </div>
+             ))}
+           </div>
         </div>
 
         {/* Project Features */}
@@ -410,25 +467,25 @@ export default function AboutPage() {
             <MdBolt className="text-yellow-600" />
             Key Features & Capabilities
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projectFeatures.map(({ title, description, icon: Icon, features }) => (
-              <div key={title} className="group bg-gradient-to-br from-rose-50 to-pink-50 p-8 rounded-2xl shadow-lg border border-rose-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-rose-100 hover:to-pink-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <Icon className="text-4xl text-rose-600 group-hover:scale-110 transition-transform duration-300" />
-                  <h3 className="text-xl font-bold text-gray-900">{title}</h3>
-                </div>
-                <p className="text-gray-700 mb-4 leading-relaxed">{description}</p>
-                <div className="space-y-2">
-                  {features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-rose-500 rounded-full"></div>
-                      <span className="text-sm text-gray-700 font-medium">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+             {projectFeatures.map(({ title, description, icon: Icon, features }) => (
+               <div key={title} className="group bg-gradient-to-br from-rose-50 to-pink-50 p-8 rounded-2xl shadow-lg border border-rose-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-rose-100 hover:to-pink-100">
+                 <div className="flex items-center gap-3 mb-4">
+                   <Icon className="text-4xl text-rose-600 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
+                   <h3 className="text-xl font-bold text-gray-900 group-hover:text-rose-900 transition-colors duration-300">{title}</h3>
+                 </div>
+                 <p className="text-gray-700 mb-4 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{description}</p>
+                 <div className="space-y-2">
+                   {features.map((feature, index) => (
+                     <div key={index} className="flex items-center gap-2 group-hover:scale-105 transition-transform duration-300">
+                       <div className="w-2 h-2 bg-rose-500 rounded-full group-hover:bg-rose-600 transition-colors duration-300"></div>
+                       <span className="text-sm text-gray-700 font-medium group-hover:text-gray-800 transition-colors duration-300">{feature}</span>
+                     </div>
+                   ))}
+                 </div>
+               </div>
+             ))}
+           </div>
         </div>
 
         {/* Developer Information */}
