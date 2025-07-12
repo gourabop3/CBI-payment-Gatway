@@ -205,40 +205,40 @@ const ApiKeyPage = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
               <div className="flex items-center gap-3 mb-2">
-                <MdSecurity className="text-xl" />
-                <span className="text-sm opacity-90">Security</span>
+                <MdSecurity className="text-xl text-indigo-600" />
+                <span className="text-sm text-gray-700">Security</span>
               </div>
-              <div className="text-lg font-semibold">Bank Grade</div>
+              <div className="text-lg font-semibold text-gray-900">Bank Grade</div>
             </div>
             
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
               <div className="flex items-center gap-3 mb-2">
-                <FaShieldAlt className="text-xl" />
-                <span className="text-sm opacity-90">Success Rate</span>
+                <FaShieldAlt className="text-xl text-green-600" />
+                <span className="text-sm text-gray-700">Success Rate</span>
               </div>
-              <div className="text-lg font-semibold">
+              <div className="text-lg font-semibold text-gray-900">
                 {apiKeys?.usage_analytics?.success_rate || '100.0'}%
               </div>
             </div>
             
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
               <div className="flex items-center gap-3 mb-2">
-                <MdDeveloperMode className="text-xl" />
-                <span className="text-sm opacity-90">Environment</span>
+                <MdDeveloperMode className="text-xl text-blue-600" />
+                <span className="text-sm text-gray-700">Environment</span>
               </div>
-              <div className="text-lg font-semibold capitalize">
+              <div className="text-lg font-semibold text-gray-900 capitalize">
                 {apiKeys?.environment || 'Test'}
               </div>
             </div>
             
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
               <div className="flex items-center gap-3 mb-2">
-                <FaCode className="text-xl" />
-                <span className="text-sm opacity-90">API Version</span>
+                <FaCode className="text-xl text-purple-600" />
+                <span className="text-sm text-gray-700">API Version</span>
               </div>
-              <div className="text-lg font-semibold">v1.0</div>
+              <div className="text-lg font-semibold text-gray-900">v1.0</div>
             </div>
           </div>
         </div>
