@@ -75,5 +75,6 @@ export default function AppSidebar({ isOpen, onClose }) {
         ))}
       </nav>
     </aside>
+    </>
   );
 }
