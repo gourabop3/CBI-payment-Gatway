@@ -197,7 +197,7 @@ const backendTechnologies = [
     description: 'Complete payment solution with instant activation',
     category: 'Payment Gateway',
     color: 'text-blue-700',
-    whyUse: 'Used for processing payments, UPI transactions, and money transfers. Integrates with Indian banking system, supports multiple payment methods, provides secure payment processing, and handles transaction webhooks for real-time updates.'
+    whyUse: 'Processing UPI payments, mobile recharge transactions, bill payments, money transfers, and handling payment webhooks for real-time transaction status updates.'
   },
   { 
     name: 'OpenAI', 
@@ -206,7 +206,7 @@ const backendTechnologies = [
     description: 'AI-powered chatbot and intelligent customer service',
     category: 'AI Integration',
     color: 'text-green-700',
-    whyUse: 'Used for building intelligent customer service chatbot. Provides 24/7 customer support, answers banking queries, helps with transactions, and offers personalized assistance using natural language processing for enhanced user experience.'
+    whyUse: 'Creating intelligent customer service chatbot for 24/7 support. Answers banking queries, helps with transactions, provides account information, and offers personalized assistance to users.'
   },
   { 
     name: 'Nodemailer', 
@@ -215,7 +215,7 @@ const backendTechnologies = [
     description: 'Send emails from Node.js applications',
     category: 'Email Service',
     color: 'text-red-600',
-    whyUse: 'Used for sending automated emails to users including transaction confirmations, account alerts, security notifications, password reset emails, and KYC verification updates. Essential for banking communication and user notifications.'
+    whyUse: 'Sending automated emails to users including transaction confirmations, account alerts, security notifications, password reset emails, and KYC verification updates.'
   },
   { 
     name: 'QR Code', 
@@ -224,7 +224,7 @@ const backendTechnologies = [
     description: 'QR code generation for payments and transfers',
     category: 'Utility',
     color: 'text-gray-800',
-    whyUse: 'Used for generating QR codes for UPI payments and money transfers. Enables quick payment processing, contactless transactions, and seamless integration with UPI ecosystem for modern banking payment solutions.'
+    whyUse: 'Generating QR codes for UPI payments and money transfers. Enables quick payment processing, contactless transactions, and seamless UPI integration.'
   },
   { 
     name: 'bcryptjs', 
@@ -233,7 +233,7 @@ const backendTechnologies = [
     description: 'Password hashing library for secure authentication',
     category: 'Security',
     color: 'text-red-500',
-    whyUse: 'Used for securely hashing user passwords and sensitive data. Implements industry-standard encryption for banking security, protects user credentials, and ensures data security compliance in financial applications.'
+    whyUse: 'Securely hashing user passwords and sensitive data. Implements industry-standard encryption for banking security and protects user credentials.'
   }
 ];
 
@@ -359,152 +359,92 @@ export default function AboutPage() {
                  <span className="text-purple-800 font-bold">🤖 AI-Powered</span>
                </div>
              </div>
-             {/* Interactive Help Text */}
-             <div className="mt-8 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl border border-yellow-200">
-               <p className="text-lg font-semibold text-yellow-800 mb-2">
-                 🎯 Interactive Technology Cards
-               </p>
-               <p className="text-sm text-yellow-700">
-                 <strong>Hover over any technology card below</strong> to see detailed explanations of why each technology was chosen for this banking project!
-               </p>
+                           {/* Project Overview */}
+              <div className="mt-8 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl border border-yellow-200">
+                <p className="text-lg font-semibold text-yellow-800 mb-2">
+                  🎯 Complete Banking Solution
+                </p>
+                <p className="text-sm text-yellow-700">
+                  Below you'll find all the technologies used in this project and their specific purposes in building this comprehensive banking platform.
+                </p>
+              </div>
+           </div>
+         </div>
+
+                 {/* Frontend Technologies */}
+         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
+           <h2 className="text-4xl font-bold mb-8 text-gray-800 flex items-center gap-3">
+             <FaDesktop className="text-blue-600" />
+             Frontend Technologies
+           </h2>
+           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-8 rounded-2xl border border-blue-200">
+             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {frontendTechnologies.map(({ name, version, icon: Icon, description, whyUse }) => (
+                 <div key={name} className="flex items-start gap-4 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                   <Icon className="text-3xl text-blue-600 flex-shrink-0 mt-1" />
+                   <div>
+                     <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
+                     <p className="text-sm text-blue-700 font-semibold mb-2">v{version}</p>
+                     <p className="text-xs text-gray-700 mb-2">{description}</p>
+                     <p className="text-xs text-blue-800 font-medium">{whyUse}</p>
+                   </div>
+                 </div>
+               ))}
              </div>
            </div>
          </div>
 
-        {/* Frontend Technologies */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
-          <h2 className="text-4xl font-bold mb-8 text-gray-800 flex items-center gap-3">
-            <FaDesktop className="text-blue-600" />
-            Frontend Technologies
-          </h2>
-                     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-             {frontendTechnologies.map(({ name, version, icon: Icon, description, category, color, whyUse }) => (
-               <div key={name} className="group relative bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl shadow-lg border border-blue-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-blue-100 hover:to-cyan-100 overflow-hidden">
-                 {/* Default Content */}
-                 <div className="group-hover:opacity-0 transition-opacity duration-300">
-                   <div className="flex items-center justify-between mb-3">
-                     <Icon className={`text-3xl ${color} group-hover:scale-110 transition-transform duration-300`} />
-                     <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full font-semibold">{category}</span>
-                   </div>
-                   <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                   <p className="text-sm text-blue-700 font-semibold mb-2">v{version}</p>
-                   <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
-                 </div>
-                 
-                 {/* Hover Content */}
-                 <div className="absolute inset-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-blue-100 to-cyan-100 flex flex-col justify-center">
-                   <div className="text-center mb-4">
-                     <Icon className={`text-4xl ${color} mx-auto mb-2`} />
+         {/* Backend Technologies */}
+         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
+           <h2 className="text-4xl font-bold mb-8 text-gray-800 flex items-center gap-3">
+             <FaServer className="text-green-600" />
+             Backend Technologies
+           </h2>
+           <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-2xl border border-green-200">
+             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {backendTechnologies.map(({ name, version, icon: Icon, description, whyUse }) => (
+                 <div key={name} className="flex items-start gap-4 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                   <Icon className="text-3xl text-green-600 flex-shrink-0 mt-1" />
+                   <div>
                      <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                     <span className="text-xs bg-blue-300 text-blue-900 px-3 py-1 rounded-full font-bold">{category}</span>
-                   </div>
-                   <div className="text-center">
-                     <h4 className="text-sm font-bold text-blue-900 mb-2">Used in this project for:</h4>
-                     <p className="text-xs text-gray-800 leading-relaxed">{whyUse}</p>
+                     <p className="text-sm text-green-700 font-semibold mb-2">v{version}</p>
+                     <p className="text-xs text-gray-700 mb-2">{description}</p>
+                     <p className="text-xs text-green-800 font-medium">{whyUse}</p>
                    </div>
                  </div>
-               </div>
-             ))}
+               ))}
+             </div>
            </div>
-        </div>
+         </div>
 
-        {/* Backend Technologies */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
-          <h2 className="text-4xl font-bold mb-8 text-gray-800 flex items-center gap-3">
-            <FaServer className="text-green-600" />
-            Backend Technologies
-          </h2>
-                     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-             {backendTechnologies.map(({ name, version, icon: Icon, description, category, color, whyUse }) => (
-               <div key={name} className="group relative bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl shadow-lg border border-green-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-green-100 hover:to-emerald-100 overflow-hidden">
-                 {/* Default Content */}
-                 <div className="group-hover:opacity-0 transition-opacity duration-300">
-                   <div className="flex items-center justify-between mb-3">
-                     <Icon className={`text-3xl ${color} group-hover:scale-110 transition-transform duration-300`} />
-                     <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full font-semibold">{category}</span>
+                 {/* Project Features */}
+         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
+           <h2 className="text-4xl font-bold mb-8 text-gray-800 flex items-center gap-3">
+             <MdBolt className="text-yellow-600" />
+             Complete Banking Features
+           </h2>
+           <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-8 rounded-2xl border border-yellow-200">
+             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+               {projectFeatures.map(({ title, description, icon: Icon, features }) => (
+                 <div key={title} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                   <div className="flex items-center gap-3 mb-4">
+                     <Icon className="text-3xl text-yellow-600" />
+                     <h3 className="text-lg font-bold text-gray-900">{title}</h3>
                    </div>
-                   <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                   <p className="text-sm text-green-700 font-semibold mb-2">v{version}</p>
-                   <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
-                 </div>
-                 
-                 {/* Hover Content */}
-                 <div className="absolute inset-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-green-100 to-emerald-100 flex flex-col justify-center">
-                   <div className="text-center mb-4">
-                     <Icon className={`text-4xl ${color} mx-auto mb-2`} />
-                     <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                     <span className="text-xs bg-green-300 text-green-900 px-3 py-1 rounded-full font-bold">{category}</span>
-                   </div>
-                   <div className="text-center">
-                     <h4 className="text-sm font-bold text-green-900 mb-2">Why use this?</h4>
-                     <p className="text-xs text-gray-800 leading-relaxed">{whyUse}</p>
+                   <p className="text-sm text-gray-700 mb-4 leading-relaxed">{description}</p>
+                   <div className="space-y-2">
+                     {features.map((feature, index) => (
+                       <div key={index} className="flex items-center gap-2">
+                         <div className="w-1.5 h-1.5 bg-yellow-600 rounded-full"></div>
+                         <span className="text-xs text-gray-700 font-medium">{feature}</span>
+                       </div>
+                     ))}
                    </div>
                  </div>
-               </div>
-             ))}
+               ))}
+             </div>
            </div>
-        </div>
-
-        {/* Development Tools */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
-          <h2 className="text-4xl font-bold mb-8 text-gray-800 flex items-center gap-3">
-            <FaCog className="text-purple-600" />
-            Development Tools & DevOps
-          </h2>
-                     <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-             {developmentTools.map(({ name, version, icon: Icon, description, whyUse }) => (
-               <div key={name} className="group relative bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-2xl shadow-lg border border-purple-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-purple-100 hover:to-indigo-100 overflow-hidden">
-                 {/* Default Content */}
-                 <div className="group-hover:opacity-0 transition-opacity duration-300">
-                   <Icon className="text-3xl text-purple-600 group-hover:scale-110 transition-transform duration-300 mb-3" />
-                   <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                   <p className="text-sm text-purple-700 font-semibold mb-2">v{version}</p>
-                   <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
-                 </div>
-                 
-                 {/* Hover Content */}
-                 <div className="absolute inset-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-purple-100 to-indigo-100 flex flex-col justify-center">
-                   <div className="text-center mb-4">
-                     <Icon className="text-4xl text-purple-600 mx-auto mb-2" />
-                     <h3 className="text-lg font-bold text-gray-900 mb-1">{name}</h3>
-                     <span className="text-xs bg-purple-300 text-purple-900 px-3 py-1 rounded-full font-bold">DevOps</span>
-                   </div>
-                   <div className="text-center">
-                     <h4 className="text-sm font-bold text-purple-900 mb-2">Why use this?</h4>
-                     <p className="text-xs text-gray-800 leading-relaxed">{whyUse}</p>
-                   </div>
-                 </div>
-               </div>
-             ))}
-           </div>
-        </div>
-
-        {/* Project Features */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
-          <h2 className="text-4xl font-bold mb-8 text-gray-800 flex items-center gap-3">
-            <MdBolt className="text-yellow-600" />
-            Key Features & Capabilities
-          </h2>
-                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-             {projectFeatures.map(({ title, description, icon: Icon, features }) => (
-               <div key={title} className="group bg-gradient-to-br from-rose-50 to-pink-50 p-8 rounded-2xl shadow-lg border border-rose-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:from-rose-100 hover:to-pink-100">
-                 <div className="flex items-center gap-3 mb-4">
-                   <Icon className="text-4xl text-rose-600 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
-                   <h3 className="text-xl font-bold text-gray-900 group-hover:text-rose-900 transition-colors duration-300">{title}</h3>
-                 </div>
-                 <p className="text-gray-700 mb-4 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{description}</p>
-                 <div className="space-y-2">
-                   {features.map((feature, index) => (
-                     <div key={index} className="flex items-center gap-2 group-hover:scale-105 transition-transform duration-300">
-                       <div className="w-2 h-2 bg-rose-500 rounded-full group-hover:bg-rose-600 transition-colors duration-300"></div>
-                       <span className="text-sm text-gray-700 font-medium group-hover:text-gray-800 transition-colors duration-300">{feature}</span>
-                     </div>
-                   ))}
-                 </div>
-               </div>
-             ))}
-           </div>
-        </div>
+         </div>
 
         {/* Developer Information */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-gray-100">
