@@ -190,15 +190,8 @@ const FDPage = () => {
                   No Fixed Deposits Found
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Start your investment journey by creating your first fixed deposit
+                  Start your investment journey by creating your first fixed deposit using the "Create New FD" button above
                 </p>
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 mx-auto transition-colors"
-                >
-                  <FaPlus className="text-sm" />
-                  Create Your First FD
-                </button>
               </div>
             )}
           </div>
