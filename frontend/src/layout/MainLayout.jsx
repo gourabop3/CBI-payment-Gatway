@@ -1,6 +1,5 @@
 "use client";
 import Navbar from '@/components/Navbar'
-import ChatBot from '@/components/ChatBot/ChatBot'
 import { MainContextProvider } from '@/context/MainContext'
 import { store } from '@/redux/store'
 import React from 'react'
