@@ -15,7 +15,7 @@ const AtmCards = () => {
         
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-xl p-6 md:p-8 text-white mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
               <div className="bg-white bg-opacity-20 p-3 rounded-xl">
                 <FaCreditCard className="text-2xl md:text-3xl" />
@@ -25,13 +25,9 @@ const AtmCards = () => {
                 <p className="text-purple-100">Manage your debit cards securely</p>
               </div>
             </div>
-            <div className="hidden md:block">
+            <div className="w-full sm:w-auto">
               <AddNewCard />
             </div>
-          </div>
-          {/* Mobile Add Card Button */}
-          <div className="md:hidden flex justify-center">
-            <AddNewCard />
           </div>
         </div>
 
