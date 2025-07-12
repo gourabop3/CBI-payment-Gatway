@@ -36,42 +36,29 @@ const AllATMCards = () => {
     return `${month}/${year}`;
   };
 
-  const getCardIcon = (type) => {
-    switch (type.toLowerCase()) {
-      case 'basic':
-        return '💳';
-      case 'classic':
-        return '💎';
-      case 'platinum':
-        return '👑';
-      default:
-        return '💳';
-    }
-  };
-
   const getCardTitle = (type) => {
     switch (type.toLowerCase()) {
       case 'basic':
-        return 'BASIC';
+        return 'Basic Card';
       case 'classic':
-        return 'CLASSIC';
+        return 'Classic Card';
       case 'platinum':
-        return 'PLATINUM';
+        return 'Platinum Card';
       default:
-        return type.toUpperCase();
+        return `${type} Card`;
     }
   };
 
   const getCardGradient = (type) => {
     switch (type.toLowerCase()) {
       case 'basic':
-        return 'from-blue-500 to-purple-600';
+        return 'from-teal-600 to-green-800';
       case 'classic':
-        return 'from-pink-500 to-rose-600';
+        return 'from-purple-600 to-indigo-800';
       case 'platinum':
-        return 'from-gray-600 to-gray-800';
+        return 'from-gray-700 to-gray-900';
       default:
-        return 'from-blue-500 to-purple-600';
+        return 'from-teal-600 to-green-800';
     }
   };
 
@@ -129,92 +116,71 @@ const AllATMCards = () => {
           <div key={atm._id} className="flex flex-col items-center group">
             {/* Account Info */}
             <div className="mb-4 text-center">
-              <h4 className="text-xl font-bold text-gray-800 capitalize mb-2">
-                {atm.card_type} Card
-              </h4>
-              <p className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+              <p className="text-sm text-gray-600">
                 Account: {getFormattedAccountNumber(atm)}
               </p>
             </div>
 
-            {/* Professional ATM Card UI */}
+            {/* ATM Card - Exact Same Design */}
             <div 
-              className={`relative w-full max-w-sm h-56 rounded-2xl p-6 mb-6 overflow-hidden text-white shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-3xl bg-gradient-to-r ${getCardGradient(atm.card_type)}`}
+              className={`relative w-full max-w-sm h-48 rounded-2xl p-6 mb-6 overflow-hidden text-white shadow-xl transform transition-all duration-300 hover:scale-105 bg-gradient-to-br ${getCardGradient(atm.card_type)}`}
             >
               {/* Card Background Pattern */}
               <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full transform translate-x-16 -translate-y-16"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full transform -translate-x-12 translate-y-12"></div>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full transform translate-x-12 -translate-y-12"></div>
+                <div className="absolute bottom-0 left-0 w-16 h-16 bg-white rounded-full transform -translate-x-8 translate-y-8"></div>
               </div>
 
               {/* Card Content */}
-              <div className="relative h-full flex flex-col">
-                {/* Card Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="text-2xl">{getCardIcon(atm.card_type)}</div>
-                    <div>
-                      <div className="text-xs font-semibold tracking-widest uppercase opacity-90">CBI BANK</div>
-                      <div className="text-sm font-bold tracking-wide">DEBIT CARD</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs opacity-75 mb-1">Type</div>
-                    <div className="bg-white bg-opacity-20 px-2 py-1 rounded-lg text-xs font-bold">
-                      {getCardTitle(atm.card_type)}
-                    </div>
+              <div className="relative h-full flex flex-col justify-between">
+                {/* Card Type at Top Center */}
+                <div className="text-center">
+                  <h3 className="text-lg font-bold tracking-wide">
+                    {getCardTitle(atm.card_type)}
+                  </h3>
+                </div>
+
+                {/* Card Number in Center */}
+                <div className="text-center">
+                  <div className="text-2xl font-mono font-bold tracking-widest">
+                    {`${atm.card_no.slice(0, 4)} **** **** ${atm.card_no.slice(12, 16)}`}
                   </div>
                 </div>
 
-                {/* Chip and Contactless */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-9 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center">
-                    <div className="w-8 h-6 bg-gradient-to-r from-yellow-500 to-yellow-700 rounded"></div>
-                  </div>
-                  <MdContactless className="text-3xl opacity-90" />
-                </div>
-
-                {/* Card Number */}
-                <div className="mb-6">
-                  <div className="text-xs opacity-75 mb-1">Card Number</div>
-                  <div className="text-lg font-mono font-bold tracking-wider">
-                    {`${atm.card_no.slice(0, 4)} ${atm.card_no.slice(4, 8)} ${atm.card_no.slice(8, 12)} ${atm.card_no.slice(12, 16)}`}
-                  </div>
-                </div>
-
-                {/* Card Footer */}
-                <div className="flex-1 flex items-end justify-between">
-                  <div>
-                    <div className="text-xs opacity-75 mb-1">Cardholder</div>
-                    <div className="text-sm font-semibold uppercase">{user?.name || 'CARDHOLDER'}</div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <div className="text-xs opacity-75 mb-1">CVV</div>
-                      <div className="flex items-center gap-2">
-                        <div className="bg-white bg-opacity-20 px-2 py-1 rounded text-sm font-mono">
-                          {isShowCVV ? atm.cvv : '***'}
-                        </div>
-                        <button
-                          onClick={() => toggleCVV(atm._id)}
-                          className="text-white opacity-75 hover:opacity-100 transition-opacity"
-                        >
-                          {isShowCVV ? <FaEyeSlash size={12} /> : <FaEye size={12} />}
-                        </button>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs opacity-75 mb-1">Expires</div>
-                      <div className="bg-white bg-opacity-20 px-2 py-1 rounded text-sm font-mono">
-                        {formatExpiry(atm.expiry)}
-                      </div>
+                {/* Bottom Row: Cardholder, CVV, Expiry */}
+                <div className="flex items-center justify-between text-sm">
+                  {/* Cardholder */}
+                  <div className="flex-1">
+                    <div className="text-xs opacity-80 mb-1">Cardholder</div>
+                    <div className="font-medium text-xs uppercase truncate">
+                      {user?.name || 'CARDHOLDER'}
                     </div>
                   </div>
-                </div>
 
-                {/* Security Badge */}
-                <div className="absolute bottom-4 right-4 opacity-60">
-                  <FaShieldAlt className="text-lg" />
+                  {/* CVV */}
+                  <div className="flex-1 text-center">
+                    <div className="text-xs opacity-80 mb-1">CVV:</div>
+                    <div className="flex items-center justify-center gap-1">
+                      <span className="font-mono font-bold">
+                        {isShowCVV ? atm.cvv : 'xxx'}
+                      </span>
+                      <button
+                        onClick={() => toggleCVV(atm._id)}
+                        className="text-white opacity-70 hover:opacity-100 transition-opacity ml-1"
+                        title={isShowCVV ? 'Hide CVV' : 'Show CVV'}
+                      >
+                        {isShowCVV ? <FaEyeSlash size={12} /> : <FaEye size={12} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Expiry */}
+                  <div className="flex-1 text-right">
+                    <div className="text-xs opacity-80 mb-1">Exp:</div>
+                    <div className="font-mono font-bold">
+                      {formatExpiry(atm.expiry)}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
