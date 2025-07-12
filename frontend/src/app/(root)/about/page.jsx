@@ -59,7 +59,7 @@ const frontendTechnologies = [
     description: 'React framework with SSR, routing, and performance optimization',
     category: 'Framework',
     color: 'text-black',
-    whyUse: 'Used for building the frontend application with server-side rendering, automatic code splitting, and optimized performance. Provides built-in routing, API routes, and production-ready features for scalable web applications.'
+    whyUse: 'Building the banking dashboard interface with server-side rendering for fast loading. Handles routing between pages like login, dashboard, transactions, UPI, recharge, and card management.'
   },
   { 
     name: 'React', 
@@ -68,7 +68,7 @@ const frontendTechnologies = [
     description: 'Modern UI library with hooks and functional components',
     category: 'Library',
     color: 'text-blue-600',
-    whyUse: 'Used for building interactive user interfaces with component-based architecture. Enables reusable UI components, efficient state management, and virtual DOM for optimal performance in banking dashboard interfaces.'
+    whyUse: 'Creating interactive banking UI components like transaction cards, balance displays, payment forms, UPI interfaces, and account management panels with reusable components.'
   },
   { 
     name: 'Redux Toolkit', 
@@ -77,7 +77,7 @@ const frontendTechnologies = [
     description: 'Predictable state container for JavaScript applications',
     category: 'State Management',
     color: 'text-purple-600',
-    whyUse: 'Used for managing complex application state across components. Essential for banking apps to handle user authentication, account data, transaction history, and real-time balance updates consistently throughout the application.'
+    whyUse: 'Managing user login state, account balance, transaction history, UPI data, card information, and recharge history across all banking pages and components.'
   },
   { 
     name: 'TailwindCSS', 
@@ -86,7 +86,7 @@ const frontendTechnologies = [
     description: 'Utility-first CSS framework for rapid UI development',
     category: 'Styling',
     color: 'text-teal-500',
-    whyUse: 'Used for styling the entire application with utility classes. Enables rapid UI development, consistent design system, responsive layouts, and modern banking interface design without writing custom CSS.'
+    whyUse: 'Styling the banking dashboard, transaction cards, payment forms, UPI interface, balance displays, and mobile recharge pages with modern responsive design.'
   },
   { 
     name: 'Framer Motion', 
@@ -95,7 +95,7 @@ const frontendTechnologies = [
     description: 'Production-ready motion library for React',
     category: 'Animation',
     color: 'text-pink-600',
-    whyUse: 'Used for creating smooth animations and transitions in the banking interface. Enhances user experience with page transitions, loading animations, and interactive elements to make the banking app feel modern and responsive.'
+    whyUse: 'Creating smooth animations for page transitions, loading states during transactions, balance updates, payment confirmations, and interactive hover effects throughout the banking app.'
   },
   { 
     name: 'Axios', 
@@ -104,7 +104,7 @@ const frontendTechnologies = [
     description: 'Promise-based HTTP client for API requests',
     category: 'HTTP Client',
     color: 'text-blue-500',
-    whyUse: 'Used for making HTTP requests to the backend API. Handles all communication between frontend and backend including user authentication, transaction processing, account operations, and real-time data fetching with interceptors for error handling.'
+    whyUse: 'Making API calls to backend for user login, fetching account balance, processing UPI payments, mobile recharge requests, transaction history, and card management operations.'
   },
   { 
     name: 'Formik', 
@@ -113,7 +113,7 @@ const frontendTechnologies = [
     description: 'Build forms in React without tears',
     category: 'Form Handling',
     color: 'text-orange-500',
-    whyUse: 'Used for handling complex forms in banking operations. Manages form validation, submission, and error handling for login, registration, money transfer, bill payments, and KYC verification forms with robust validation.'
+    whyUse: 'Handling forms for user login, registration, UPI transfers, mobile recharge, bill payments, card PIN change, and KYC document upload with validation and error handling.'
   },
   { 
     name: 'React Icons', 
@@ -122,7 +122,7 @@ const frontendTechnologies = [
     description: 'Popular icon packs as React components',
     category: 'Icons',
     color: 'text-gray-600',
-    whyUse: 'Used for displaying consistent icons throughout the banking interface. Provides banking-specific icons for transactions, payments, security, accounts, and navigation elements to enhance visual communication and user experience.'
+    whyUse: 'Displaying icons for transaction types, payment methods, bank cards, UPI transfers, mobile recharge, security features, and navigation throughout the banking interface.'
   },
   { 
     name: 'React Razorpay', 
@@ -131,7 +131,7 @@ const frontendTechnologies = [
     description: 'Razorpay payment gateway integration for React',
     category: 'Payment',
     color: 'text-blue-700',
-    whyUse: 'Used for integrating Razorpay payment gateway in React components. Enables secure payment processing, UPI transactions, card payments, and digital wallet integration directly within the banking application frontend.'
+    whyUse: 'Integrating Razorpay payment gateway for processing UPI payments, card transactions, mobile recharge payments, and bill payments directly from the banking frontend.'
   },
   { 
     name: 'TypeScript Support', 
@@ -140,7 +140,7 @@ const frontendTechnologies = [
     description: 'Type-safe development with static type checking',
     category: 'Language',
     color: 'text-blue-700',
-    whyUse: 'Used for type-safe development in banking applications. Prevents runtime errors, improves code quality, enables better IDE support, and ensures data integrity in financial transactions and sensitive banking operations.'
+    whyUse: 'Ensuring type safety for banking data structures like user accounts, transaction records, UPI details, and payment information to prevent errors in financial operations.'
   }
 ];
 
@@ -152,7 +152,7 @@ const backendTechnologies = [
     description: 'JavaScript runtime built on Chrome\'s V8 JavaScript engine',
     category: 'Runtime',
     color: 'text-green-600',
-    whyUse: 'Used for backend development to build the server-side application. Enables JavaScript everywhere (frontend and backend), provides excellent performance for I/O intensive banking operations, and has a rich ecosystem for financial applications.'
+    whyUse: 'Building the backend server to handle user authentication, process banking transactions, manage account data, and provide APIs for UPI, recharge, and card management operations.'
   },
   { 
     name: 'Express.js', 
@@ -161,7 +161,7 @@ const backendTechnologies = [
     description: 'Fast, unopinionated, minimalist web framework',
     category: 'Framework',
     color: 'text-gray-700',
-    whyUse: 'Used for building RESTful APIs and handling HTTP requests. Provides routing, middleware support, and flexibility for creating banking APIs, user authentication endpoints, transaction processing, and payment gateway integrations.'
+    whyUse: 'Creating REST APIs for user login, account management, UPI transactions, mobile recharge, bill payments, card operations, and transaction history endpoints.'
   },
   { 
     name: 'MongoDB', 
@@ -170,7 +170,7 @@ const backendTechnologies = [
     description: 'Document-based NoSQL database with Mongoose ODM',
     category: 'Database',
     color: 'text-green-500',
-    whyUse: 'Used for storing all banking data including user accounts, transaction history, KYC documents, and application settings. Provides flexible schema for complex banking data structures and excellent scalability for growing user base.'
+    whyUse: 'Storing user accounts, transaction records, UPI transaction history, mobile recharge data, bill payment records, card information, and KYC documents in the database.'
   },
   { 
     name: 'JWT', 
@@ -179,7 +179,7 @@ const backendTechnologies = [
     description: 'JSON Web Tokens for secure authentication',
     category: 'Authentication',
     color: 'text-purple-600',
-    whyUse: 'Used for secure user authentication and session management. Provides stateless authentication for banking applications, secure token-based login, and protection of sensitive banking operations with role-based access control.'
+    whyUse: 'Securing user login sessions, protecting banking APIs, and ensuring only authenticated users can access account data, make transactions, and perform UPI operations.'
   },
   { 
     name: 'Cloudinary', 
@@ -188,7 +188,7 @@ const backendTechnologies = [
     description: 'Cloud-based image and video management platform',
     category: 'Cloud Storage',
     color: 'text-blue-500',
-    whyUse: 'Used for storing and managing user documents, profile pictures, KYC verification documents, and transaction receipts. Provides secure cloud storage with automatic optimization and CDN delivery for banking document management.'
+    whyUse: 'Storing user profile pictures, KYC verification documents (Aadhaar, PAN, address proof), transaction receipts, and card delivery photos in secure cloud storage.'
   },
   { 
     name: 'Razorpay', 
@@ -399,7 +399,7 @@ export default function AboutPage() {
                      <span className="text-xs bg-blue-300 text-blue-900 px-3 py-1 rounded-full font-bold">{category}</span>
                    </div>
                    <div className="text-center">
-                     <h4 className="text-sm font-bold text-blue-900 mb-2">Why use this?</h4>
+                     <h4 className="text-sm font-bold text-blue-900 mb-2">Used in this project for:</h4>
                      <p className="text-xs text-gray-800 leading-relaxed">{whyUse}</p>
                    </div>
                  </div>
