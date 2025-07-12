@@ -52,13 +52,13 @@ const AllATMCards = () => {
   const getCardGradient = (type) => {
     switch (type.toLowerCase()) {
       case 'basic':
-        return 'from-teal-600 to-green-800';
+        return 'from-emerald-700 to-teal-900';
       case 'classic':
-        return 'from-purple-600 to-indigo-800';
+        return 'from-purple-700 to-indigo-900';
       case 'platinum':
-        return 'from-gray-700 to-gray-900';
+        return 'from-slate-800 to-gray-900';
       default:
-        return 'from-teal-600 to-green-800';
+        return 'from-emerald-700 to-teal-900';
     }
   };
 
