@@ -142,7 +142,7 @@ export default function AboutPage() {
         </div>
 
         {/* Single Project Features Card */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-16 border border-gray-100 hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-105">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-16 border border-gray-100 hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-[1.02]">
           <div className="text-center mb-12">
             <h2 className="text-5xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3">
               <MdBolt className="text-yellow-500" />
