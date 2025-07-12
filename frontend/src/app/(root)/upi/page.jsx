@@ -20,7 +20,8 @@ const UPIPage = () => {
   const [paymentForm, setPaymentForm] = useState({
     recipient_upi: '',
     amount: '',
-    note: ''
+    note: '',
+    pin: ''
   });
 
   // QR generation form states
@@ -31,6 +32,13 @@ const UPIPage = () => {
 
   const [validationResult, setValidationResult] = useState(null);
 
+  const [registrationForm, setRegistrationForm] = useState({
+    upi_id: '',
+    pin: '',
+    confirm_pin: ''
+  });
+  const [registrationError, setRegistrationError] = useState(null);
+
   useEffect(() => {
     fetchUPIInfo();
     fetchTransactions();
@@ -38,7 +46,7 @@ const UPIPage = () => {
 
   const fetchUPIInfo = async () => {
     try {
-      const response = await fetch('/api/upi/info', {
+      const response = await fetch('/api/v1/upi/info', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -54,7 +62,7 @@ const UPIPage = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch('/api/upi/transactions?page=1&limit=10', {
+      const response = await fetch('/api/v1/upi/transactions?page=1&limit=10', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -71,7 +79,7 @@ const UPIPage = () => {
   const generateQR = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/upi/qr?amount=${qrForm.amount}&note=${qrForm.note}`, {
+      const response = await fetch(`/api/v1/upi/qr?amount=${qrForm.amount}&note=${qrForm.note}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -90,7 +98,7 @@ const UPIPage = () => {
   const validateUPI = async (upi_id) => {
     if (!upi_id) return;
     try {
-      const response = await fetch(`/api/upi/validate/${upi_id}`, {
+      const response = await fetch(`/api/v1/upi/validate/${upi_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -102,10 +110,41 @@ const UPIPage = () => {
     }
   };
 
+  const registerUPI = async () => {
+    if (!registrationForm.upi_id || !registrationForm.pin || registrationForm.pin !== registrationForm.confirm_pin) {
+      setRegistrationError('Please enter matching PIN and a valid UPI ID');
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch('/api/v1/upi/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ upi_id: registrationForm.upi_id, pin: registrationForm.pin })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('UPI ID created successfully');
+        setRegistrationForm({ upi_id: '', pin: '', confirm_pin: '' });
+        fetchUPIInfo();
+      } else {
+        setRegistrationError(data.msg || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Error registering UPI:', error);
+      setRegistrationError('Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const processPayment = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/upi/pay', {
+      const response = await fetch('/api/v1/upi/pay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +155,7 @@ const UPIPage = () => {
       const data = await response.json();
       if (response.ok) {
         alert('Payment successful!');
-        setPaymentForm({ recipient_upi: '', amount: '', note: '' });
+        setPaymentForm({ recipient_upi: '', amount: '', note: '', pin: '' });
         fetchTransactions();
         fetchUPIInfo();
       } else {
@@ -158,6 +197,56 @@ const UPIPage = () => {
       <div className="container py-6 px-4">
         <HeaderName />
         
+        {/* Show registration card if user has no UPI yet */}
+        {(!upiInfo || !upiInfo.upi_id) && (
+          <Card className="mb-6 p-6 bg-white shadow-lg">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <MdQrCode className="text-blue-600" />
+              Create Your UPI ID
+            </h2>
+            {registrationError && (
+              <p className="text-red-600 text-sm mb-2">{registrationError}</p>
+            )}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Desired UPI ID</label>
+                <input
+                  type="text"
+                  placeholder="yourname@cbibank"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={registrationForm.upi_id}
+                  onChange={(e) => setRegistrationForm(prev => ({ ...prev, upi_id: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Set UPI PIN</label>
+                <input
+                  type="password"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={registrationForm.pin}
+                  onChange={(e) => setRegistrationForm(prev => ({ ...prev, pin: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Confirm UPI PIN</label>
+                <input
+                  type="password"
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={registrationForm.confirm_pin}
+                  onChange={(e) => setRegistrationForm(prev => ({ ...prev, confirm_pin: e.target.value }))}
+                />
+              </div>
+              <button
+                onClick={registerUPI}
+                disabled={loading}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              >
+                {loading ? 'Creating...' : 'Create UPI ID'}
+              </button>
+            </div>
+          </Card>
+        )}
+
         {/* Header Section */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -269,6 +358,18 @@ const UPIPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    UPI PIN
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Enter your UPI PIN"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={paymentForm.pin}
+                    onChange={(e) => setPaymentForm(prev => ({ ...prev, pin: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Note (Optional)
                   </label>
                   <input
@@ -282,7 +383,7 @@ const UPIPage = () => {
 
                 <button
                   onClick={processPayment}
-                  disabled={loading || !paymentForm.recipient_upi || !paymentForm.amount}
+                  disabled={loading || !paymentForm.recipient_upi || !paymentForm.amount || !paymentForm.pin}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? 'Processing...' : 'Send Money'}
