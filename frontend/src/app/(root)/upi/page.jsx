@@ -9,7 +9,6 @@ import { axiosClient } from '@/utils/AxiosClient';
 
 const UPIPage = () => {
   const { user } = useMainContext();
-  const token = (user && user.token) || '';
   const [activeTab, setActiveTab] = useState('pay');
   const [upiInfo, setUpiInfo] = useState(null);
   const [qrCode, setQrCode] = useState(null);
@@ -55,9 +54,12 @@ const UPIPage = () => {
 
   const fetchUPIInfo = async () => {
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) return;
+      
       const response = await axiosClient.get('/upi/info', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         }
       });
       const data = response.data;
@@ -71,9 +73,12 @@ const UPIPage = () => {
 
   const fetchTransactions = async () => {
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) return;
+      
       const response = await axiosClient.get('/upi/transactions?page=1&limit=10', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         }
       });
       const data = response.data;
@@ -88,9 +93,12 @@ const UPIPage = () => {
   const generateQR = async () => {
     setLoading(true);
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) return;
+      
       const response = await axiosClient.get(`/upi/qr?amount=${qrForm.amount}&note=${qrForm.note}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         }
       });
       const data = response.data;
@@ -107,9 +115,12 @@ const UPIPage = () => {
   const validateUPI = async (upi_id) => {
     if (!upi_id) return;
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) return;
+      
       const response = await axiosClient.get(`/upi/validate/${upi_id}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         }
       });
       const data = response.data;
@@ -152,11 +163,23 @@ const UPIPage = () => {
     if (!validateRegistrationInputs()) {
       return;
     }
+    
+    const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+    if (!currentToken) {
+      setRegistrationError('Please log in to create UPI ID');
+      return;
+    }
+    
     setLoading(true);
     try {
-      const { data } = await axiosClient.post('/upi/register', { upi_id: registrationForm.upi_id, pin: registrationForm.pin }, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axiosClient.post('/upi/register', { 
+        upi_id: registrationForm.upi_id, 
+        pin: registrationForm.pin 
+      }, {
+        headers: { Authorization: `Bearer ${currentToken}` }
       });
+      
+      const data = response.data;
       if (data && data.upi_id) {
         setRegistrationSuccess('UPI ID created successfully!');
         setRegistrationError(null);
@@ -168,7 +191,18 @@ const UPIPage = () => {
       }
     } catch (error) {
       console.error('Error registering UPI:', error);
-      setRegistrationError('Network error: Unable to register UPI');
+      console.error('Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers
+      });
+      
+      const errorMessage = error.response?.data?.msg || 
+                          error.response?.data?.message || 
+                          error.message || 
+                          'Network error: Unable to register UPI';
+      setRegistrationError(errorMessage);
+      setRegistrationSuccess(null);
     } finally {
       setLoading(false);
     }
@@ -177,8 +211,14 @@ const UPIPage = () => {
   const processPayment = async () => {
     setLoading(true);
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) {
+        setPaymentStatus({ success: null, error: 'Please log in to make payment' });
+        return;
+      }
+      
       const { data } = await axiosClient.post('/upi/pay', paymentForm, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${currentToken}` }
       });
       if (data && data.status === 'success') {
         setPaymentStatus({ success: 'Payment successful!', error: null });
@@ -190,7 +230,11 @@ const UPIPage = () => {
       }
     } catch (error) {
       console.error('Error processing payment:', error);
-      setPaymentStatus({ success: null, error: 'Network error: payment failed' });
+      const errorMessage = error.response?.data?.msg || 
+                          error.response?.data?.message || 
+                          error.message || 
+                          'Network error: payment failed';
+      setPaymentStatus({ success: null, error: errorMessage });
     } finally {
       setLoading(false);
     }
