@@ -1,7 +1,7 @@
 "use client";
 import { AiOutlineGithub, AiOutlineInstagram, AiFillLinkedin, AiOutlineMail } from 'react-icons/ai';
-import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop, FaGitAlt, FaDocker } from 'react-icons/fa';
-import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit, SiJsonwebtokens, SiRazorpay, SiNodemailer } from 'react-icons/si';
+import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop, FaGitAlt, FaDocker, FaEnvelope } from 'react-icons/fa';
+import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit, SiJsonwebtokens, SiRazorpay } from 'react-icons/si';
 import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed, MdApi, MdEmail, MdCloud, MdIntegrationInstructions } from 'react-icons/md';
 import { BiKey, BiCodeCurly, BiData } from 'react-icons/bi';
 import { RiSecurePaymentLine } from 'react-icons/ri';
@@ -93,7 +93,7 @@ const apis = [
     name: 'Email API',
     description: 'NodeMailer integration for email notifications',
     endpoints: ['/email/send', '/email/verify', '/email/template'],
-    icon: SiNodemailer,
+    icon: FaEnvelope,
     color: 'text-red-600'
   },
   {
