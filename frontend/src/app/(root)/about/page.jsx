@@ -1,13 +1,14 @@
 "use client";
 import { AiOutlineGithub, AiOutlineInstagram, AiFillLinkedin, AiOutlineMail } from 'react-icons/ai';
 import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop } from 'react-icons/fa';
-import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit } from 'react-icons/si';
+import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit, SiTelegram } from 'react-icons/si';
 import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed } from 'react-icons/md';
 import HeaderName from '@/components/HeaderName';
 
 const socials = [
   { href: 'https://github.com/gourab18', label: 'GitHub', Icon: AiOutlineGithub },
   { href: 'https://instagram.com/gourab_op_84', label: 'Instagram', Icon: AiOutlineInstagram },
+  { href: 'https://t.me/GourabMullick', label: 'Telegram', Icon: SiTelegram },
   { href: 'https://linkedin.com/in/gourab-mullick', label: 'LinkedIn', Icon: AiFillLinkedin },
   { href: 'mailto:gourabmullick200@gmail.com', label: 'Gmail', Icon: AiOutlineMail },
 ];
@@ -127,6 +128,32 @@ export default function AboutPage() {
           <p className="text-gray-700">
             This project combines both frontend and backend best practices using the MERN stack along with secure payment integration workflows.
           </p>
+        </section>
+
+        {/* Developer & Contact Section */}
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
+            <AiOutlineMail className="text-rose-600" />
+            Developer &amp; Contact
+          </h2>
+          <p className="text-gray-700 mb-6">
+            Hi, I&#39;m <span className="font-semibold">Gourab Mullick</span>, a passionate full-stack developer focused on building secure and delightful banking experiences. Feel free to reach out or explore my work through the links below.
+          </p>
+
+          <div className="flex flex-wrap gap-6">
+            {socials.map(({ href, label, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-800 hover:text-rose-600 text-lg font-medium"
+              >
+                <Icon className="text-2xl" />
+                <span>{label}</span>
+              </a>
+            ))}
+          </div>
         </section>
       </div>
     </div>
