@@ -187,15 +187,15 @@ const ProfilePage = () => {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
-                <div className="text-2xl font-bold">
+              <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
+                <div className="text-2xl font-bold text-gray-900">
                   {user?.account_no?.length || 0}
                 </div>
-                <div className="text-sm opacity-90">Accounts</div>
+                <div className="text-sm text-gray-700">Accounts</div>
               </div>
-              <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
-                <div className="text-2xl font-bold">100%</div>
-                <div className="text-sm opacity-90">Profile</div>
+              <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
+                <div className="text-2xl font-bold text-gray-900">100%</div>
+                <div className="text-sm text-gray-700">Profile</div>
               </div>
             </div>
           </div>

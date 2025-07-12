@@ -133,36 +133,36 @@ const Transactions = () => {
           
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
               <div className="flex items-center gap-2 mb-2">
-                <MdAccountBalance className="text-lg" />
-                <span className="text-sm opacity-90">Total</span>
+                <MdAccountBalance className="text-lg text-blue-600" />
+                <span className="text-sm text-gray-700">Total</span>
               </div>
-              <div className="text-xl md:text-2xl font-bold">{stats.totalTransactions}</div>
+              <div className="text-xl md:text-2xl font-bold text-gray-900">{stats.totalTransactions}</div>
             </div>
             
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
               <div className="flex items-center gap-2 mb-2">
-                <BiTrendingUp className="text-lg text-green-300" />
-                <span className="text-sm opacity-90">Credit</span>
+                <BiTrendingUp className="text-lg text-green-600" />
+                <span className="text-sm text-gray-700">Credit</span>
               </div>
-              <div className="text-xl md:text-2xl font-bold text-green-300">₹{stats.totalCredit.toLocaleString()}</div>
+              <div className="text-xl md:text-2xl font-bold text-green-600">₹{stats.totalCredit.toLocaleString()}</div>
             </div>
             
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
               <div className="flex items-center gap-2 mb-2">
-                <BiTrendingDown className="text-lg text-red-300" />
-                <span className="text-sm opacity-90">Debit</span>
+                <BiTrendingDown className="text-lg text-red-600" />
+                <span className="text-sm text-gray-700">Debit</span>
               </div>
-              <div className="text-xl md:text-2xl font-bold text-red-300">₹{stats.totalDebit.toLocaleString()}</div>
+              <div className="text-xl md:text-2xl font-bold text-red-600">₹{stats.totalDebit.toLocaleString()}</div>
             </div>
             
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-50 rounded-xl p-4 text-gray-800">
               <div className="flex items-center gap-2 mb-2">
-                <MdCreditCard className="text-lg" />
-                <span className="text-sm opacity-90">Net</span>
+                <MdCreditCard className="text-lg text-purple-600" />
+                <span className="text-sm text-gray-700">Net</span>
               </div>
-              <div className={`text-xl md:text-2xl font-bold ${stats.netAmount >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+              <div className={`text-xl md:text-2xl font-bold ${stats.netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {stats.netAmount >= 0 ? '+' : ''}₹{stats.netAmount.toLocaleString()}
               </div>
             </div>
