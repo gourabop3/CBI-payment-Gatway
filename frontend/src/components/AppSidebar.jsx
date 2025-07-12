@@ -46,7 +46,7 @@ export default function AppSidebar({ isOpen, onClose }) {
           'app-sidebar transform transition-transform duration-300 z-40',
           'fixed top-0 left-0 h-full w-64',
           'bg-white border-r border-gray-200',
-          'lg:static lg:transform-none lg:block',
+          'lg:block',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
         style={{
