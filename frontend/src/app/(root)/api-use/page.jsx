@@ -129,21 +129,21 @@ export default function ApiUsePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="text-sm opacity-90">Environment</div>
               <div className="text-lg font-semibold capitalize">
                 {keys?.environment || 'Test'}
               </div>
             </div>
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="text-sm opacity-90">API Version</div>
               <div className="text-lg font-semibold">v1.0</div>
             </div>
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="text-sm opacity-90">Support</div>
               <div className="text-lg font-semibold">24/7</div>
             </div>
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="text-sm opacity-90">Uptime</div>
               <div className="text-lg font-semibold">99.9%</div>
             </div>
