@@ -81,7 +81,7 @@ export default function AboutPage() {
         <div className="grid lg:grid-cols-2 gap-8 mb-16">
           
           {/* Frontend Card */}
-          <div className="group bg-gradient-to-br from-orange-400 to-orange-500 rounded-3xl shadow-2xl p-8 border border-orange-300 hover:shadow-[0_35px_60px_-15px_rgba(255,165,0,0.5)] transition-all duration-500 hover:scale-105 hover:rotate-1">
+          <div className="group bg-gradient-to-br from-orange-400 to-orange-500 rounded-3xl shadow-2xl p-8 border border-orange-300 hover:shadow-[0_35px_60px_-15px_rgba(255,165,0,0.5)] transition-all duration-300 hover:scale-105 hover:rotate-1">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-black rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <FaDesktop className="text-3xl text-orange-400" />
@@ -111,7 +111,7 @@ export default function AboutPage() {
           </div>
 
           {/* Backend Card */}
-          <div className="group bg-gradient-to-br from-orange-400 to-orange-500 rounded-3xl shadow-2xl p-8 border border-orange-300 hover:shadow-[0_35px_60px_-15px_rgba(255,165,0,0.5)] transition-all duration-500 hover:scale-105 hover:-rotate-1">
+          <div className="group bg-gradient-to-br from-orange-400 to-orange-500 rounded-3xl shadow-2xl p-8 border border-orange-300 hover:shadow-[0_35px_60px_-15px_rgba(255,165,0,0.5)] transition-all duration-300 hover:scale-105 hover:-rotate-1">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-black rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <FaServer className="text-3xl text-orange-400" />
@@ -142,7 +142,7 @@ export default function AboutPage() {
         </div>
 
         {/* Single Project Features Card */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-16 border border-gray-100 hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 hover:scale-105">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 mb-16 border border-gray-100 hover:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-105">
           <div className="text-center mb-12">
             <h2 className="text-5xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3">
               <MdBolt className="text-yellow-500" />
@@ -153,7 +153,7 @@ export default function AboutPage() {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {projectFeatures.map(({ title, icon: Icon, description }) => (
-              <div key={title} className="group relative overflow-hidden bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:-translate-y-2 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50">
+              <div key={title} className="group relative overflow-hidden bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:-translate-y-2 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50">
                 <div className="relative z-10">
                   <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                     <Icon className="text-2xl text-white" />

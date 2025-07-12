@@ -68,7 +68,7 @@ const CustomMenu = ({link,text,Icon})=>{
           <AppSidebar isOpen={isToggle} onClose={() => dispatch(setIsToggle())} />
 
           {/* Content */}
-          <main className='px-1 md:px-3 w-full lg:ml-0'>
+          <main className='px-1 md:px-3 w-full lg:ml-64'>
             <PageFade>{children}</PageFade>
           </main>
         </section>
