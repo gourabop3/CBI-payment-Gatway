@@ -264,22 +264,25 @@ const UPIPage = () => {
       if (data && data.status === 'success') {
         setPaymentStatus({ success: 'Payment successful!', error: null });
         setPaymentForm({ recipient_upi: '', amount: '', note: '', pin: '' });
-        fetchTransactions();
-        fetchUPIInfo();
         
-        // Redirect to success page with payment details
-        const successParams = new URLSearchParams({
-          transaction_id: data.transaction_id,
-          amount: data.amount.toString(),
-          recipient_upi: data.recipient_upi,
-          sender_upi: data.sender_upi,
-          note: data.note || '',
-          timestamp: data.timestamp
-        });
+        // Immediately update balance and transactions
+        await Promise.all([
+          fetchTransactions(),
+          fetchUPIInfo()
+        ]);
         
+        // Show success message for a few seconds before redirecting
         setTimeout(() => {
+          const successParams = new URLSearchParams({
+            transaction_id: data.transaction_id,
+            amount: data.amount.toString(),
+            recipient_upi: data.recipient_upi,
+            sender_upi: data.sender_upi,
+            note: data.note || '',
+            timestamp: data.timestamp
+          });
           window.location.href = `/upi/payment-success?${successParams.toString()}`;
-        }, 1000);
+        }, 2000);
       } else {
         setPaymentStatus({ success: null, error: data.msg || 'Payment failed' });
       }
@@ -318,10 +321,11 @@ const UPIPage = () => {
     });
   };
 
-  // Poll for transactions every 15 seconds to keep history updated
+  // Enhanced polling for balance and transactions updates
   useEffect(() => {
     const interval = setInterval(() => {
       fetchTransactions();
+      fetchUPIInfo(); // Also refresh balance every 15 seconds
     }, 15000);
     return () => clearInterval(interval);
   }, []);

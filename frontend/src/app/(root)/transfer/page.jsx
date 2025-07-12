@@ -21,13 +21,24 @@ const TransferPage = () => {
   const [recipientDetails, setRecipientDetails] = useState(null);
   const [verifyingAccount, setVerifyingAccount] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const { user } = useMainContext();
+  const { user, fetchUserProfile } = useMainContext();
   const router = useRouter();
 
   // Get user's account information
   const primaryAccount = user?.account_no?.[0];
   const userAccountNumber = (primaryAccount && user?._id) ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : '';
   const userBalance = primaryAccount?.amount || 0;
+
+  // Real-time balance updates
+  useEffect(() => {
+    // Refresh user data every 15 seconds for real-time balance updates
+    const interval = setInterval(() => {
+      // Use fetchUserProfile from context for smooth updates
+      fetchUserProfile();
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [fetchUserProfile]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -122,7 +133,16 @@ const TransferPage = () => {
 
       if (response.data.success) {
         const { transferId, transactionDetails } = response.data;
-        router.push(`/transfer-success?txnId=${transferId}&amount=${transactionDetails.amount}&recipient=${recipientDetails.accountHolderName}&account=${transferData.recipientAccountNumber}&type=${transferData.transferType}&ts=${Date.now()}`);
+        
+        // Immediately refresh balance after successful transfer
+        await fetchUserProfile();
+        
+        // Show success message briefly before redirecting
+        toast.success('Transfer successful! Balance updated.');
+        
+        setTimeout(() => {
+          router.push(`/transfer-success?txnId=${transferId}&amount=${transactionDetails.amount}&recipient=${recipientDetails.accountHolderName}&account=${transferData.recipientAccountNumber}&type=${transferData.transferType}&ts=${Date.now()}`);
+        }, 1500);
       }
     } catch (error) {
       toast.error(error?.response?.data?.msg || 'Transfer failed');

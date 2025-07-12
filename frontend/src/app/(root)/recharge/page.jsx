@@ -34,13 +34,23 @@ const RechargePage = () => {
   const [plans, setPlans] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [operatorDetails, setOperatorDetails] = useState(null);
-  const { user } = useMainContext();
+  const { user, fetchUserProfile } = useMainContext();
   const router = useRouter();
 
   // Get user's account information
   const primaryAccount = user?.account_no?.[0];
   const userAccountNumber = (primaryAccount && user?._id) ? generateAccountNumber(user._id, primaryAccount._id, primaryAccount.ac_type) : '';
   const userBalance = primaryAccount?.amount || 0;
+
+  // Real-time balance updates
+  useEffect(() => {
+    // Refresh user data every 15 seconds for real-time balance updates
+    const interval = setInterval(() => {
+      fetchUserProfile();
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [fetchUserProfile]);
 
   // Mobile operators with their details
   const mobileOperators = [
@@ -185,14 +195,22 @@ const RechargePage = () => {
       });
 
       if (response.data.success) {
-        if (activeTab === 'mobile') {
-          const { transactionId, details } = response.data;
-          router.push(`/recharge-success?txnId=${transactionId}&mobile=${details?.mobileNumber || rechargeData.mobileNumber}&amount=${details?.amount || rechargeData.amount}&operator=${rechargeData.operator}&ts=${Date.now()}`);
-        } else {
-          // For bill payment, redirect with appropriate params
-          const { transactionId } = response.data;
-          router.push(`/recharge-success?txnId=${transactionId}&amount=${rechargeData.billAmount}&operator=${rechargeData.billType}&ts=${Date.now()}`);
-        }
+        // Immediately refresh balance after successful recharge/bill payment
+        await fetchUserProfile();
+        
+        // Show success message briefly before redirecting
+        toast.success(`${activeTab === 'mobile' ? 'Recharge' : 'Bill payment'} successful! Balance updated.`);
+        
+        setTimeout(() => {
+          if (activeTab === 'mobile') {
+            const { transactionId, details } = response.data;
+            router.push(`/recharge-success?txnId=${transactionId}&mobile=${details?.mobileNumber || rechargeData.mobileNumber}&amount=${details?.amount || rechargeData.amount}&operator=${rechargeData.operator}&ts=${Date.now()}`);
+          } else {
+            // For bill payment, redirect with appropriate params
+            const { transactionId } = response.data;
+            router.push(`/recharge-success?txnId=${transactionId}&amount=${rechargeData.billAmount}&operator=${rechargeData.billType}&ts=${Date.now()}`);
+          }
+        }, 1500);
       }
     } catch (error) {
       toast.error(error?.response?.data?.msg || `${activeTab === 'mobile' ? 'Recharge' : 'Bill payment'} failed`);
