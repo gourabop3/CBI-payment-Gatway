@@ -31,13 +31,31 @@ export default function AppSidebar({ isOpen, onClose }) {
   const pathname = usePathname();
 
   return (
-    <aside
-      className={clsx(
-        'app-sidebar transform top-0 left-0 lg:translate-x-0 h-full bg-[var(--sidebar)] text-[var(--sidebar-foreground)] transition-transform duration-300 z-40',
-        isOpen ? 'translate-x-0' : '-translate-x-full',
-        'lg:static lg:block fixed w-64'
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={onClose}
+        />
       )}
-    >
+      
+      {/* Sidebar */}
+      <aside
+        className={clsx(
+          'app-sidebar transform transition-transform duration-300 z-40',
+          'fixed top-0 left-0 h-full w-64',
+          'bg-white border-r border-gray-200',
+          'lg:static lg:transform-none lg:block',
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        )}
+        style={{
+          // Fallback styles for better browser compatibility
+          backgroundColor: 'var(--sidebar, #ffffff)',
+          color: 'var(--sidebar-foreground, #1a202c)',
+          borderRightColor: 'var(--sidebar-border, #e2e8f0)',
+        }}
+      >
       <nav className="py-10 space-y-2">
         {links.map(({ href, label, Icon }) => (
           <Link
