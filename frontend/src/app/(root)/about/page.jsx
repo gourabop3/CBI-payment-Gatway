@@ -1,10 +1,8 @@
 "use client";
 import { AiOutlineGithub, AiOutlineInstagram, AiFillLinkedin, AiOutlineMail } from 'react-icons/ai';
-import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop, FaGitAlt, FaDocker, FaEnvelope } from 'react-icons/fa';
-import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit, SiJsonwebtokens, SiRazorpay } from 'react-icons/si';
-import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed, MdApi, MdEmail, MdCloud, MdIntegrationInstructions } from 'react-icons/md';
-import { BiKey, BiCodeCurly, BiData } from 'react-icons/bi';
-import { RiSecurePaymentLine } from 'react-icons/ri';
+import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop } from 'react-icons/fa';
+import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit } from 'react-icons/si';
+import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed } from 'react-icons/md';
 import HeaderName from '@/components/HeaderName';
 
 const socials = [
@@ -46,143 +44,6 @@ const features = [
   { title: 'Account Management', description: 'Comprehensive account balance and transaction tracking', icon: MdAccountBalance },
   { title: 'Security', description: 'JWT authentication and secure payment processing', icon: MdSecurity },
   { title: 'Real-time Updates', description: 'Live balance updates without page refresh', icon: MdSpeed },
-];
-
-const frameworks = [
-  {
-    category: 'Frontend Framework',
-    items: [
-      { name: 'React 18+', description: 'Component-based UI library with hooks and functional components', icon: FaReact, color: 'text-blue-500' },
-      { name: 'Next.js 14', description: 'Full-stack React framework with SSR, routing, and optimization', icon: SiNextdotjs, color: 'text-black' },
-      { name: 'Tailwind CSS', description: 'Utility-first CSS framework for rapid UI development', icon: SiTailwindcss, color: 'text-cyan-500' },
-    ]
-  },
-  {
-    category: 'Backend Framework',
-    items: [
-      { name: 'Node.js', description: 'JavaScript runtime environment for server-side development', icon: FaNodeJs, color: 'text-green-500' },
-      { name: 'Express.js', description: 'Fast, unopinionated web framework for Node.js', icon: SiExpress, color: 'text-gray-600' },
-      { name: 'Mongoose', description: 'MongoDB object modeling for Node.js', icon: SiMongodb, color: 'text-green-600' },
-    ]
-  }
-];
-
-const apis = [
-  {
-    name: 'Authentication API',
-    description: 'JWT-based user authentication and authorization',
-    endpoints: ['/auth/login', '/auth/register', '/auth/profile'],
-    icon: SiJsonwebtokens,
-    color: 'text-purple-600'
-  },
-  {
-    name: 'Payment Gateway API',
-    description: 'Razorpay integration for secure payment processing',
-    endpoints: ['/payment/create', '/payment/verify', '/payment/webhook'],
-    icon: SiRazorpay,
-    color: 'text-blue-600'
-  },
-  {
-    name: 'UPI API',
-    description: 'Custom UPI payment system with QR code generation',
-    endpoints: ['/upi/pay', '/upi/qr', '/upi/transactions'],
-    icon: MdPayment,
-    color: 'text-green-600'
-  },
-  {
-    name: 'Email API',
-    description: 'NodeMailer integration for email notifications',
-    endpoints: ['/email/send', '/email/verify', '/email/template'],
-    icon: FaEnvelope,
-    color: 'text-red-600'
-  },
-  {
-    name: 'Banking API',
-    description: 'Account management and transaction processing',
-    endpoints: ['/account/balance', '/transfer/initiate', '/transactions/history'],
-    icon: MdAccountBalance,
-    color: 'text-indigo-600'
-  },
-  {
-    name: 'ATM Card API',
-    description: 'ATM card management and operations',
-    endpoints: ['/atm-card/create', '/atm-card/activate', '/atm-card/transactions'],
-    icon: BiKey,
-    color: 'text-orange-600'
-  }
-];
-
-const architecture = [
-  {
-    title: 'Frontend Architecture',
-    description: 'Modern React-based SPA with Next.js',
-    details: [
-      'Component-based architecture with React hooks',
-      'Server-side rendering with Next.js App Router',
-      'Responsive design with Tailwind CSS',
-      'State management using React Context API',
-      'Real-time updates with polling mechanism',
-      'Form validation and error handling',
-      'Toast notifications for user feedback'
-    ],
-    icon: FaDesktop,
-    color: 'text-blue-600'
-  },
-  {
-    title: 'Backend Architecture',
-    description: 'RESTful API with Node.js and Express',
-    details: [
-      'MVC (Model-View-Controller) pattern',
-      'RESTful API design with Express.js',
-      'MongoDB database with Mongoose ODM',
-      'JWT authentication middleware',
-      'Email service with NodeMailer',
-      'Payment gateway integration',
-      'Transaction management with sessions',
-      'Error handling and logging'
-    ],
-    icon: FaServer,
-    color: 'text-green-600'
-  },
-  {
-    title: 'Database Design',
-    description: 'MongoDB with optimized schemas',
-    details: [
-      'User authentication and profile management',
-      'Account and transaction modeling',
-      'UPI payment system integration',
-      'ATM card management',
-      'API key and usage tracking',
-      'Email templates and notifications',
-      'Admin dashboard data'
-    ],
-    icon: FaDatabase,
-    color: 'text-purple-600'
-  }
-];
-
-const integrations = [
-  {
-    name: 'Razorpay Payment Gateway',
-    description: 'Secure payment processing with multiple payment methods',
-    features: ['Credit/Debit Cards', 'Net Banking', 'UPI', 'Wallets'],
-    icon: RiSecurePaymentLine,
-    color: 'text-blue-600'
-  },
-  {
-    name: 'Email Service (NodeMailer)',
-    description: 'Automated email notifications and templates',
-    features: ['Payment confirmations', 'Account updates', 'Security alerts', 'Welcome emails'],
-    icon: MdEmail,
-    color: 'text-red-600'
-  },
-  {
-    name: 'QR Code Generation',
-    description: 'Dynamic QR codes for UPI payments',
-    features: ['Payment QR codes', 'Account QR codes', 'Transaction receipts'],
-    icon: BiCodeCurly,
-    color: 'text-green-600'
-  }
 ];
 
 export default function AboutPage() {
@@ -241,115 +102,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Frameworks Used */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
-            <MdIntegrationInstructions className="text-rose-600" />
-            Frameworks & Libraries
-          </h2>
-          {frameworks.map((framework) => (
-            <div key={framework.category} className="mb-8">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">{framework.category}</h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                {framework.items.map((item) => (
-                  <div key={item.name} className="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center gap-3 mb-2">
-                      <item.icon className={`text-2xl ${item.color}`} />
-                      <h4 className="font-semibold text-gray-800">{item.name}</h4>
-                    </div>
-                    <p className="text-sm text-gray-600">{item.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* APIs Used */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
-            <MdApi className="text-rose-600" />
-            APIs & Integrations
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {apis.map((api) => (
-              <div key={api.name} className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-lg">
-                <div className="flex items-center gap-3 mb-3">
-                  <api.icon className={`text-2xl ${api.color}`} />
-                  <h3 className="text-lg font-semibold text-gray-800">{api.name}</h3>
-                </div>
-                <p className="text-gray-700 mb-4">{api.description}</p>
-                <div className="space-y-1">
-                  <h4 className="font-medium text-gray-800">Key Endpoints:</h4>
-                  {api.endpoints.map((endpoint) => (
-                    <code key={endpoint} className="block text-sm bg-white px-2 py-1 rounded text-gray-700 font-mono">
-                      {endpoint}
-                    </code>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Project Architecture */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
-            <BiData className="text-rose-600" />
-            Project Architecture
-          </h2>
-          <div className="space-y-6">
-            {architecture.map((arch) => (
-              <div key={arch.title} className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <arch.icon className={`text-2xl ${arch.color}`} />
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800">{arch.title}</h3>
-                    <p className="text-gray-600">{arch.description}</p>
-                  </div>
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {arch.details.map((detail, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <p className="text-gray-700 text-sm">{detail}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Third-Party Integrations */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
-            <MdCloud className="text-rose-600" />
-            Third-Party Integrations
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {integrations.map((integration) => (
-              <div key={integration.name} className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg">
-                <div className="flex items-center gap-3 mb-3">
-                  <integration.icon className={`text-2xl ${integration.color}`} />
-                  <h3 className="text-lg font-semibold text-gray-800">{integration.name}</h3>
-                </div>
-                <p className="text-gray-700 mb-4">{integration.description}</p>
-                <div className="space-y-2">
-                  <h4 className="font-medium text-gray-800">Features:</h4>
-                  {integration.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-                      <span className="text-sm text-gray-700">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Technologies Grid */}
+        {/* Technologies Used */}
         <div className="mb-12">
           <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
             <FaShieldAlt className="text-rose-600" />
@@ -411,6 +164,71 @@ export default function AboutPage() {
                   <li>• <strong>Responsive:</strong> Mobile-first design approach</li>
                   <li>• <strong>Scalability:</strong> Modular architecture for easy scaling</li>
                 </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Project Architecture */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
+            <FaServer className="text-rose-600" />
+            Project Architecture
+          </h2>
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <FaDesktop className="text-2xl text-blue-600" />
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">Frontend Architecture</h3>
+                  <p className="text-gray-600">Modern React-based SPA with Next.js</p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700 text-sm">Component-based architecture with React hooks</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700 text-sm">Server-side rendering with Next.js App Router</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700 text-sm">Responsive design with Tailwind CSS</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700 text-sm">State management using React Context API</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <FaServer className="text-2xl text-green-600" />
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">Backend Architecture</h3>
+                  <p className="text-gray-600">RESTful API with Node.js and Express</p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700 text-sm">MVC (Model-View-Controller) pattern</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700 text-sm">RESTful API design with Express.js</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700 text-sm">MongoDB database with Mongoose ODM</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-gray-700 text-sm">JWT authentication middleware</p>
+                </div>
               </div>
             </div>
           </div>
