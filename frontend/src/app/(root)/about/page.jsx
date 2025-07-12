@@ -180,6 +180,22 @@ export default function AboutPage() {
             <SiTailwindcss title="Tailwind CSS" className="text-teal-500" />
             <SiVercel title="Vercel" className="text-black" />
           </div>
+
+          {/* Social Links */}
+          <div className="flex justify-center items-center gap-8 mt-10 text-3xl">
+            {socialLinks.map(({ href, label, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+                title={label}
+              >
+                <Icon />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </div>
