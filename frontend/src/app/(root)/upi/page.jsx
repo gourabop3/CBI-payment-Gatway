@@ -266,6 +266,20 @@ const UPIPage = () => {
         setPaymentForm({ recipient_upi: '', amount: '', note: '', pin: '' });
         fetchTransactions();
         fetchUPIInfo();
+        
+        // Redirect to success page with payment details
+        const successParams = new URLSearchParams({
+          transaction_id: data.transaction_id,
+          amount: data.amount.toString(),
+          recipient_upi: data.recipient_upi,
+          sender_upi: data.sender_upi,
+          note: data.note || '',
+          timestamp: data.timestamp
+        });
+        
+        setTimeout(() => {
+          window.location.href = `/upi/payment-success?${successParams.toString()}`;
+        }, 1000);
       } else {
         setPaymentStatus({ success: null, error: data.msg || 'Payment failed' });
       }

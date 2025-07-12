@@ -133,7 +133,7 @@ const Transactions = () => {
           
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <MdAccountBalance className="text-lg" />
                 <span className="text-sm opacity-90">Total</span>
@@ -141,7 +141,7 @@ const Transactions = () => {
               <div className="text-xl md:text-2xl font-bold">{stats.totalTransactions}</div>
             </div>
             
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <BiTrendingUp className="text-lg text-green-300" />
                 <span className="text-sm opacity-90">Credit</span>
@@ -149,7 +149,7 @@ const Transactions = () => {
               <div className="text-xl md:text-2xl font-bold text-green-300">₹{stats.totalCredit.toLocaleString()}</div>
             </div>
             
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <BiTrendingDown className="text-lg text-red-300" />
                 <span className="text-sm opacity-90">Debit</span>
@@ -157,7 +157,7 @@ const Transactions = () => {
               <div className="text-xl md:text-2xl font-bold text-red-300">₹{stats.totalDebit.toLocaleString()}</div>
             </div>
             
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <MdCreditCard className="text-lg" />
                 <span className="text-sm opacity-90">Net</span>

@@ -5,6 +5,7 @@ const { AccountModel } = require('../models/Account.model');
 const { TransactionModel } = require('../models/Transactions.model');
 const ApiError = require('../utils/ApiError');
 const mongoose = require('mongoose');
+const NodeMailerService = require('../utils/NodeMail');
 
 class UPIService {
     /**
@@ -205,7 +206,7 @@ class UPIService {
 
             await session.commitTransaction();
 
-            return {
+            const paymentResult = {
                 transaction_id: new mongoose.Types.ObjectId().toString(),
                 amount: transferAmount,
                 sender_upi: sender.upi_id,
@@ -214,6 +215,13 @@ class UPIService {
                 timestamp: new Date(),
                 note: note || null
             };
+
+            // Send payment success email (don't await to avoid blocking the response)
+            this.sendPaymentSuccessEmail(senderId, paymentResult).catch(error => {
+                console.error('Email sending failed:', error);
+            });
+
+            return paymentResult;
 
         } catch (error) {
             await session.abortTransaction();
@@ -347,6 +355,97 @@ class UPIService {
             payment_data: paymentData,
             expires_at: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
         };
+    }
+
+    /**
+     * Send payment success email to user
+     */
+    static async sendPaymentSuccessEmail(userId, paymentDetails) {
+        try {
+            const user = await UserModel.findById(userId).select('name email');
+            if (!user || !user.email) {
+                console.log('User not found or email not available for payment confirmation');
+                return;
+            }
+
+            const emailHtml = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+                    <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="background-color: #10b981; color: white; width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 20px;">
+                                ✓
+                            </div>
+                            <h2 style="color: #10b981; margin: 0;">Payment Successful!</h2>
+                        </div>
+                        
+                        <p>Dear ${user.name},</p>
+                        <p>Your UPI payment has been processed successfully. Here are the details:</p>
+                        
+                        <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 8px 0; color: #166534; font-weight: bold;">Amount:</td>
+                                    <td style="padding: 8px 0; color: #166534;">₹${paymentDetails.amount.toLocaleString('en-IN')}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #166534; font-weight: bold;">Transaction ID:</td>
+                                    <td style="padding: 8px 0; color: #166534; font-family: monospace;">${paymentDetails.transaction_id}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #166534; font-weight: bold;">From:</td>
+                                    <td style="padding: 8px 0; color: #166534; font-family: monospace;">${paymentDetails.sender_upi}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #166534; font-weight: bold;">To:</td>
+                                    <td style="padding: 8px 0; color: #166534; font-family: monospace;">${paymentDetails.recipient_upi}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #166534; font-weight: bold;">Date:</td>
+                                    <td style="padding: 8px 0; color: #166534;">${paymentDetails.timestamp.toLocaleString('en-IN')}</td>
+                                </tr>
+                                ${paymentDetails.note ? `
+                                <tr>
+                                    <td style="padding: 8px 0; color: #166534; font-weight: bold;">Note:</td>
+                                    <td style="padding: 8px 0; color: #166534;">${paymentDetails.note}</td>
+                                </tr>
+                                ` : ''}
+                            </table>
+                        </div>
+                        
+                        <div style="background-color: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                            <p style="margin: 0; color: #92400e; font-size: 14px;">
+                                <strong>Security Reminder:</strong> Keep this transaction ID safe for your records. Never share your UPI PIN or personal banking details with anyone.
+                            </p>
+                        </div>
+                        
+                        <p>Thank you for using CBI Bank UPI services!</p>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/upi/payment-success?transaction_id=${paymentDetails.transaction_id}&amount=${paymentDetails.amount}&recipient_upi=${paymentDetails.recipient_upi}&sender_upi=${paymentDetails.sender_upi}&note=${encodeURIComponent(paymentDetails.note || '')}&timestamp=${paymentDetails.timestamp.toISOString()}" 
+                               style="background-color: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+                                View Transaction Details
+                            </a>
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                        <p style="color: #6b7280; font-size: 12px; text-align: center;">
+                            This is an automated email from CBI Bank UPI. Please do not reply to this email.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            await NodeMailerService.sendEmail({
+                to: user.email,
+                subject: `UPI Payment Successful - ₹${paymentDetails.amount.toLocaleString('en-IN')} - ${paymentDetails.transaction_id}`,
+                html: emailHtml
+            });
+
+            console.log('Payment success email sent to:', user.email);
+        } catch (error) {
+            console.error('Error sending payment success email:', error);
+            // Don't throw error as email failure shouldn't fail the payment
+        }
     }
 }
 

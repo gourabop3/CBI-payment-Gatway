@@ -205,7 +205,7 @@ const ApiKeyPage = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
                 <MdSecurity className="text-xl" />
                 <span className="text-sm opacity-90">Security</span>
@@ -213,7 +213,7 @@ const ApiKeyPage = () => {
               <div className="text-lg font-semibold">Bank Grade</div>
             </div>
             
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
                 <FaShieldAlt className="text-xl" />
                 <span className="text-sm opacity-90">Success Rate</span>
@@ -223,7 +223,7 @@ const ApiKeyPage = () => {
               </div>
             </div>
             
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
                 <MdDeveloperMode className="text-xl" />
                 <span className="text-sm opacity-90">Environment</span>
@@ -233,7 +233,7 @@ const ApiKeyPage = () => {
               </div>
             </div>
             
-            <div className="bg-white bg-opacity-10 rounded-xl p-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-white border-opacity-30 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-2">
                 <FaCode className="text-xl" />
                 <span className="text-sm opacity-90">API Version</span>
