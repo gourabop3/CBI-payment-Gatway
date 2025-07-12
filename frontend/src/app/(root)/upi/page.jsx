@@ -38,6 +38,8 @@ const UPIPage = () => {
     confirm_pin: ''
   });
   const [registrationError, setRegistrationError] = useState(null);
+  const [registrationSuccess, setRegistrationSuccess] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState({ success: null, error: null });
 
   useEffect(() => {
     fetchUPIInfo();
@@ -127,11 +129,13 @@ const UPIPage = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert('UPI ID created successfully');
+        setRegistrationSuccess('UPI ID created successfully!');
+        setRegistrationError(null);
         setRegistrationForm({ upi_id: '', pin: '', confirm_pin: '' });
         fetchUPIInfo();
       } else {
         setRegistrationError(data.msg || 'Registration failed');
+        setRegistrationSuccess(null);
       }
     } catch (error) {
       console.error('Error registering UPI:', error);
@@ -154,16 +158,16 @@ const UPIPage = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert('Payment successful!');
+        setPaymentStatus({ success: 'Payment successful!', error: null });
         setPaymentForm({ recipient_upi: '', amount: '', note: '', pin: '' });
         fetchTransactions();
         fetchUPIInfo();
       } else {
-        alert(data.msg || 'Payment failed');
+        setPaymentStatus({ success: null, error: data.msg || 'Payment failed' });
       }
     } catch (error) {
       console.error('Error processing payment:', error);
-      alert('Payment failed');
+      setPaymentStatus({ success: null, error: 'Payment failed' });
     } finally {
       setLoading(false);
     }
@@ -206,6 +210,9 @@ const UPIPage = () => {
             </h2>
             {registrationError && (
               <p className="text-red-600 text-sm mb-2">{registrationError}</p>
+            )}
+            {registrationSuccess && (
+              <p className="text-green-600 text-sm mb-2">{registrationSuccess}</p>
             )}
             <div className="space-y-4">
               <div>
@@ -381,6 +388,12 @@ const UPIPage = () => {
                   />
                 </div>
 
+                {paymentStatus.error && (
+                  <p className="text-red-600 text-sm">{paymentStatus.error}</p>
+                )}
+                {paymentStatus.success && (
+                  <p className="text-green-600 text-sm">{paymentStatus.success}</p>
+                )}
                 <button
                   onClick={processPayment}
                   disabled={loading || !paymentForm.recipient_upi || !paymentForm.amount || !paymentForm.pin}
