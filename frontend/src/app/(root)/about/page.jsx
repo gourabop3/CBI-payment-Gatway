@@ -72,16 +72,7 @@ const features = [
   },
 ];
 
-const axiosBenefits = [
-  'Automatic JSON data transformation',
-  'Request and response interceptors',
-  'Built-in XSRF protection',
-  'Request timeout handling',
-  'Automatic request/response logging',
-  'Error handling and retry logic',
-  'Progress monitoring for uploads',
-  'Request cancellation support'
-];
+
 
 export default function AboutPage() {
   return (
@@ -133,38 +124,78 @@ export default function AboutPage() {
               Backend Technologies
             </h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {backendTech.map(({ name, icon: Icon, description }) => (
+              {backendTech.map(({ name, icon: Icon, description, why }) => (
                 <div key={name} className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg shadow-lg border border-green-200 hover:shadow-xl hover:scale-105 transition-all duration-300">
                   <div className="flex items-center gap-3 mb-3">
                     <Icon className="text-3xl text-green-600" />
                     <h4 className="text-lg font-semibold text-gray-800">{name}</h4>
                   </div>
-                  <p className="text-gray-700 text-sm">{description}</p>
+                  <p className="text-gray-700 text-sm mb-2">{description}</p>
+                  <p className="text-green-600 text-xs font-medium">Why: {why}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Why Axios Section */}
+        {/* Why These Technologies Section */}
         <section className="mb-16">
           <h2 className="text-4xl font-bold mb-8 text-gray-800 flex items-center gap-3">
-            <SiAxios className="text-rose-600" />
-            Why Axios?
+            <FaCode className="text-rose-600" />
+            Why These Technologies?
           </h2>
           <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-8 rounded-lg shadow-lg border border-purple-200">
             <p className="text-gray-700 text-lg mb-6 leading-relaxed">
-              <strong>Axios</strong> is chosen as the HTTP client for this project due to its powerful features that enhance API communication, 
-              error handling, and developer experience. It provides a clean and intuitive interface for making HTTP requests with automatic 
-              JSON transformation and comprehensive error handling.
+              Each technology in this stack was carefully chosen for its specific benefits and how it contributes to building a robust, 
+              scalable, and user-friendly banking application.
             </p>
-            <div className="grid md:grid-cols-2 gap-4">
-              {axiosBenefits.map((benefit, index) => (
-                <div key={index} className="flex items-center gap-3 text-gray-700">
-                  <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                  <span className="text-sm">{benefit}</span>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Frontend Choices</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
+                    <div>
+                      <strong>React + Next.js:</strong> Component reusability and optimized performance
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
+                    <div>
+                      <strong>TailwindCSS:</strong> Rapid development with utility-first approach
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
+                    <div>
+                      <strong>Axios:</strong> Automatic JSON parsing and comprehensive error handling
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Backend Choices</h3>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
+                    <div>
+                      <strong>Node.js + Express:</strong> JavaScript everywhere for consistency
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
+                    <div>
+                      <strong>MongoDB:</strong> Flexible schema for banking data structures
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
+                    <div>
+                      <strong>JWT:</strong> Stateless authentication for scalability
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
