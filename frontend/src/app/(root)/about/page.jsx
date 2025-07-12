@@ -508,27 +508,24 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* Social Links */}
-            <div>
-              <h4 className="text-2xl font-bold text-gray-900 mb-6 text-center">Connect with the Developer</h4>
-              <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {socialLinks.map(({ href, label, Icon, color, bgColor, username }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`group flex flex-col items-center gap-3 p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 ${color} ${bgColor} transform hover:-translate-y-2 hover:scale-105`}
-                  >
-                    <Icon className="text-4xl transition-all duration-300 group-hover:scale-125 group-hover:rotate-12" />
-                    <div className="text-center">
-                      <span className="font-bold text-lg block">{label}</span>
-                      <span className="text-sm text-gray-600 block">{username}</span>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
+                         {/* Social Links */}
+             <div>
+               <h4 className="text-2xl font-bold text-gray-900 mb-6 text-center">Connect with the Developer</h4>
+               <div className="flex justify-center items-center gap-6 flex-wrap">
+                 {socialLinks.map(({ href, label, Icon, color, bgColor }) => (
+                   <a
+                     key={label}
+                     href={href}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className={`flex items-center gap-3 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 ${color} ${bgColor} hover:scale-105`}
+                   >
+                     <Icon className="text-2xl transition-transform duration-300" />
+                     <span className="font-semibold">{label}</span>
+                   </a>
+                 ))}
+               </div>
+             </div>
           </div>
         </div>
 
