@@ -81,7 +81,7 @@ export default function AboutPage() {
         <div className="grid lg:grid-cols-2 gap-8 mb-16">
           
           {/* Frontend Card */}
-          <div className="group bg-gradient-to-br from-orange-400 to-orange-500 rounded-3xl shadow-2xl p-8 border border-orange-300 hover:shadow-[0_35px_60px_-15px_rgba(255,165,0,0.5)] transition-all duration-300 hover:scale-105 hover:rotate-1">
+          <div className="group bg-gradient-to-br from-orange-400 to-orange-500 rounded-3xl shadow-2xl p-8 border border-orange-300 hover:shadow-[0_35px_60px_-15px_rgba(255,165,0,0.5)] transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-black rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <FaDesktop className="text-3xl text-orange-400" />
@@ -111,7 +111,7 @@ export default function AboutPage() {
           </div>
 
           {/* Backend Card */}
-          <div className="group bg-gradient-to-br from-orange-400 to-orange-500 rounded-3xl shadow-2xl p-8 border border-orange-300 hover:shadow-[0_35px_60px_-15px_rgba(255,165,0,0.5)] transition-all duration-300 hover:scale-105 hover:-rotate-1">
+          <div className="group bg-gradient-to-br from-orange-400 to-orange-500 rounded-3xl shadow-2xl p-8 border border-orange-300 hover:shadow-[0_35px_60px_-15px_rgba(255,165,0,0.5)] transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 bg-black rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
                 <FaServer className="text-3xl text-orange-400" />
