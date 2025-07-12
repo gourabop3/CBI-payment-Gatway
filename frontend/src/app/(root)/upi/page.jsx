@@ -5,6 +5,7 @@ import { MdQrCode, MdSend, MdHistory, MdAccountBalance, MdPayment } from 'react-
 import { FaDownload, FaShare, FaCopy, FaCheck } from 'react-icons/fa';
 import Card from '@/components/ui/Card';
 import { useMainContext } from '@/context/MainContext';
+import { axiosClient } from '@/utils/AxiosClient';
 
 const UPIPage = () => {
   const { user } = useMainContext();
@@ -54,13 +55,13 @@ const UPIPage = () => {
 
   const fetchUPIInfo = async () => {
     try {
-      const response = await fetch('/api/v1/upi/info', {
+      const response = await axiosClient.get('/upi/info', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      const data = await response.json();
-      if (response.ok) {
+      const data = response.data;
+      if (response.status === 200) {
         setUpiInfo(data.upi_info);
       }
     } catch (error) {
@@ -70,13 +71,13 @@ const UPIPage = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch('/api/v1/upi/transactions?page=1&limit=10', {
+      const response = await axiosClient.get('/upi/transactions?page=1&limit=10', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      const data = await response.json();
-      if (response.ok) {
+      const data = response.data;
+      if (response.status === 200) {
         setTransactions(data.transactions || []);
       }
     } catch (error) {
@@ -87,13 +88,13 @@ const UPIPage = () => {
   const generateQR = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/v1/upi/qr?amount=${qrForm.amount}&note=${qrForm.note}`, {
+      const response = await axiosClient.get(`/upi/qr?amount=${qrForm.amount}&note=${qrForm.note}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      const data = await response.json();
-      if (response.ok) {
+      const data = response.data;
+      if (response.status === 200) {
         setQrCode(data);
       }
     } catch (error) {
@@ -106,12 +107,12 @@ const UPIPage = () => {
   const validateUPI = async (upi_id) => {
     if (!upi_id) return;
     try {
-      const response = await fetch(`/api/v1/upi/validate/${upi_id}`, {
+      const response = await axiosClient.get(`/upi/validate/${upi_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      const data = await response.json();
+      const data = response.data;
       setValidationResult(data);
     } catch (error) {
       console.error('Error validating UPI:', error);
@@ -153,16 +154,10 @@ const UPIPage = () => {
     }
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/upi/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ upi_id: registrationForm.upi_id, pin: registrationForm.pin })
+      const { data } = await axiosClient.post('/upi/register', { upi_id: registrationForm.upi_id, pin: registrationForm.pin }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await response.json();
-      if (response.ok) {
+      if (data && data.upi_id) {
         setRegistrationSuccess('UPI ID created successfully!');
         setRegistrationError(null);
         setRegistrationForm({ upi_id: '', pin: '', confirm_pin: '' });
@@ -182,16 +177,10 @@ const UPIPage = () => {
   const processPayment = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/v1/upi/pay', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(paymentForm)
+      const { data } = await axiosClient.post('/upi/pay', paymentForm, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await response.json();
-      if (response.ok) {
+      if (data && data.status === 'success') {
         setPaymentStatus({ success: 'Payment successful!', error: null });
         setPaymentForm({ recipient_upi: '', amount: '', note: '', pin: '' });
         fetchTransactions();
