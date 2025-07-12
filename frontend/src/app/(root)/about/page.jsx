@@ -463,58 +463,33 @@ export default function AboutPage() {
               <p className="text-gray-600 font-medium">West Bengal, India</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <div>
-                <h4 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <MdDeveloperMode className="text-indigo-600" />
-                  About the Developer
-                </h4>
-                <p className="text-gray-700 leading-relaxed mb-4">
-                  Passionate full-stack developer specializing in modern web technologies with expertise in building 
-                  secure, scalable banking and financial applications. Committed to delivering high-quality, 
-                  production-ready solutions with focus on user experience and performance optimization.
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                    <span className="text-gray-700 font-medium">5+ Years of Development Experience</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                    <span className="text-gray-700 font-medium">Specialized in Financial Applications</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
-                    <span className="text-gray-700 font-medium">Expert in Security Implementation</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <TbApi className="text-indigo-600" />
-                  Technical Expertise
-                </h4>
-                <div className="grid grid-cols-1 gap-3">
-                  {[
-                    'Full-Stack Development (MERN Stack)',
-                    'Banking & Financial Applications',
-                    'Payment Gateway Integration',
-                    'API Development & Integration',
-                    'Database Design & Optimization',
-                    'Security & Authentication',
-                    'AI Integration (OpenAI)',
-                    'Cloud Services (Cloudinary)',
-                    'Real-time Applications',
-                    'Responsive Web Design'
-                  ].map((skill, index) => (
-                    <div key={index} className="bg-white p-3 rounded-lg shadow-sm border border-indigo-100">
-                      <span className="text-gray-700 font-medium">• {skill}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+                         <div className="mb-8">
+               <div>
+                 <h4 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                   <MdDeveloperMode className="text-indigo-600" />
+                   About the Developer
+                 </h4>
+                 <p className="text-gray-700 leading-relaxed mb-4">
+                   Passionate full-stack developer specializing in modern web technologies with expertise in building 
+                   secure, scalable banking and financial applications. Committed to delivering high-quality, 
+                   production-ready solutions with focus on user experience and performance optimization.
+                 </p>
+                 <div className="space-y-2">
+                   <div className="flex items-center gap-2">
+                     <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
+                     <span className="text-gray-700 font-medium">5+ Years of Development Experience</span>
+                   </div>
+                   <div className="flex items-center gap-2">
+                     <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
+                     <span className="text-gray-700 font-medium">Specialized in Financial Applications</span>
+                   </div>
+                   <div className="flex items-center gap-2">
+                     <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
+                     <span className="text-gray-700 font-medium">Expert in Security Implementation</span>
+                   </div>
+                 </div>
+               </div>
+             </div>
 
             {/* Contact Information */}
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-indigo-200 mb-6">
