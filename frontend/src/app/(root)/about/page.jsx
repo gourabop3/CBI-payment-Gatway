@@ -151,19 +151,20 @@ export default function AboutPage() {
             <p className="text-xl text-gray-600">Comprehensive banking solutions at your fingertips</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Features List */}
+          <ul className="space-y-6 max-w-3xl mx-auto">
             {projectFeatures.map(({ title, icon: Icon, description }) => (
-              <div key={title} className="group relative overflow-hidden bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:-translate-y-2 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50">
-                <div className="relative z-10">
-                  <div className="inline-flex p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Icon className="text-2xl text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-800 transition-colors duration-300">{title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed group-hover:text-gray-700 transition-colors duration-300">{description}</p>
+              <li key={title} className="flex items-start gap-4">
+                <div className="flex-shrink-0 p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md">
+                  <Icon className="text-2xl" />
                 </div>
-              </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">{title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
 
         {/* Developer Section */}
