@@ -280,37 +280,55 @@ const projectFeatures = [
     title: 'UPI Payment System',
     description: 'Complete UPI integration with QR code generation, instant transfers, and multi-bank support',
     icon: MdPayment,
-    features: ['QR Code Payments', 'Bank Transfers (NEFT/RTGS/IMPS)', 'Real-time Processing', 'Transaction History']
+    features: ['QR Code Generation & Scanning', 'UPI ID Creation', 'Instant Money Transfer', 'Bank-to-Bank Transfers (NEFT/RTGS/IMPS)', 'Payment History & Receipts']
+  },
+  {
+    title: 'ATM/Debit Card Management',
+    description: 'Comprehensive ATM and debit card services with complete control and security features',
+    icon: RiBankCardLine,
+    features: ['Card Activation & Blocking', 'PIN Change & Reset', 'Transaction Limits Setting', 'Card Usage Controls', 'ATM Locator', 'Card Delivery Tracking']
+  },
+  {
+    title: 'Fixed Deposit (FD) Services',
+    description: 'Complete fixed deposit management with flexible tenure options and competitive interest rates',
+    icon: MdAccountBalance,
+    features: ['FD Account Opening', 'Flexible Tenure (7 days to 10 years)', 'Interest Rate Calculator', 'Premature Withdrawal', 'FD Renewal Options', 'Certificate Generation']
+  },
+  {
+    title: 'Mobile Recharge & Bill Payments',
+    description: 'Comprehensive digital payment services for mobile recharge and utility bill payments',
+    icon: MdBolt,
+    features: ['Mobile Recharge (Jio, Airtel, Vi, BSNL)', 'DTH/Cable TV Recharge', 'Electricity Bill Payment', 'Gas Bill Payment', 'Water Bill Payment', 'Credit Card Bill Payment']
+  },
+  {
+    title: 'Money Transfer Services',
+    description: 'Secure and instant money transfer services with multiple transfer options',
+    icon: BiTransfer,
+    features: ['NEFT Transfers', 'RTGS Transfers', 'IMPS Transfers', 'Bank-to-Bank Transfer', 'Beneficiary Management', 'Transfer Scheduling']
   },
   {
     title: 'Account Management',
-    description: 'Comprehensive banking operations with real-time balance tracking and account services',
+    description: 'Complete banking account operations with real-time balance tracking and comprehensive services',
     icon: MdAccountBalance,
-    features: ['Live Balance Updates', 'Account Statements', 'Fixed Deposits', 'KYC Management']
+    features: ['Real-time Balance Updates', 'Account Statements (PDF)', 'Transaction History', 'Mini Statements', 'Account Summary', 'Passbook Download']
   },
   {
-    title: 'Digital Services',
-    description: 'Complete digital ecosystem with mobile recharge, bill payments, and utility services',
-    icon: MdBolt,
-    features: ['Mobile Recharge (All Operators)', 'Electricity Bills', 'DTH/Cable TV', 'Credit Card Bills']
-  },
-  {
-    title: 'AI Customer Service',
-    description: '24/7 intelligent chatbot with natural language processing and banking assistance',
-    icon: MdChat,
-    features: ['Natural Language Processing', 'Banking Queries', 'Transaction Support', 'Personalized Help']
-  },
-  {
-    title: 'Security & Compliance',
-    description: 'Bank-grade security with advanced fraud detection and compliance measures',
+    title: 'KYC Verification System',
+    description: 'Complete Know Your Customer verification process with document upload and verification',
     icon: MdSecurity,
-    features: ['Two-Factor Authentication', 'Fraud Detection', 'Data Encryption', 'Audit Logging']
+    features: ['Aadhaar Verification', 'PAN Card Verification', 'Address Proof Upload', 'Video KYC', 'Document Status Tracking', 'Compliance Management']
   },
   {
-    title: 'Card Management',
-    description: 'Complete ATM/Debit card controls with activation, blocking, and limit management',
-    icon: RiBankCardLine,
-    features: ['Card Activation/Blocking', 'PIN Management', 'Transaction Limits', 'Usage Controls']
+    title: 'AI-Powered Customer Service',
+    description: '24/7 intelligent chatbot with natural language processing and comprehensive banking assistance',
+    icon: MdChat,
+    features: ['Natural Language Processing', 'Banking Query Resolution', 'Transaction Support', 'Account Information', 'Service Requests', 'Personalized Assistance']
+  },
+  {
+    title: 'Security & Fraud Protection',
+    description: 'Advanced security measures with fraud detection and comprehensive protection systems',
+    icon: MdSecurity,
+    features: ['Two-Factor Authentication', 'Biometric Login', 'Real-time Fraud Detection', 'Transaction Alerts', 'Account Monitoring', 'Security Notifications']
   }
 ];
 
