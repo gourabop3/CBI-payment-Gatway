@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // Removed static export to allow rewrites/proxy in production
   async rewrites() {
     return [
       {
