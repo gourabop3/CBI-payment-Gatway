@@ -17,12 +17,9 @@ import {
 import { 
   FaRobot, 
   FaUser, 
-  FaMinus,
-  FaExpand,
   FaVolumeUp,
   FaVolumeMute,
-  FaPaperPlane,
-  FaTrash
+  FaPaperPlane
 } from "react-icons/fa";
 import HeaderName from "@/components/HeaderName";
 import { useMainContext } from "@/context/MainContext";
@@ -41,7 +38,6 @@ export default function CustomerServicePage() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const bottomRef = useRef(null);
   const chatInputRef = useRef(null);
@@ -100,9 +96,17 @@ export default function CustomerServicePage() {
     try {
       // Use authenticated endpoint if user is logged in, otherwise use public endpoint
       const endpoint = user ? '/support/chat' : '/support/chat/public';
+      const requestConfig = user 
+        ? {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token")
+            }
+          }
+        : {};
+      
       const response = await axiosClient.post(endpoint, {
         message: userMessage
-      });
+      }, requestConfig);
 
       // simulate typing delay
       setTimeout(() => {
@@ -140,31 +144,15 @@ export default function CustomerServicePage() {
     sendMessage(reply);
   };
 
-  // Clear chat
-  const clearChat = () => {
-    setMessages([
-      {
-        id: 1,
-        sender: "bot",
-        text: user 
-          ? `👋 Hello ${user.fullName || 'there'}! I'm CBI Assistant, your intelligent banking chatbot created by Gourab. I'm here to provide you personalized 24/7 banking support.\n\n👨‍💻 Developer: Gourab | Email: gourabmop@gmail.com | Mobile: +91 9263839602 | West Bengal, India\n\nI can assist you with account balance, money transfers, ATM cards, mobile recharge, KYC verification, and much more. How can I help you today?`
-          : "👋 Hello! I'm CBI Assistant, your intelligent banking chatbot created by Gourab. I'm here to help you 24/7 with all your banking needs.\n\n👨‍💻 Developer: Gourab | Email: gourabmop@gmail.com | Mobile: +91 9263839602 | West Bengal, India\n\nI can assist you with account balance, money transfers, ATM cards, mobile recharge, KYC verification, and much more. How can I help you today?",
-        timestamp: new Date().toLocaleTimeString()
-      }
-    ]);
-  };
-
   /* auto-scroll on new messages */
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Focus input when chat opens
+  // Focus input when component loads
   useEffect(() => {
-    if (!isMinimized) {
-      chatInputRef.current?.focus();
-    }
-  }, [isMinimized]);
+    chatInputRef.current?.focus();
+  }, []);
 
   const onKeyDown = e => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -203,9 +191,7 @@ export default function CustomerServicePage() {
         </div>
 
         {/* -------- Chat Container -------- */}
-        <div className={`bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 ${
-          isMinimized ? 'h-20' : 'h-auto'
-        }`}>
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Chat Header */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -236,29 +222,11 @@ export default function CustomerServicePage() {
                 >
                   {isSoundEnabled ? <FaVolumeUp className="text-white text-sm" /> : <FaVolumeMute className="text-white text-sm" />}
                 </button>
-                
-                <button
-                  onClick={clearChat}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                  title="Clear chat"
-                >
-                  <FaTrash className="text-white text-sm" />
-                </button>
-                
-                <button
-                  onClick={() => setIsMinimized(!isMinimized)}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                  title={isMinimized ? "Expand chat" : "Minimize chat"}
-                >
-                  {isMinimized ? <FaExpand className="text-white text-sm" /> : <FaMinus className="text-white text-sm" />}
-                </button>
               </div>
             </div>
           </div>
 
-          {/* Chat Body - Only show when not minimized */}
-          {!isMinimized && (
-            <>
+          {/* Chat Body */}
               {/* Messages */}
               <div className="h-96 overflow-y-auto bg-gray-50 p-6 space-y-4">
                 {messages.map((m) => (
@@ -380,8 +348,6 @@ export default function CustomerServicePage() {
                   </span>
                 </div>
               </div>
-            </>
-          )}
 
           {/* Chat Footer with Developer Info */}
           <div className="bg-gray-50 border-t border-gray-200 px-6 py-3">
