@@ -1,12 +1,19 @@
 "use client";
-import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop } from 'react-icons/fa';
+import { AiOutlineGithub, AiOutlineInstagram, AiFillLinkedin, AiOutlineMail } from 'react-icons/ai';
+import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop, FaTelegram } from 'react-icons/fa';
 import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit } from 'react-icons/si';
 import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed, MdChat, MdQrCode, MdBolt, MdReceipt } from 'react-icons/md';
 import { BiTransfer } from 'react-icons/bi';
 import { RiBankCardLine } from 'react-icons/ri';
 import HeaderName from '@/components/HeaderName';
 
-
+const socials = [
+  { href: 'https://github.com/gourab18', label: 'GitHub', Icon: AiOutlineGithub, color: 'hover:text-gray-800', bgColor: 'hover:bg-gray-100' },
+  { href: 'https://instagram.com/gourab_op_84', label: 'Instagram', Icon: AiOutlineInstagram, color: 'hover:text-pink-600', bgColor: 'hover:bg-pink-50' },
+  { href: 'https://linkedin.com/in/gourab-mullick', label: 'LinkedIn', Icon: AiFillLinkedin, color: 'hover:text-blue-600', bgColor: 'hover:bg-blue-50' },
+  { href: 'mailto:gourabmullick200@gmail.com', label: 'Gmail', Icon: AiOutlineMail, color: 'hover:text-red-600', bgColor: 'hover:bg-red-50' },
+  { href: 'https://t.me/gourab_op_84', label: 'Telegram', Icon: FaTelegram, color: 'hover:text-blue-500', bgColor: 'hover:bg-blue-50' },
+];
 
 const frontendTech = [
   { name: 'React 19.0.0', icon: FaReact, description: 'Modern UI library with hooks and functional components', why: 'Component-based architecture for reusable UI elements' },
@@ -192,7 +199,24 @@ export default function AboutPage() {
               </div>
             </div>
 
-
+            {/* Social Links */}
+            <div className="text-center">
+              <h4 className="text-xl font-semibold text-gray-900 mb-6">Connect with the Developer</h4>
+              <div className="flex justify-center items-center gap-4 flex-wrap">
+                {socials.map(({ href, label, Icon, color, bgColor }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`group flex items-center gap-3 px-6 py-4 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 ${color} ${bgColor} transform hover:-translate-y-1 hover:scale-105`}
+                  >
+                    <Icon className="text-2xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" />
+                    <span className="font-semibold transition-all duration-300">{label}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
