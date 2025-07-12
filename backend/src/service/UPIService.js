@@ -1,4 +1,5 @@
 const QRCode = require('qrcode');
+const bcryptjs = require('bcryptjs');
 const { UserModel } = require('../models/User.model');
 const { AccountModel } = require('../models/Account.model');
 const { TransactionModel } = require('../models/Transactions.model');
@@ -38,6 +39,45 @@ class UPIService {
     }
 
     /**
+     * Register a new UPI handle and PIN for the authenticated user
+     */
+    static async createUPI(userId, { upi_id, pin }) {
+        // Validate required params
+        if (!upi_id || !pin) {
+            throw new ApiError(400, 'UPI ID and PIN are required');
+        }
+
+        // Basic format validation
+        const upiRegex = /^[\w.-]+@[\w.-]+$/;
+        if (!upiRegex.test(upi_id)) {
+            throw new ApiError(400, 'Invalid UPI ID format');
+        }
+
+        // Ensure uniqueness of the handle
+        const existing = await UserModel.findOne({ upi_id });
+        if (existing) {
+            throw new ApiError(400, 'UPI ID is already taken');
+        }
+
+        // Hash the PIN before storing
+        const hashedPin = await bcryptjs.hash(pin, 10);
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            userId,
+            { upi_id, upi_pin: hashedPin },
+            { new: true }
+        ).select('upi_id');
+
+        if (!updatedUser) {
+            throw new ApiError(404, 'User not found');
+        }
+
+        return {
+            upi_id: updatedUser.upi_id
+        };
+    }
+
+    /**
      * Process UPI payment between two UPI IDs
      */
     static async processUPIPayment(senderId, { recipient_upi, amount, note, pin }) {
@@ -46,7 +86,8 @@ class UPIService {
 
         try {
             // Validate sender
-            const sender = await UserModel.findById(senderId).populate('account_no');
+            // Include +upi_pin because the field is excluded by default for security
+            const sender = await UserModel.findById(senderId).select('+upi_pin').populate('account_no');
             if (!sender || !sender.upi_id) {
                 throw new ApiError(404, 'Sender UPI ID not found');
             }
@@ -78,6 +119,16 @@ class UPIService {
             // Check sufficient balance
             if (senderAccount.amount < transferAmount) {
                 throw new ApiError(400, 'Insufficient balance');
+            }
+
+            // Validate UPI PIN
+            if (!pin) {
+                throw new ApiError(400, 'UPI PIN is required');
+            }
+
+            const isPinValid = await bcryptjs.compare(pin, sender.upi_pin || '');
+            if (!isPinValid) {
+                throw new ApiError(401, 'Invalid UPI PIN');
             }
 
             // Debit from sender

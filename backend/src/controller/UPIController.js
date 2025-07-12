@@ -16,6 +16,28 @@ class UPIController {
         }
     }
 
+    /**
+     * Register UPI ID and PIN for the authenticated user
+     */
+    static async registerUPI(req, res, next) {
+        try {
+            const { upi_id, pin } = req.body;
+
+            if (!upi_id || !pin) {
+                return res.status(400).json({ msg: 'UPI ID and PIN are required' });
+            }
+
+            const data = await UPIService.createUPI(req.user, { upi_id, pin });
+
+            res.json({
+                msg: 'UPI ID created successfully',
+                ...data,
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
     static async generatePaymentQR(req, res, next) {
         try {
             const { amount, note, merchant_code } = req.body;

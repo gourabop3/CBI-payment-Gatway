@@ -149,9 +149,9 @@ const AllATMCards = () => {
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <div className="text-3xl">{getCardIcon(atm.card_type)}</div>
-                    <div>
-                      <div className="card-label">Bank Name</div>
-                      <div className="card-title">DEBIT CARD</div>
+                    <div className="text-left leading-tight">
+                      <div className="text-xs font-semibold tracking-widest uppercase">CBI BANK</div>
+                      <div className="card-title mt-0.5">DEBIT CARD</div>
                     </div>
                   </div>
                   <div className="text-right">

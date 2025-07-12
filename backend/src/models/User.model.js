@@ -42,6 +42,12 @@ const schema = new mongoose.Schema({
         unique:true,
         sparse:true,
         trim:true
+    },
+    
+    // Hashed UPI PIN (stored securely, excluded from default queries)
+    upi_pin:{
+        type:String,
+        select:false
     }
 },{
     timestamps:true
@@ -52,6 +58,11 @@ schema.pre("save",async function(next){
     const user =this;
     if(user.isModified("password")){
         this.password = await bcryptjs.hash(user.password,10)
+    }
+    
+    // Hash UPI PIN when it is newly set or modified
+    if(user.isModified("upi_pin") && user.upi_pin){
+        this.upi_pin = await bcryptjs.hash(user.upi_pin,10)
     }
     next()
 })
