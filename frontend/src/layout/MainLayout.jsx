@@ -15,7 +15,6 @@ const MainLayout = ({children}) => {
     <ErrorBoundary>
       <Navbar/>
       {children}
-      <ChatBot/>
     </ErrorBoundary>
     </MainContextProvider>
     </Provider>
