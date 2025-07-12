@@ -6,37 +6,21 @@ import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed } from 'react-icons/md
 import HeaderName from '@/components/HeaderName';
 
 const socials = [
-  {
-    href: 'https://github.com/gourab18',
-    label: 'GitHub',
-    Icon: AiOutlineGithub,
-  },
-  {
-    href: 'https://instagram.com/gourab_op_84',
-    label: 'Instagram',
-    Icon: AiOutlineInstagram,
-  },
-  {
-    href: 'https://linkedin.com/in/gourab-mullick',
-    label: 'LinkedIn',
-    Icon: AiFillLinkedin,
-  },
-  {
-    href: 'mailto:gourabmullick200@gmail.com',
-    label: 'Gmail',
-    Icon: AiOutlineMail,
-  },
+  { href: 'https://github.com/gourab18', label: 'GitHub', Icon: AiOutlineGithub },
+  { href: 'https://instagram.com/gourab_op_84', label: 'Instagram', Icon: AiOutlineInstagram },
+  { href: 'https://linkedin.com/in/gourab-mullick', label: 'LinkedIn', Icon: AiFillLinkedin },
+  { href: 'mailto:gourabmullick200@gmail.com', label: 'Gmail', Icon: AiOutlineMail },
 ];
 
 const technologies = [
-  { name: 'React', icon: FaReact, color: 'text-blue-500' },
-  { name: 'Next.js', icon: SiNextdotjs, color: 'text-black' },
-  { name: 'Tailwind CSS', icon: SiTailwindcss, color: 'text-cyan-500' },
-  { name: 'Node.js', icon: FaNodeJs, color: 'text-green-500' },
-  { name: 'Express.js', icon: SiExpress, color: 'text-gray-600' },
-  { name: 'MongoDB', icon: SiMongodb, color: 'text-green-600' },
-  { name: 'JavaScript', icon: SiJavascript, color: 'text-yellow-500' },
-  { name: 'Git', icon: SiGit, color: 'text-orange-500' },
+  { name: 'React', icon: FaReact },
+  { name: 'Next.js', icon: SiNextdotjs },
+  { name: 'Tailwind CSS', icon: SiTailwindcss },
+  { name: 'Node.js', icon: FaNodeJs },
+  { name: 'Express.js', icon: SiExpress },
+  { name: 'MongoDB', icon: SiMongodb },
+  { name: 'JavaScript', icon: SiJavascript },
+  { name: 'Git', icon: SiGit },
 ];
 
 const features = [
@@ -62,14 +46,12 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* How The Project Is Built */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
             <FaCode className="text-rose-600" />
             How This Project Is Built
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Frontend */}
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg shadow-lg border border-blue-200 hover:shadow-xl hover:scale-105 transition-all duration-300">
               <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800">
                 <FaDesktop className="text-blue-600" />
@@ -85,7 +67,6 @@ export default function AboutPage() {
               </ul>
             </div>
 
-            {/* Backend */}
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg shadow-lg border border-green-200 hover:shadow-xl hover:scale-105 transition-all duration-300">
               <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800">
                 <FaServer className="text-green-600" />
@@ -103,18 +84,14 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Technologies Used */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
             <FaShieldAlt className="text-rose-600" />
             Technologies Used
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {technologies.map(({ name, icon: Icon }, index) => (
-              <div
-                key={name}
-                className="group relative overflow-hidden rounded-xl text-center shadow-lg hover:scale-110 transition transform duration-500 cursor-pointer bg-white border border-gray-100 p-6"
-              >
+            {technologies.map(({ name, icon: Icon }) => (
+              <div key={name} className="group relative overflow-hidden rounded-xl text-center shadow-lg hover:scale-110 transition transform duration-500 cursor-pointer bg-white border border-gray-100 p-6">
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <Icon className="text-5xl mx-auto mb-3 text-rose-600 drop-shadow-lg" />
                 <p className="font-bold text-gray-800 text-lg drop-shadow-md group-hover:text-rose-600 transition-colors duration-300">
@@ -125,7 +102,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Key Features */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-3">
             <FaMobile className="text-rose-600" />
@@ -144,6 +120,15 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Technical Highlights */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-
+          <h2 className="text-3xl font-bold mb-6 text-gray-800">
+            Technical Highlights
+          </h2>
+          <p className="text-gray-700">
+            This project combines both frontend and backend best practices using the MERN stack along with secure payment integration workflows.
+          </p>
+        </section>
+      </div>
+    </div>
+  );
+}
