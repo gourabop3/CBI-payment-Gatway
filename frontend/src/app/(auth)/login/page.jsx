@@ -8,17 +8,13 @@ import CustomAuthButton from '@/components/reuseable/CustomAuthButton';
 import Link from 'next/link';
 import { useMainContext } from '@/context/MainContext';
 import { useRouter } from 'next/navigation';
+
 const LoginPage = () => {
     const [loading,setLoading] = useState(false)
     const {fetchUserProfile} = useMainContext()
-const router = useRouter()
-//   const [states,setStates] = useState()
-//   const onChangeHandler =(e)=>{
-//     setStates({...states,[e.target.name]:e.target.value})
-//   }
+    const router = useRouter()
 
   const initialValues = {
- 
     email:'',
     password:'' 
   }
@@ -29,16 +25,12 @@ const router = useRouter()
    })
 
   const onSubmitHandler= async(values,helpers)=>{
- 
     try {
         setLoading(true)
       
       const response = await axiosClient.post('/auth/login',values)
       const data = await response.data 
 
-
-      //   console.log(data);
-      
       toast.success(data.msg)
       
       // token
@@ -58,42 +50,76 @@ const router = useRouter()
 
   return (
     <>
-          <div className="min-h-[80vh] flex items-center justify-center">
-       
-                    <div className=" w-full xl:w-[60%] flex items-start border">
-                        <div className="hidden lg:block bg-white">
-                            <img src="https://bfsi.eletsonline.com/wp-content/uploads/2023/07/Yono-SBI.jpg" className='h-full w-full object-cover' alt="" />
-                        </div>
-                        <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={onSubmitHandler}
-          >
-          <Form  className=" w-full lg:w-1/2 px-10 py-10 ">
- 
-<div className="mb-3">
-<Field type="text" name='email'  className="w-full py-3 px-3 rounded border outline-none"  placeholder="Enter Your Email"/>
-<ErrorMessage name='email' className='text-red-500' component={'p'} />
-
-</div>
-<div className="mb-3">
-<Field type="text" name='password'  className="w-full py-3 px-3 rounded border outline-none" placeholder="Enter Your Password" />
-<ErrorMessage name='password' className='text-red-500' component={'p'} />
-
-</div>
- 
-<div className="mb-3">
-        <CustomAuthButton isLoading={loading} text={'Login'} type='submit' />
-</div>
-<div className="mb-3">
-<p className='text-end font-medium'>Don't Have An Account ? <Link href={'/register'} className='text-red-600 '>Register</Link> </p>
-<p className='text-end font-medium'>Admin? <Link href={'/admin-login'} className='text-red-600 '>Login here</Link></p>
-</div>
-</Form>
-          </Formik>
-                    </div>
-
+      <div className="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-6xl flex items-start border rounded-lg overflow-hidden shadow-lg">
+          <div className="hidden lg:block lg:w-1/2 bg-white">
+            <img 
+              src="https://bfsi.eletsonline.com/wp-content/uploads/2023/07/Yono-SBI.jpg" 
+              className='h-full w-full object-cover' 
+              alt="Banking Login" 
+            />
           </div>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmitHandler}
+          >
+            <Form className="w-full lg:w-1/2 px-6 py-8 sm:px-10 sm:py-10 bg-white">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+                <p className="text-gray-600">Sign in to your account</p>
+              </div>
+
+              <div className="mb-4">
+                <Field 
+                  type="email" 
+                  name="email"  
+                  className="w-full py-3 px-4 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"  
+                  placeholder="Enter Your Email"
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
+                />
+                <ErrorMessage name="email" className="text-red-500 text-sm mt-1" component={'p'} />
+              </div>
+
+              <div className="mb-6">
+                <Field 
+                  type="password" 
+                  name="password"  
+                  className="w-full py-3 px-4 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                  placeholder="Enter Your Password"
+                  autoComplete="current-password"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
+                />
+                <ErrorMessage name="password" className="text-red-500 text-sm mt-1" component={'p'} />
+              </div>
+
+              <div className="mb-6">
+                <CustomAuthButton isLoading={loading} text={'Sign In'} type='submit' />
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-center text-sm text-gray-600">
+                  Don't have an account?{' '}
+                  <Link href={'/register'} className="text-blue-600 hover:text-blue-800 font-medium">
+                    Register here
+                  </Link>
+                </p>
+                <p className="text-center text-sm text-gray-600">
+                  Admin?{' '}
+                  <Link href={'/admin-login'} className="text-blue-600 hover:text-blue-800 font-medium">
+                    Login here
+                  </Link>
+                </p>
+              </div>
+            </Form>
+          </Formik>
+        </div>
+      </div>
     </>
   )
 }
