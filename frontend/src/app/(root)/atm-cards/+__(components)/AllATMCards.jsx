@@ -129,7 +129,7 @@ const AllATMCards = () => {
         return (
           <div key={atm._id} className="flex flex-col items-center group">
             <div className="mb-4 text-center">
-              <p className="text-sm text-gray-600">Account: {getFormattedAccountNumber(atm)}</p>
+              <p className="text-sm text-gray-800 font-medium">Account: {getFormattedAccountNumber(atm)}</p>
             </div>
 
             <div
@@ -151,17 +151,17 @@ const AllATMCards = () => {
 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex-1">
-                    <div className="text-xs opacity-80 mb-1">Cardholder</div>
+                    <div className="text-xs text-gray-200 mb-1">Cardholder</div>
                     <div className="font-medium text-xs uppercase truncate">{user?.name || "CARDHOLDER"}</div>
                   </div>
 
                   <div className="flex-1 text-center">
-                    <div className="text-xs opacity-80 mb-1">CVV:</div>
+                    <div className="text-xs text-gray-200 mb-1">CVV:</div>
                     <div className="flex items-center justify-center gap-1">
                       <span className="font-mono font-bold">{isShowCVV ? atm.cvv : "xxx"}</span>
                       <button
                         onClick={() => toggleCVV(atm._id)}
-                        className="text-white opacity-70 hover:opacity-100 transition-opacity ml-1"
+                        className="text-white opacity-80 hover:opacity-100 transition-opacity ml-1"
                         title={isShowCVV ? "Hide CVV" : "Show CVV"}
                       >
                         {isShowCVV ? <FaEyeSlash size={12} /> : <FaEye size={12} />}
@@ -170,7 +170,7 @@ const AllATMCards = () => {
                   </div>
 
                   <div className="flex-1 text-right">
-                    <div className="text-xs opacity-80 mb-1">Exp:</div>
+                    <div className="text-xs text-gray-200 mb-1">Exp:</div>
                     <div className="font-mono font-bold">{formatExpiry(atm.expiry)}</div>
                   </div>
                 </div>
@@ -180,7 +180,7 @@ const AllATMCards = () => {
             <div className="flex justify-center mb-4">
               <button
                 onClick={() => toggleCardDetails(atm._id)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors duration-200 text-sm font-medium shadow-sm"
               >
                 {isShowCardDetails ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
                 {isShowCardDetails ? "Hide Card Details" : "View Card Details"}
