@@ -10,12 +10,20 @@ import { generateAccountNumber, formatAccountNumber } from '@/utils/accountUtils
 const AllATMCards = () => {
   const { user } = useMainContext();
   const [visibleCVVs, setVisibleCVVs] = useState({});
+  const [visibleCardDetails, setVisibleCardDetails] = useState({});
 
   const atms = Array.isArray(user?.atms) ? user.atms : [];
   const accountNos = Array.isArray(user?.account_no) ? user.account_no : [];
 
   const toggleCVV = (cardId) => {
     setVisibleCVVs(prev => ({
+      ...prev,
+      [cardId]: !prev[cardId]
+    }));
+  };
+
+  const toggleCardDetails = (cardId) => {
+    setVisibleCardDetails(prev => ({
       ...prev,
       [cardId]: !prev[cardId]
     }));
@@ -111,6 +119,7 @@ const AllATMCards = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {validAtms.map((atm) => {
         const isShowCVV = visibleCVVs[atm._id] || false;
+        const isShowCardDetails = visibleCardDetails[atm._id] || false;
 
         return (
           <div key={atm._id} className="flex flex-col items-center group">
@@ -184,6 +193,48 @@ const AllATMCards = () => {
                 </div>
               </div>
             </div>
+
+            {/* View Card Details Button */}
+            <div className="flex justify-center mb-4">
+              <button
+                onClick={() => toggleCardDetails(atm._id)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 text-sm font-medium"
+              >
+                {isShowCardDetails ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                {isShowCardDetails ? 'Hide Card Details' : 'View Card Details'}
+              </button>
+            </div>
+
+            {/* Card Details Section */}
+            {isShowCardDetails && (
+              <div className="w-full max-w-sm mb-4 p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                <h4 className="text-sm font-semibold text-gray-800 mb-3">Card Information</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Full Card Number:</span>
+                    <span className="font-mono font-semibold text-gray-800">
+                      {`${atm.card_no.slice(0, 4)} ${atm.card_no.slice(4, 8)} ${atm.card_no.slice(8, 12)} ${atm.card_no.slice(12, 16)}`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">CVV:</span>
+                    <span className="font-mono font-semibold text-gray-800">{atm.cvv}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Expiry Date:</span>
+                    <span className="font-mono font-semibold text-gray-800">{formatExpiry(atm.expiry)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cardholder:</span>
+                    <span className="font-semibold text-gray-800 uppercase">{user?.name || 'CARDHOLDER'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Card Type:</span>
+                    <span className="font-semibold text-gray-800 capitalize">{atm.card_type}</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Use Card Button */}
             <div className="flex justify-center">
