@@ -49,10 +49,26 @@ class UPIService {
             throw new ApiError(400, 'UPI ID and PIN are required');
         }
 
+        // Check if user already has a UPI ID
+        const currentUser = await UserModel.findById(userId).select('upi_id');
+        if (!currentUser) {
+            throw new ApiError(404, 'User not found');
+        }
+        
+        if (currentUser.upi_id) {
+            throw new ApiError(400, 'You already have a UPI ID. Each user can only have one UPI ID.');
+        }
+
         // Basic format validation
         const upiRegex = /^[\w.-]+@cbibank$/;
         if (!upiRegex.test(upi_id)) {
             throw new ApiError(400, 'UPI ID must end with @cbibank');
+        }
+
+        // Extract username part for better error messages
+        const username = upi_id.split('@')[0];
+        if (username.length < 2) {
+            throw new ApiError(400, 'UPI ID username must be at least 2 characters long');
         }
 
         // PIN length validation (4 or 6 digits)
@@ -64,7 +80,7 @@ class UPIService {
         // Ensure uniqueness of the handle
         const existing = await UserModel.findOne({ upi_id });
         if (existing) {
-            throw new ApiError(400, 'UPI ID is already taken');
+            throw new ApiError(400, `UPI ID "${upi_id}" is already taken. Please choose a different username before @cbibank`);
         }
 
         // Hash the PIN before storing
@@ -77,10 +93,10 @@ class UPIService {
         ).select('upi_id');
 
         if (!updatedUser) {
-            throw new ApiError(404, 'User not found');
+            throw new ApiError(404, 'User not found during update');
         }
 
-        console.log('UPI created successfully for user:', userId);
+        console.log('UPI created successfully for user:', userId, 'with UPI ID:', upi_id);
         return {
             upi_id: updatedUser.upi_id
         };
