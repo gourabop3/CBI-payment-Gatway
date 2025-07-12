@@ -152,6 +152,29 @@ class SupportService {
   static generateBankingResponse(message) {
     // Enhanced rule-based responses for comprehensive banking support
     
+    // Developer queries - Handle ALL variations first (highest priority)
+    if (
+      message.includes('who is developer') || 
+      message.includes('who is the developer') || 
+      message.includes('who developed') || 
+      message.includes('who built') || 
+      message.includes('who created') || 
+      message.includes('who made') || 
+      message.includes('developer is') || 
+      message.includes('developer name') || 
+      message.includes('who is gourab') || 
+      message.includes('tell me about developer') || 
+      message.includes('about developer') ||
+      message.includes('developer details') ||
+      message.includes('developer info') ||
+      message.includes('creator') ||
+      message.includes('gourab') ||
+      (message.includes('developer') && (message.includes('who') || message.includes('what') || message.includes('tell'))) ||
+      message === 'developer'
+    ) {
+      return "👨‍💻 **Meet the Developer - Gourab**\n\nI'm CBI Assistant, an intelligent banking chatbot developed by **Gourab**. Here are the complete details:\n\n📋 **Developer Information:**\n• **Name:** Gourab\n• **Email:** gourabmop@gmail.com\n• **Mobile:** +91 9263839602\n• **Location:** West Bengal, India\n\n🎯 **Why I Was Created:**\n- Provide instant banking support 24/7\n- Guide customers through digital banking services\n- Offer quick solutions to banking queries\n- Make banking more accessible and user-friendly\n\n✨ **My Capabilities:**\n- Account balance inquiries\n- Money transfer guidance\n- ATM card services support\n- Mobile recharge & bill payments\n- KYC verification assistance\n- General banking help\n\n🤖 **Advanced Features:**\n- AI-powered responses\n- Personalized assistance\n- Multi-language support\n- 24/7 availability\n\nGourab designed me with advanced AI capabilities to serve CBI Bank customers efficiently. How can I assist you with your banking needs today?";
+    }
+    
     // Greeting responses
     if (message.includes('hello') || message.includes('hi') || message.includes('hey') || message.includes('good morning') || message.includes('good afternoon') || message.includes('good evening')) {
       const greetings = [
@@ -274,6 +297,29 @@ class SupportService {
   static generatePersonalizedBankingResponse(message, user) {
     const userName = user?.fullName || 'there';
     const isVerified = user?.isVerified || false;
+    
+    // Developer queries - Handle ALL variations first (highest priority) - Personalized
+    if (
+      message.includes('who is developer') || 
+      message.includes('who is the developer') || 
+      message.includes('who developed') || 
+      message.includes('who built') || 
+      message.includes('who created') || 
+      message.includes('who made') || 
+      message.includes('developer is') || 
+      message.includes('developer name') || 
+      message.includes('who is gourab') || 
+      message.includes('tell me about developer') || 
+      message.includes('about developer') ||
+      message.includes('developer details') ||
+      message.includes('developer info') ||
+      message.includes('creator') ||
+      message.includes('gourab') ||
+      (message.includes('developer') && (message.includes('who') || message.includes('what') || message.includes('tell'))) ||
+      message === 'developer'
+    ) {
+      return `Hi ${userName}! 👨‍💻 **Meet the Developer - Gourab**\n\nI'm CBI Assistant, an intelligent banking chatbot developed specifically by **Gourab** to provide personalized support to valued customers like you.\n\n📋 **Developer Information:**\n• **Name:** Gourab\n• **Email:** gourabmop@gmail.com\n• **Mobile:** +91 9263839602\n• **Location:** West Bengal, India\n\n🎯 **Why I Was Created for You:**\n- Provide personalized banking support 24/7\n- Understand your account status (${isVerified ? 'Verified ✅' : 'KYC Pending ⏳'})\n- Guide you through digital banking services\n- Offer customized solutions to your banking queries\n- Make your banking experience seamless\n\n✨ **My Capabilities for You:**\n- Your account balance inquiries\n- Personalized money transfer guidance\n- ATM card services support\n- Mobile recharge & bill payments\n- KYC verification assistance\n- Transaction history access\n- Tailored banking recommendations\n\n🤖 **Advanced Features:**\n- AI-powered personalized responses\n- User context awareness\n- Account status integration\n- Smart banking assistance\n- 24/7 availability\n\nGourab designed me with advanced AI capabilities to serve CBI Bank customers like you efficiently, ${userName}. How can I assist you with your banking needs today?`;
+    }
     
     // Greeting responses with personalization
     if (message.includes('hello') || message.includes('hi') || message.includes('hey') || message.includes('good morning') || message.includes('good afternoon') || message.includes('good evening')) {
