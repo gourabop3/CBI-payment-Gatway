@@ -8,6 +8,9 @@ const router = express.Router();
 router.get('/qr', UPIController.generateQR);
 router.post('/qr/payment', UPIController.generatePaymentQR);
 
+// Register new UPI handle
+router.post('/register', UPIController.registerUPI);
+
 // Payment Processing
 router.post('/pay', UPIController.processPayment);
 
