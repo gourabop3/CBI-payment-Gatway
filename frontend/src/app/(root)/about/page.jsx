@@ -2,7 +2,7 @@
 import { AiOutlineGithub, AiOutlineInstagram, AiFillLinkedin, AiOutlineMail } from 'react-icons/ai';
 import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop, FaTelegram } from 'react-icons/fa';
 import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit, SiAxios } from 'react-icons/si';
-import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed, MdChat, MdQrCode, MdRecharge, MdReceipt } from 'react-icons/md';
+import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed, MdChat, MdQrCode, MdBolt, MdReceipt } from 'react-icons/md';
 import { BiTransfer } from 'react-icons/bi';
 import { RiBankCardLine } from 'react-icons/ri';
 import HeaderName from '@/components/HeaderName';
@@ -49,7 +49,7 @@ const features = [
   { 
     title: 'Digital Services', 
     description: 'Complete digital banking ecosystem with mobile recharge and bill payments', 
-    icon: MdRecharge,
+    icon: MdBolt,
     details: ['Mobile Recharge', 'Bill Payments', 'DTH/Cable TV', 'Credit Card Bills']
   },
   { 

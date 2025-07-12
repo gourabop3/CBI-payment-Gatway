@@ -1,6 +1,5 @@
-const {config}=require("dotenv")
-config({
-    path:'.env'
+require('dotenv').config({
+    path: '.env'
 })
 const app = require("./src/app")
 const { ConnectDB } = require("./src/config/db.config")
