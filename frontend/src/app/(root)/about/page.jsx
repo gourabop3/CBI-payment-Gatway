@@ -167,6 +167,7 @@ export default function AboutPage() {
           <div className="text-center mb-8">
             <h2 className="text-5xl font-bold text-gray-900 mb-2">Gourab Mullick</h2>
             <p className="text-lg text-gray-600">West Bengal, India</p>
+            <p className="text-xl text-gray-600 mt-2">Meet the developer behind this project</p>
           </div>
 
           {/* Skills */}
