@@ -4,12 +4,61 @@ import React, { useEffect, useState } from 'react';
 import HeaderName from '@/components/HeaderName';
 import { useMainContext } from '@/context/MainContext';
 import { axiosClient } from '@/utils/AxiosClient';
-import { FaCode, FaKey, FaPlug, FaReact, FaNodeJs, FaHtml5, FaJs, FaDownload, FaBook, FaExternalLinkAlt, FaShieldAlt, FaCog, FaInfoCircle } from 'react-icons/fa';
+import { FaCode, FaKey, FaPlug, FaReact, FaNodeJs, FaHtml5, FaJs, FaDownload, FaBook, FaExternalLinkAlt, FaShieldAlt, FaCog, FaInfoCircle, FaCopy, FaCheck } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const truncate = (str = '', front = 6, back = 4) => {
   if (str.length <= front + back) return str;
   return `${str.slice(0, front)}...${str.slice(-back)}`;
+};
+
+// CodeBlock component with copy functionality
+const CodeBlock = ({ code, language = 'text', title }) => {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      toast.success('Code copied to clipboard!');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast.error('Failed to copy code');
+    }
+  };
+
+  return (
+    <div className="relative">
+      {title && (
+        <div className="flex items-center justify-between bg-gray-800 text-gray-200 px-4 py-2 rounded-t-lg border-b border-gray-700">
+          <span className="text-sm font-medium">{title}</span>
+          <button
+            onClick={copyToClipboard}
+            className="flex items-center gap-2 px-3 py-1 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded text-xs transition-colors"
+            title="Copy to clipboard"
+          >
+            {copied ? <FaCheck className="text-green-400" /> : <FaCopy />}
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+      )}
+      <div className={`bg-gray-900 ${title ? 'rounded-b-lg' : 'rounded-lg'} p-4 overflow-x-auto relative group`}>
+        {!title && (
+          <button
+            onClick={copyToClipboard}
+            className="absolute top-3 right-3 flex items-center gap-2 px-3 py-1 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded text-xs transition-all opacity-0 group-hover:opacity-100"
+            title="Copy to clipboard"
+          >
+            {copied ? <FaCheck className="text-green-400" /> : <FaCopy />}
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        )}
+        <pre className="text-green-400 text-sm whitespace-pre-wrap">
+          {code}
+        </pre>
+      </div>
+    </div>
+  );
 };
 
 export default function ApiUsePage() {
@@ -210,20 +259,18 @@ export default function ApiUsePage() {
                     <div className="space-y-4">
                       <div>
                         <h5 className="font-semibold text-blue-700 mb-2">1. Install Required Package</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`npm install axios
+                        <CodeBlock 
+                          code={`npm install axios
 # or
 yarn add axios`}
-                          </pre>
-                        </div>
+                          title="Package Installation"
+                        />
                       </div>
 
                       <div>
                         <h5 className="font-semibold text-blue-700 mb-2">2. Create Payment Component</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`import React, { useState } from 'react';
+                        <CodeBlock 
+                          code={`import React, { useState } from 'react';
 import axios from 'axios';
 
 const PaymentComponent = () => {
@@ -309,15 +356,14 @@ const PaymentComponent = () => {
 };
 
 export default PaymentComponent;`}
-                          </pre>
-                        </div>
+                          title="PaymentComponent.jsx"
+                        />
                       </div>
 
                       <div>
                         <h5 className="font-semibold text-blue-700 mb-2">3. Handle Payment Callback</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`// pages/payment/callback.js
+                        <CodeBlock 
+                          code={`// pages/payment/callback.js
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
@@ -344,8 +390,8 @@ const PaymentCallback = () => {
 };
 
 export default PaymentCallback;`}
-                          </pre>
-                        </div>
+                          title="PaymentCallback.jsx"
+                        />
                       </div>
                     </div>
                   </div>
@@ -364,35 +410,32 @@ export default PaymentCallback;`}
                     <div className="space-y-4">
                       <div>
                         <h5 className="font-semibold text-green-700 mb-2">1. Install Dependencies</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`npm install express axios crypto dotenv
+                        <CodeBlock 
+                          code={`npm install express axios crypto dotenv
 # or
 yarn add express axios crypto dotenv`}
-                          </pre>
-                        </div>
+                          title="Package Installation"
+                        />
                       </div>
 
                       <div>
                         <h5 className="font-semibold text-green-700 mb-2">2. Environment Configuration</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`// .env file
+                        <CodeBlock 
+                          code={`# .env file
 CBI_API_SECRET=${truncate(keys.api_secret, 8, 8)}
 CBI_API_HASH=${truncate(keys.api_hash, 8, 8)}
 CBI_MERCHANT_ID=${keys.merchant_id}
 CBI_GATEWAY_KEY=${truncate(keys.payment_gateway_key, 8, 8)}
 CBI_BASE_URL=${getBaseUrl()}
 CBI_ENVIRONMENT=${keys.environment}`}
-                          </pre>
-                        </div>
+                          title=".env"
+                        />
                       </div>
 
                       <div>
                         <h5 className="font-semibold text-green-700 mb-2">3. Payment Service Implementation</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`// services/paymentService.js
+                        <CodeBlock 
+                          code={`// services/paymentService.js
 const axios = require('axios');
 const crypto = require('crypto');
 require('dotenv').config();
@@ -479,15 +522,14 @@ class PaymentService {
 }
 
 module.exports = new PaymentService();`}
-                          </pre>
-                        </div>
+                          title="paymentService.js"
+                        />
                       </div>
 
                       <div>
                         <h5 className="font-semibold text-green-700 mb-2">4. Express.js Route Implementation</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`// routes/payment.js
+                        <CodeBlock 
+                          code={`// routes/payment.js
 const express = require('express');
 const paymentService = require('../services/paymentService');
 const router = express.Router();
@@ -564,8 +606,8 @@ router.get('/verify/:paymentId', async (req, res) => {
 });
 
 module.exports = router;`}
-                          </pre>
-                        </div>
+                          title="payment.js (Routes)"
+                        />
                       </div>
                     </div>
                   </div>
@@ -584,9 +626,8 @@ module.exports = router;`}
                     <div className="space-y-4">
                       <div>
                         <h5 className="font-semibold text-orange-700 mb-2">Complete HTML Payment Form</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`<!DOCTYPE html>
+                        <CodeBlock 
+                          code={`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -799,8 +840,122 @@ module.exports = router;`}
     </script>
 </body>
 </html>`}
-                          </pre>
-                        </div>
+                          title="payment.html"
+                        />
+                      </div>
+
+                      <div>
+                        <h5 className="font-semibold text-orange-700 mb-2">Payment Callback Page</h5>
+                        <CodeBlock 
+                          code={`<!-- payment-callback.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Status - CBI Gateway</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-container {
+            max-width: 400px;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .failed {
+            color: #dc3545;
+        }
+        
+        .status-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .continue-button {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-container">
+        <div id="paymentStatus">
+            <div class="status-icon">⏳</div>
+            <h2>Processing...</h2>
+            <p>Please wait while we verify your payment</p>
+        </div>
+        
+        <button class="continue-button" onclick="goHome()" style="display: none;" id="continueBtn">
+            Continue Shopping
+        </button>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentId = urlParams.get('payment_id');
+        const status = urlParams.get('status');
+        const amount = urlParams.get('amount');
+        
+        const statusContainer = document.getElementById('paymentStatus');
+        const continueBtn = document.getElementById('continueBtn');
+        
+        if (status === 'success') {
+            statusContainer.innerHTML = \`
+                <div class="status-icon success">✅</div>
+                <h2 class="success">Payment Successful!</h2>
+                <p>Payment ID: <strong>\${paymentId}</strong></p>
+                <p>Amount: <strong>₹\${amount}</strong></p>
+                <p>Thank you for your payment!</p>
+            \`;
+        } else if (status === 'failed') {
+            statusContainer.innerHTML = \`
+                <div class="status-icon failed">❌</div>
+                <h2 class="failed">Payment Failed</h2>
+                <p>Payment ID: <strong>\${paymentId}</strong></p>
+                <p>Please try again or contact support</p>
+            \`;
+        } else {
+            statusContainer.innerHTML = \`
+                <div class="status-icon">❓</div>
+                <h2>Unknown Status</h2>
+                <p>Please contact support for assistance</p>
+            \`;
+        }
+        
+        continueBtn.style.display = 'block';
+        
+        function goHome() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>`}
+                          title="payment-callback.html"
+                        />
                       </div>
                     </div>
                   </div>
@@ -819,9 +974,8 @@ module.exports = router;`}
                     <div className="space-y-4">
                       <div>
                         <h5 className="font-semibold text-yellow-700 mb-2">CBI Payment SDK</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`// cbi-payment-sdk.js
+                        <CodeBlock 
+                          code={`// cbi-payment-sdk.js
 class CBIPaymentGateway {
     constructor(config) {
         this.config = {
@@ -973,15 +1127,14 @@ async function makePayment(amount, customerData) {
         alert('Payment failed: ' + error.message);
     }
 }`}
-                          </pre>
-                        </div>
+                          title="cbi-payment-sdk.js"
+                        />
                       </div>
 
                       <div>
                         <h5 className="font-semibold text-yellow-700 mb-2">Implementation Example</h5>
-                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                          <pre className="text-green-400 text-sm">
-{`<!DOCTYPE html>
+                        <CodeBlock 
+                          code={`<!DOCTYPE html>
 <html>
 <head>
     <title>CBI Payment Integration</title>
@@ -1023,8 +1176,8 @@ async function makePayment(amount, customerData) {
     </script>
 </body>
 </html>`}
-                          </pre>
-                        </div>
+                          title="example.html"
+                        />
                       </div>
                     </div>
                   </div>
