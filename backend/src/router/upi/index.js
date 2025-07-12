@@ -1,8 +1,10 @@
 const express = require('express');
 const UPIController = require('../../controller/UPIController');
 const router = express.Router();
+const AuthMiddleware = require('../../middleware/AuthMiddleware');
 
-// Assume authentication middleware sets req.user (already used by other routes)
+// Apply authentication to all UPI routes
+router.use(AuthMiddleware);
 
 // QR Code Generation
 router.get('/qr', UPIController.generateQR);

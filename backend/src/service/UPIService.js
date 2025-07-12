@@ -48,9 +48,15 @@ class UPIService {
         }
 
         // Basic format validation
-        const upiRegex = /^[\w.-]+@[\w.-]+$/;
+        const upiRegex = /^[\w.-]+@cbibank$/;
         if (!upiRegex.test(upi_id)) {
-            throw new ApiError(400, 'Invalid UPI ID format');
+            throw new ApiError(400, 'UPI ID must end with @cbibank');
+        }
+
+        // PIN length validation (4 or 6 digits)
+        const pinRegex = /^\d{4}$|^\d{6}$/;
+        if (!pinRegex.test(pin)) {
+            throw new ApiError(400, 'PIN must be 4 or 6 digits');
         }
 
         // Ensure uniqueness of the handle
