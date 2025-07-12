@@ -8,9 +8,11 @@ import CustomAuthButton from '@/components/reuseable/CustomAuthButton';
 import Link from 'next/link';
 import { useMainContext } from '@/context/MainContext';
 import { useRouter } from 'next/navigation';
+import { FaUserLock, FaShieldAlt, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const LoginPage = () => {
     const [loading,setLoading] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
     const {fetchUserProfile} = useMainContext()
     const router = useRouter()
 
@@ -49,78 +51,141 @@ const LoginPage = () => {
   }
 
   return (
-    <>
-      <div className="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-6xl flex items-start border rounded-lg overflow-hidden shadow-lg">
-          <div className="hidden lg:block lg:w-1/2 bg-white">
-            <img 
-              src="https://bfsi.eletsonline.com/wp-content/uploads/2023/07/Yono-SBI.jpg" 
-              className='h-full w-full object-cover' 
-              alt="Banking Login" 
-            />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <div className="mx-auto w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
+            <FaUserLock className="text-white text-2xl" />
           </div>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={onSubmitHandler}
-          >
-            <Form className="w-full lg:w-1/2 px-6 py-8 sm:px-10 sm:py-10 bg-white">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-                <p className="text-gray-600">Sign in to your account</p>
-              </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">CBI Payment Gateway</h1>
+          <p className="text-gray-600">Professional Banking Solution</p>
+        </div>
 
-              <div className="mb-4">
-                <Field 
-                  type="email" 
-                  name="email"  
-                  className="w-full py-3 px-4 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"  
-                  placeholder="Enter Your Email"
-                  autoComplete="email"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck="false"
-                />
-                <ErrorMessage name="email" className="text-red-500 text-sm mt-1" component={'p'} />
-              </div>
+        {/* Login Card */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="px-8 py-10">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+              <p className="text-gray-600">Sign in to your account</p>
+            </div>
 
-              <div className="mb-6">
-                <Field 
-                  type="password" 
-                  name="password"  
-                  className="w-full py-3 px-4 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                  placeholder="Enter Your Password"
-                  autoComplete="current-password"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck="false"
-                />
-                <ErrorMessage name="password" className="text-red-500 text-sm mt-1" component={'p'} />
-              </div>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={onSubmitHandler}
+            >
+              <Form className="space-y-6">
+                {/* Email Field */}
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address
+                  </label>
+                  <Field 
+                    id="email"
+                    type="email" 
+                    name="email"  
+                    className="w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white"  
+                    placeholder="Enter your email address"
+                    autoComplete="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck="false"
+                  />
+                  <ErrorMessage name="email" className="text-red-500 text-sm mt-1" component={'p'} />
+                </div>
 
-              <div className="mb-6">
-                <CustomAuthButton isLoading={loading} text={'Sign In'} type='submit' />
-              </div>
+                {/* Password Field */}
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Field 
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      name="password"  
+                      className="w-full py-3 px-4 pr-12 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white" 
+                      placeholder="Enter your password"
+                      autoComplete="current-password"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      spellCheck="false"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                  <ErrorMessage name="password" className="text-red-500 text-sm mt-1" component={'p'} />
+                </div>
 
-              <div className="space-y-2">
-                <p className="text-center text-sm text-gray-600">
+                {/* Submit Button */}
+                <div className="pt-2">
+                  <CustomAuthButton 
+                    isLoading={loading} 
+                    text={'Sign In'} 
+                    type='submit' 
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  />
+                </div>
+              </Form>
+            </Formik>
+
+            {/* Links Section */}
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <div className="space-y-3 text-center">
+                <p className="text-sm text-gray-600">
                   Don't have an account?{' '}
-                  <Link href={'/register'} className="text-blue-600 hover:text-blue-800 font-medium">
+                  <Link href={'/register'} className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
                     Register here
                   </Link>
                 </p>
-                <p className="text-center text-sm text-gray-600">
+                <p className="text-sm text-gray-600">
                   Admin?{' '}
-                  <Link href={'/admin-login'} className="text-blue-600 hover:text-blue-800 font-medium">
+                  <Link href={'/admin-login'} className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
                     Login here
                   </Link>
                 </p>
               </div>
-            </Form>
-          </Formik>
+            </div>
+          </div>
+
+          {/* Security Footer */}
+          <div className="bg-gray-50 px-8 py-4 border-t border-gray-100">
+            <div className="flex items-center justify-center text-gray-500">
+              <FaShieldAlt className="text-sm mr-2" />
+              <span className="text-xs">Secured with bank-grade encryption</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+          <div className="bg-white rounded-lg p-3 shadow-sm">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <FaShieldAlt className="text-blue-600 text-sm" />
+            </div>
+            <p className="text-xs text-gray-600 font-medium">Secure</p>
+          </div>
+          <div className="bg-white rounded-lg p-3 shadow-sm">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <span className="text-green-600 text-sm font-bold">24/7</span>
+            </div>
+            <p className="text-xs text-gray-600 font-medium">Support</p>
+          </div>
+          <div className="bg-white rounded-lg p-3 shadow-sm">
+            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <span className="text-purple-600 text-sm font-bold">⚡</span>
+            </div>
+            <p className="text-xs text-gray-600 font-medium">Fast</p>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
