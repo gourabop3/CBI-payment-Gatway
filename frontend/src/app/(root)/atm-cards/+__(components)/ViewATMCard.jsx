@@ -25,7 +25,7 @@ const ViewATMCard = () => {
 <div className="flex flex-col items-center">
   {/* Professional Single Card UI */}
   <div
-    className={`atm-card atm-card-${atm.card_type.toLowerCase()} card-entrance relative w-full max-w-md rounded-2xl p-6 mb-6 overflow-hidden text-white`}
+    className={`atm-card atm-card-${atm.card_type.toLowerCase()} card-entrance relative w-full max-w-md rounded-2xl p-6 mb-6 overflow-hidden text-white min-h-[200px] shadow-lg`}
   >
     {/* Card Background Pattern */}
     <div className="card-pattern">

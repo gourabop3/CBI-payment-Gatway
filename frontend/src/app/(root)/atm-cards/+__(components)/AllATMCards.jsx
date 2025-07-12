@@ -135,7 +135,7 @@ const AllATMCards = () => {
 
             {/* Professional Card UI */}
             <div 
-              className={`atm-card atm-card-${atm.card_type.toLowerCase()} card-entrance relative w-full max-w-sm rounded-2xl p-6 mb-6 overflow-hidden text-white`}
+              className={`atm-card atm-card-${atm.card_type.toLowerCase()} card-entrance relative w-full max-w-sm rounded-2xl p-6 mb-6 overflow-hidden text-white min-h-[200px] shadow-lg`}
             >
               {/* Card Background Pattern */}
               <div className="card-pattern">
