@@ -1,26 +1,18 @@
 "use client";
-import { AiOutlineGithub, AiOutlineInstagram, AiFillLinkedin, AiOutlineMail } from 'react-icons/ai';
-import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop, FaTelegram } from 'react-icons/fa';
-import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit, SiAxios } from 'react-icons/si';
+import { FaReact, FaNodeJs, FaDatabase, FaShieldAlt, FaMobile, FaCode, FaServer, FaDesktop } from 'react-icons/fa';
+import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiJavascript, SiGit } from 'react-icons/si';
 import { MdPayment, MdAccountBalance, MdSecurity, MdSpeed, MdChat, MdQrCode, MdBolt, MdReceipt } from 'react-icons/md';
 import { BiTransfer } from 'react-icons/bi';
 import { RiBankCardLine } from 'react-icons/ri';
 import HeaderName from '@/components/HeaderName';
 
-const socials = [
-  { href: 'https://github.com/gourab18', label: 'GitHub', Icon: AiOutlineGithub, color: 'hover:text-gray-800' },
-  { href: 'https://instagram.com/gourab_op_84', label: 'Instagram', Icon: AiOutlineInstagram, color: 'hover:text-pink-600' },
-  { href: 'https://linkedin.com/in/gourab-mullick', label: 'LinkedIn', Icon: AiFillLinkedin, color: 'hover:text-blue-600' },
-  { href: 'mailto:gourabmullick200@gmail.com', label: 'Gmail', Icon: AiOutlineMail, color: 'hover:text-red-600' },
-  { href: 'https://t.me/gourab_op_84', label: 'Telegram', Icon: FaTelegram, color: 'hover:text-blue-500' },
-];
+
 
 const frontendTech = [
   { name: 'React 19.0.0', icon: FaReact, description: 'Modern UI library with hooks and functional components', why: 'Component-based architecture for reusable UI elements' },
   { name: 'Next.js 15.2.4', icon: SiNextdotjs, description: 'React framework for production-ready applications', why: 'SSR, routing, and optimized performance out of the box' },
   { name: 'TailwindCSS 4.0', icon: SiTailwindcss, description: 'Utility-first CSS framework for modern design', why: 'Rapid UI development with utility classes' },
   { name: 'Redux Toolkit', icon: FaCode, description: 'State management for complex application logic', why: 'Centralized state management with simplified Redux' },
-  { name: 'Axios 1.8.4', icon: SiAxios, description: 'HTTP client for API communication', why: 'Automatic JSON parsing and comprehensive error handling' },
   { name: 'Framer Motion', icon: FaCode, description: 'Advanced animations and transitions', why: 'Smooth, performant animations with declarative API' },
 ];
 
@@ -72,16 +64,7 @@ const features = [
   },
 ];
 
-const axiosBenefits = [
-  'Automatic JSON data transformation',
-  'Request and response interceptors',
-  'Built-in XSRF protection',
-  'Request timeout handling',
-  'Automatic request/response logging',
-  'Error handling and retry logic',
-  'Progress monitoring for uploads',
-  'Request cancellation support'
-];
+
 
 export default function AboutPage() {
   return (
@@ -95,7 +78,7 @@ export default function AboutPage() {
           </h1>
           <p className="text-gray-700 leading-relaxed text-xl max-w-4xl mx-auto">
             A comprehensive, full-stack banking application that provides modern digital banking solutions with cutting-edge technology. 
-            Built with <span className="font-semibold text-rose-600">React</span>, <span className="font-semibold text-rose-600">Node.js</span>, and <span className="font-semibold text-rose-600">Axios</span> for seamless API communication.
+            Built with <span className="font-semibold text-rose-600">React</span>, <span className="font-semibold text-rose-600">Node.js</span>, and <span className="font-semibold text-rose-600">modern web technologies</span> for seamless user experience.
           </p>
         </div>
 
