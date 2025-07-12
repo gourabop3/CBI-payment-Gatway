@@ -152,16 +152,11 @@ export default function AboutPage() {
           </div>
           
           {/* Features List */}
-          <ul className="space-y-6 max-w-3xl mx-auto">
-            {projectFeatures.map(({ title, icon: Icon, description }) => (
-              <li key={title} className="flex items-start gap-4">
-                <div className="flex-shrink-0 p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md">
-                  <Icon className="text-2xl" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">{title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
-                </div>
+          <ul className="space-y-4 max-w-3xl mx-auto list-disc list-inside text-lg text-gray-800">
+            {projectFeatures.map(({ title, icon: Icon }) => (
+              <li key={title} className="flex items-center gap-3">
+                <Icon className="text-blue-600" />
+                <span className="font-medium">{title}</span>
               </li>
             ))}
           </ul>
