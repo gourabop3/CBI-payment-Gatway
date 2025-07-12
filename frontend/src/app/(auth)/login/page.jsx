@@ -1,6 +1,6 @@
 "use client";
 import { axiosClient } from '@/utils/AxiosClient';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {Formik,Form,ErrorMessage,Field} from 'formik'
 import * as yup from 'yup'
 import { toast } from 'react-toastify';
@@ -9,12 +9,34 @@ import Link from 'next/link';
 import { useMainContext } from '@/context/MainContext';
 import { useRouter } from 'next/navigation';
 import { FaUserLock, FaShieldAlt, FaEye, FaEyeSlash } from 'react-icons/fa';
+import Head from 'next/head';
 
 const LoginPage = () => {
     const [loading,setLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const {fetchUserProfile} = useMainContext()
     const router = useRouter()
+
+    // Prevent Safari Reader Mode on mobile
+    useEffect(() => {
+      // Add meta tag to prevent Reader Mode
+      const metaTag = document.createElement('meta');
+      metaTag.name = 'article:author';
+      metaTag.content = '';
+      document.head.appendChild(metaTag);
+
+      // Add another meta to indicate this is an app interface
+      const appMetaTag = document.createElement('meta');
+      appMetaTag.name = 'application-name';
+      appMetaTag.content = 'CBI Banking Login';
+      document.head.appendChild(appMetaTag);
+
+      return () => {
+        // Cleanup
+        if (metaTag.parentNode) metaTag.parentNode.removeChild(metaTag);
+        if (appMetaTag.parentNode) appMetaTag.parentNode.removeChild(appMetaTag);
+      };
+    }, []);
 
   const initialValues = {
     email:'',
@@ -51,23 +73,40 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md">
+    <>
+      <style jsx>{`
+        /* Prevent Safari Reader Mode */
+        body { 
+          -webkit-user-select: none;
+          user-select: none;
+        }
+        .login-container {
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+        .form-input {
+          -webkit-user-select: text;
+          user-select: text;
+        }
+      `}</style>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4 sm:px-6 lg:px-8 login-container" role="application" aria-label="CBI Banking Login Application">
+        <div className="w-full max-w-md" role="form" aria-label="Login Form">
         {/* Header Section */}
-        <div className="text-center mb-8">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
+        <div className="text-center mb-8" role="banner">
+          <div className="mx-auto w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-4 shadow-lg" role="img" aria-label="CBI Banking Logo">
             <FaUserLock className="text-white text-2xl" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">CBI Payment Gateway</h1>
-          <p className="text-gray-600">Professional Banking Solution</p>
+          <div className="text-3xl font-bold text-gray-900 mb-2" role="heading" aria-level="1">CBI Payment Gateway</div>
+          <div className="text-gray-600" role="text">Professional Banking Solution</div>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden" role="region" aria-label="Login Interface">
           <div className="px-8 py-10">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-              <p className="text-gray-600">Sign in to your account</p>
+            <div className="text-center mb-8" role="region" aria-label="Login Welcome">
+              <div className="text-2xl font-bold text-gray-900 mb-2" role="heading" aria-level="2">Welcome Back</div>
+              <div className="text-gray-600" role="text">Sign in to your account</div>
             </div>
 
             <Formik
@@ -85,7 +124,7 @@ const LoginPage = () => {
                     id="email"
                     type="email" 
                     name="email"  
-                    className="w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white"  
+                    className="form-input w-full py-3 px-4 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white"  
                     placeholder="Enter your email address"
                     autoComplete="email"
                     autoCapitalize="none"
@@ -105,7 +144,7 @@ const LoginPage = () => {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       name="password"  
-                      className="w-full py-3 px-4 pr-12 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white" 
+                      className="form-input w-full py-3 px-4 pr-12 rounded-xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 focus:bg-white" 
                       placeholder="Enter your password"
                       autoComplete="current-password"
                       autoCapitalize="none"
@@ -184,8 +223,9 @@ const LoginPage = () => {
             <p className="text-xs text-gray-600 font-medium">Fast</p>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
