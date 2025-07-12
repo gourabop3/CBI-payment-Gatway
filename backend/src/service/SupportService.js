@@ -10,6 +10,80 @@ try {
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 class SupportService {
+  static async chatWithUser(message, user) {
+    if (!message || message.trim() === "") {
+      throw new ApiError(400, "Message is required");
+    }
+
+    // Enhanced system prompt for authenticated users
+    const enhancedSystemPrompt = `You are CBI Assistant, a helpful and intelligent customer support chatbot for Central Bank of India, created by Gourab.
+
+    User Information:
+    - User ID: ${user?.id || 'Unknown'}
+    - User Name: ${user?.fullName || 'Valued Customer'}
+    - Email: ${user?.email || 'Not provided'}
+    - Account Status: ${user?.isVerified ? 'Verified' : 'Pending Verification'}
+    
+    Developer Information:
+    - Name: Gourab
+    - Email: gourabmop@gmail.com  
+    - Mobile: +91 9263839602
+    - Location: West Bengal, India
+
+    Your responsibilities:
+    - Provide personalized banking assistance to this specific user
+    - Address the user by their name when appropriate
+    - Consider their account status when providing guidance
+    - Help with account-specific queries while maintaining privacy
+    - Always be polite, professional, and solution-oriented
+    - For account-specific details, guide users to their dashboard sections
+    
+    Available services to help with:
+    - Account Balance & Management (personalized for this user)
+    - Money Transfers (NEFT, RTGS, IMPS)
+    - ATM/Debit Card Services
+    - Mobile Recharge & Bill Payments
+    - KYC Verification Status
+    - Transaction History
+    - General Banking Queries
+
+    If asked about developer details, provide: Name (Gourab), Email (gourabmop@gmail.com), Mobile (+91 9263839602), State (West Bengal, India).
+    Personalize responses when possible but maintain banking security standards.`;
+
+    // If OPENAI_API_KEY is not provided, use enhanced rule-based response system
+    if (!OPENAI_API_KEY || !OpenAIApi) {
+      return {
+        reply: this.generatePersonalizedBankingResponse(message.toLowerCase().trim(), user)
+      };
+    }
+
+    try {
+      const openai = new OpenAIApi(new Configuration({ apiKey: OPENAI_API_KEY }));
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: enhancedSystemPrompt,
+          },
+          { role: "user", content: message },
+        ],
+        temperature: 0.4,
+        max_tokens: 250,
+      });
+
+      const reply = completion.choices?.[0]?.message?.content?.trim() ||
+        `Hello ${user?.fullName || 'there'}! I'm sorry, I couldn't process that. Could you please rephrase your banking question?`;
+
+      return { reply };
+    } catch (err) {
+      console.error("OpenAI chat error", err);
+      return {
+        reply: `Hello ${user?.fullName || 'there'}! I'm experiencing high traffic right now. Let me help you with our standard banking services. What would you like to know about?`,
+      };
+    }
+  }
+
   static async chat(message) {
     if (!message || message.trim() === "") {
       throw new ApiError(400, "Message is required");
@@ -195,6 +269,82 @@ class SupportService {
     ];
     
     return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+  }
+
+  static generatePersonalizedBankingResponse(message, user) {
+    const userName = user?.fullName || 'there';
+    const isVerified = user?.isVerified || false;
+    
+    // Greeting responses with personalization
+    if (message.includes('hello') || message.includes('hi') || message.includes('hey') || message.includes('good morning') || message.includes('good afternoon') || message.includes('good evening')) {
+      const personalizedGreetings = [
+        `Hello ${userName}! Welcome back to CBI Bank. I'm your AI assistant created by Gourab. How can I help you with your banking needs today?`,
+        `Hi ${userName}! Great to see you again. I'm CBI Assistant, developed by Gourab to help you with all your banking queries. What would you like to know?`,
+        `Greetings ${userName}! I'm here to assist you with Central Bank of India services. How may I help you today?`,
+      ];
+      return personalizedGreetings[Math.floor(Math.random() * personalizedGreetings.length)];
+    }
+
+    // Account Balance queries with personalization
+    if (message.includes('balance') || message.includes('account balance') || message.includes('check balance')) {
+      return `Hi ${userName}! To check your account balance:\n\n1. Visit the 'Account' section in your dashboard\n2. Your current balance is displayed on your account cards\n3. You can also view detailed balance for each account type\n\n${!isVerified ? '⚠️ **Note**: Complete your KYC verification for enhanced features and higher transaction limits.\n\n' : ''}For real-time balance, you can also use our mobile app or visit any CBI ATM. Is there anything specific about your account balance you'd like to know?`;
+    }
+
+    // KYC Verification with personalized status
+    if (message.includes('kyc') || message.includes('verification') || message.includes('documents') || message.includes('identity')) {
+      if (isVerified) {
+        return `Great news ${userName}! Your KYC verification is ✅ **COMPLETED**.\n\n🎉 **You have access to:**\n- Full banking features\n- Higher transaction limits\n- Enhanced security features\n- All digital services\n\nIf you need to update any information, visit the 'KYC' section in your dashboard.`;
+      } else {
+        return `Hello ${userName}! I see your KYC verification is ⏳ **PENDING**.\n\n📋 **Complete your KYC to unlock:**\n- Full access to banking features\n- Higher transaction limits\n- Enhanced security\n- All digital services\n\n📱 **Quick Steps:**\n1. Visit 'KYC' section in your dashboard\n2. Upload required documents\n3. Wait 24-48 hours for processing\n\n**Required documents**: Government ID (Aadhaar/PAN), Address proof, Recent photograph`;
+      }
+    }
+
+    // Personalized money transfer guidance
+    if (message.includes('transfer') || message.includes('send money') || message.includes('neft') || message.includes('rtgs') || message.includes('imps')) {
+      const transferLimits = isVerified ? 'unlimited transfers (within regulatory limits)' : 'limited transfer amounts until KYC completion';
+      return `Hi ${userName}! CBI Bank offers multiple transfer options:\n\n💰 **IMPS** - Instant transfers (24/7)\n💰 **NEFT** - 2-4 hours processing\n💰 **RTGS** - Real-time (Min ₹2,00,000)\n\n📍 **Your Status**: ${transferLimits}\n\nTo transfer money:\n1. Go to 'Transfer' section in your dashboard\n2. Enter recipient account details\n3. Verify recipient information\n4. Enter amount and confirm\n\n${!isVerified ? '💡 **Tip**: Complete KYC for higher limits and additional features!\n\n' : ''}All transfers are secured with bank-grade encryption. Need help with a specific transfer type?`;
+    }
+
+    // Personalized contact and support
+    if (message.includes('help') || message.includes('support') || message.includes('problem') || message.includes('issue') || message.includes('contact')) {
+      return `Hello ${userName}! I'm here to help you with personalized support:\n\n🎧 **24/7 Support Channels**\n- This AI chatbot (created by Gourab)\n- Phone: 1800-123-4567\n- Email: support@cbibank.com\n- Visit nearest branch\n\n👤 **Your Account Status**: ${isVerified ? 'Verified ✅' : 'KYC Pending ⏳'}\n\n💬 **I can help with:**\n- Your account balance & management\n- Money transfers\n- ATM card services\n- Mobile recharge & bills\n- KYC verification\n- Transaction history\n\n👨‍💻 **Developer Contact:**\nFor bot-related queries: gourabmop@gmail.com | +91 9263839602\n\nWhat specific banking service can I help you with today, ${userName}?`;
+    }
+
+    // Enhanced developer contact with personalization
+    if (message.includes('contact developer') || message.includes('developer contact') || message.includes('gourab contact') || message.includes('developer phone') || message.includes('developer email') || message.includes('developer mobile')) {
+      return `Hi ${userName}! 📞 **Developer Contact Information:**\n\n👨‍💻 **Gourab - CBI Assistant Developer**\n• **Email:** gourabmop@gmail.com\n• **Mobile:** +91 9263839602\n• **Location:** West Bengal, India\n\n🤖 **About Your Assistant:**\nI'm CBI Assistant, an intelligent banking chatbot created specifically by Gourab to provide personalized 24/7 customer support for Central Bank of India customers like you.\n\n✨ **Personalized for You:**\n- Account Status: ${isVerified ? 'Verified ✅' : 'KYC Pending ⏳'}\n- Tailored banking guidance\n- Your transaction history access\n- Customized recommendations\n\n🏦 **How can I assist you today, ${userName}?**`;
+    }
+
+    // Enhanced goodbye with personalization
+    if (message.includes('bye') || message.includes('goodbye') || message.includes('see you') || message.includes('exit')) {
+      const personalizedGoodbyes = [
+        `Thank you for banking with CBI, ${userName}! Have a wonderful day and remember, I'm here 24/7 whenever you need personalized banking assistance. Created by Gourab to serve you better! 👋`,
+        `Goodbye ${userName}! It was great helping you today. Feel free to return anytime for banking support. Have a great day! 🌟`,
+        `Take care, ${userName}! Remember, your personalized CBI Assistant is always available for banking help. Wishing you a pleasant day ahead! 💫`,
+      ];
+      return personalizedGoodbyes[Math.floor(Math.random() * personalizedGoodbyes.length)];
+    }
+
+    // Enhanced thank you with personalization
+    if (message.includes('thank') || message.includes('thanks') || message.includes('appreciate')) {
+      const personalizedThanks = [
+        `You're most welcome, ${userName}! I'm glad I could help. Remember, I'm available 24/7 for all your personalized banking needs. Developed by Gourab to serve you better! 😊`,
+        `Happy to help, ${userName}! If you have any other banking questions, feel free to ask. I'm here whenever you need assistance with CBI Bank services.`,
+        `You're welcome, ${userName}! It's my pleasure to provide personalized assistance to CBI Bank customers. Is there anything else you'd like to know about our banking services?`,
+      ];
+      return personalizedThanks[Math.floor(Math.random() * personalizedThanks.length)];
+    }
+
+    // Default responses with personalization
+    const personalizedDefaults = [
+      `Hello ${userName}! I'd be happy to help with your banking query. Could you please be more specific? I can assist with:\n\n• Your account balance & management\n• Money transfers\n• ATM card services\n• Mobile recharge & bills\n• KYC verification ${!isVerified ? '(Complete yours now!)' : '✅'}\n• General banking questions`,
+      
+      `Hi ${userName}! I'm here to help with CBI Bank services. As your AI assistant created by Gourab, I can provide personalized information about:\n\n✓ Your digital banking features\n✓ Account management\n✓ Transaction services\n✓ Customer support\n\nWhat would you like to know?`,
+      
+      `Thank you for your question, ${userName}! For account-specific details, I recommend checking your dashboard sections. I can help with:\n\n🏧 Account services\n💸 Transfer operations\n📱 Mobile banking\n🔐 Security queries\n📊 Transaction history\n\n${!isVerified ? '💡 Don\'t forget to complete your KYC verification!\n\n' : ''}What specific service do you need help with?`,
+    ];
+    
+    return personalizedDefaults[Math.floor(Math.random() * personalizedDefaults.length)];
   }
 }
 

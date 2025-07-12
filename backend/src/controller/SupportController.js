@@ -10,6 +10,17 @@ class SupportController {
       next(err);
     }
   }
+
+  static async chatAuthenticated(req, res, next) {
+    try {
+      const { message } = req.body;
+      const user = req.user; // Available from AuthMiddleware
+      const data = await SupportService.chatWithUser(message, user);
+      res.status(200).send(data);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = SupportController;

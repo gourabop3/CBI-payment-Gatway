@@ -3,6 +3,10 @@ const router = express.Router();
 const AuthMiddleware = require("../../middleware/AuthMiddleware");
 const SupportController = require("../../controller/SupportController");
 
-router.post("/chat", AuthMiddleware, SupportController.chat);
+// Public chat endpoint (no authentication required)
+router.post("/chat/public", SupportController.chat);
+
+// Authenticated chat endpoint (enhanced with user context)
+router.post("/chat", AuthMiddleware, SupportController.chatAuthenticated);
 
 module.exports = router;
