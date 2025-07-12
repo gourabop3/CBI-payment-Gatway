@@ -16,21 +16,21 @@ const socials = [
 ];
 
 const frontendTech = [
-  { name: 'React 19.0.0', icon: FaReact, description: 'Modern UI library with hooks and functional components' },
-  { name: 'Next.js 15.2.4', icon: SiNextdotjs, description: 'React framework for production-ready applications' },
-  { name: 'TailwindCSS 4.0', icon: SiTailwindcss, description: 'Utility-first CSS framework for modern design' },
-  { name: 'Redux Toolkit', icon: FaCode, description: 'State management for complex application logic' },
-  { name: 'Axios 1.8.4', icon: SiAxios, description: 'HTTP client for API communication' },
-  { name: 'Framer Motion', icon: FaCode, description: 'Advanced animations and transitions' },
+  { name: 'React 19.0.0', icon: FaReact, description: 'Modern UI library with hooks and functional components', why: 'Component-based architecture for reusable UI elements' },
+  { name: 'Next.js 15.2.4', icon: SiNextdotjs, description: 'React framework for production-ready applications', why: 'SSR, routing, and optimized performance out of the box' },
+  { name: 'TailwindCSS 4.0', icon: SiTailwindcss, description: 'Utility-first CSS framework for modern design', why: 'Rapid UI development with utility classes' },
+  { name: 'Redux Toolkit', icon: FaCode, description: 'State management for complex application logic', why: 'Centralized state management with simplified Redux' },
+  { name: 'Axios 1.8.4', icon: SiAxios, description: 'HTTP client for API communication', why: 'Automatic JSON parsing and comprehensive error handling' },
+  { name: 'Framer Motion', icon: FaCode, description: 'Advanced animations and transitions', why: 'Smooth, performant animations with declarative API' },
 ];
 
 const backendTech = [
-  { name: 'Node.js', icon: FaNodeJs, description: 'JavaScript runtime for server-side development' },
-  { name: 'Express.js 5.1.0', icon: SiExpress, description: 'Fast, unopinionated web framework' },
-  { name: 'MongoDB', icon: SiMongodb, description: 'NoSQL database for flexible data storage' },
-  { name: 'JWT Authentication', icon: FaShieldAlt, description: 'Secure token-based authentication' },
-  { name: 'Razorpay', icon: MdPayment, description: 'Payment gateway integration' },
-  { name: 'OpenAI', icon: MdChat, description: 'AI-powered chatbot and customer service' },
+  { name: 'Node.js', icon: FaNodeJs, description: 'JavaScript runtime for server-side development', why: 'JavaScript everywhere - same language for frontend and backend' },
+  { name: 'Express.js 5.1.0', icon: SiExpress, description: 'Fast, unopinionated web framework', why: 'Minimal, flexible framework for building APIs' },
+  { name: 'MongoDB', icon: SiMongodb, description: 'NoSQL database for flexible data storage', why: 'Schema flexibility and JSON-like document structure' },
+  { name: 'JWT Authentication', icon: FaShieldAlt, description: 'Secure token-based authentication', why: 'Stateless authentication for scalable applications' },
+  { name: 'Razorpay', icon: MdPayment, description: 'Payment gateway integration', why: 'Popular Indian payment gateway with comprehensive APIs' },
+  { name: 'OpenAI', icon: MdChat, description: 'AI-powered chatbot and customer service', why: 'Advanced NLP for intelligent customer support' },
 ];
 
 const features = [
@@ -113,13 +113,14 @@ export default function AboutPage() {
               Frontend Technologies
             </h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {frontendTech.map(({ name, icon: Icon, description }) => (
+              {frontendTech.map(({ name, icon: Icon, description, why }) => (
                 <div key={name} className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg shadow-lg border border-blue-200 hover:shadow-xl hover:scale-105 transition-all duration-300">
                   <div className="flex items-center gap-3 mb-3">
                     <Icon className="text-3xl text-blue-600" />
                     <h4 className="text-lg font-semibold text-gray-800">{name}</h4>
                   </div>
-                  <p className="text-gray-700 text-sm">{description}</p>
+                  <p className="text-gray-700 text-sm mb-2">{description}</p>
+                  <p className="text-blue-600 text-xs font-medium">Why: {why}</p>
                 </div>
               ))}
             </div>
