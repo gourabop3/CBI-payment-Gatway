@@ -50,7 +50,8 @@ import {
   MdSchool,
   MdWork,
   MdEmail,
-  MdLocationOn
+  MdLocationOn,
+  MdQrCode
 } from 'react-icons/md';
 import { 
   BiTransfer, 
@@ -73,16 +74,16 @@ const frontendTechnologies = [
   {
     name: 'React 18',
     icon: FaReact,
-    version: '18.2.0',
+    version: '19.0.0',
     description: 'A JavaScript library for building user interfaces with component-based architecture',
     whyChosen: 'React provides excellent performance with its virtual DOM, has a vast ecosystem, and allows for reusable components. The hooks system makes state management intuitive.',
     benefits: ['Virtual DOM for optimal performance', 'Large community support', 'Reusable components', 'Excellent developer tools'],
     color: 'from-blue-500 to-cyan-500'
   },
   {
-    name: 'Next.js 14',
+    name: 'Next.js 15',
     icon: SiNextdotjs,
-    version: '14.0.0',
+    version: '15.2.4',
     description: 'React framework for production with server-side rendering and static site generation',
     whyChosen: 'Next.js provides out-of-the-box SSR, automatic code splitting, and optimized performance. It\'s perfect for SEO-friendly banking applications.',
     benefits: ['Server-side rendering', 'Automatic code splitting', 'Built-in optimization', 'API routes'],
@@ -91,7 +92,7 @@ const frontendTechnologies = [
   {
     name: 'Tailwind CSS',
     icon: SiTailwindcss,
-    version: '3.4.0',
+    version: '4.0.0',
     description: 'Utility-first CSS framework for rapidly building custom user interfaces',
     whyChosen: 'Tailwind allows for rapid prototyping and consistent design system. It reduces CSS bundle size and provides excellent customization options.',
     benefits: ['Utility-first approach', 'Consistent design system', 'Smaller CSS bundle', 'Responsive design'],
@@ -100,20 +101,56 @@ const frontendTechnologies = [
   {
     name: 'Redux Toolkit',
     icon: SiRedux,
-    version: '1.9.0',
+    version: '2.6.1',
     description: 'Predictable state container for JavaScript apps with simplified Redux logic',
     whyChosen: 'For complex banking operations, centralized state management is crucial. Redux Toolkit simplifies Redux usage with less boilerplate code.',
     benefits: ['Predictable state updates', 'Time-travel debugging', 'Simplified Redux logic', 'DevTools integration'],
     color: 'from-purple-500 to-indigo-500'
   },
   {
-    name: 'JavaScript ES6+',
-    icon: SiJavascript,
-    version: 'ES2023',
-    description: 'Modern JavaScript with latest features for enhanced development experience',
-    whyChosen: 'Modern JavaScript features like async/await, destructuring, and modules improve code readability and maintainability.',
-    benefits: ['Modern syntax', 'Async/await support', 'Module system', 'Enhanced performance'],
-    color: 'from-yellow-500 to-orange-500'
+    name: 'Axios',
+    icon: BiCodeAlt,
+    version: '1.8.4',
+    description: 'Promise-based HTTP client for making API requests with interceptors and error handling',
+    whyChosen: 'Axios provides excellent request/response interceptors, automatic request/response transformation, and better error handling than fetch API.',
+    benefits: ['Request/response interceptors', 'Automatic JSON parsing', 'Request/response transformation', 'Better error handling'],
+    color: 'from-green-500 to-emerald-500'
+  },
+  {
+    name: 'Formik & Yup',
+    icon: FaCode,
+    version: '2.4.6',
+    description: 'Form library with validation schema for handling complex forms and user input',
+    whyChosen: 'Formik simplifies form handling with validation, error messages, and form state management. Yup provides object schema validation.',
+    benefits: ['Form state management', 'Validation schemas', 'Error handling', 'Field-level validation'],
+    color: 'from-orange-500 to-red-500'
+  },
+  {
+    name: 'Framer Motion',
+    icon: MdSpeed,
+    version: '12.23.3',
+    description: 'Production-ready motion library for React with declarative animations',
+    whyChosen: 'Framer Motion provides smooth, performant animations that enhance user experience without compromising performance.',
+    benefits: ['Declarative animations', 'Gesture recognition', 'Layout animations', 'Performance optimized'],
+    color: 'from-pink-500 to-purple-500'
+  },
+  {
+    name: 'React Toastify',
+    icon: MdChat,
+    version: '11.0.5',
+    description: 'Notification library for displaying alerts, success messages, and error notifications',
+    whyChosen: 'React Toastify provides beautiful, customizable notifications that are essential for user feedback in banking applications.',
+    benefits: ['Beautiful notifications', 'Customizable themes', 'Multiple positions', 'Auto-dismiss options'],
+    color: 'from-indigo-500 to-blue-500'
+  },
+  {
+    name: 'React Icons',
+    icon: MdArchitecture,
+    version: '5.5.0',
+    description: 'Popular icon library providing thousands of icons from different icon packs',
+    whyChosen: 'React Icons provides a comprehensive set of icons from multiple libraries, ensuring consistent iconography across the application.',
+    benefits: ['Thousands of icons', 'Tree-shaking support', 'Consistent styling', 'Multiple icon packs'],
+    color: 'from-cyan-500 to-blue-500'
   }
 ];
 
@@ -130,47 +167,83 @@ const backendTechnologies = [
   {
     name: 'Express.js',
     icon: SiExpress,
-    version: '4.18.0',
+    version: '5.1.0',
     description: 'Fast, unopinionated, minimalist web framework for Node.js applications',
     whyChosen: 'Express.js is lightweight, flexible, and has extensive middleware support. Perfect for building RESTful APIs quickly.',
     benefits: ['Minimal and flexible', 'Extensive middleware', 'Fast development', 'Great performance'],
     color: 'from-gray-600 to-gray-800'
   },
   {
-    name: 'MongoDB',
+    name: 'MongoDB & Mongoose',
     icon: SiMongodb,
-    version: '6.0.0',
-    description: 'NoSQL document database for modern applications with flexible schema',
-    whyChosen: 'MongoDB provides flexible document structure, excellent scalability, and integrates well with JavaScript applications.',
-    benefits: ['Flexible schema', 'Horizontal scaling', 'JSON-like documents', 'Rich query language'],
+    version: '8.13.2',
+    description: 'NoSQL document database with Object Document Mapping (ODM) for schema validation',
+    whyChosen: 'MongoDB provides flexible document structure, excellent scalability. Mongoose adds schema validation and query building.',
+    benefits: ['Flexible schema', 'Horizontal scaling', 'Schema validation', 'Rich query language'],
     color: 'from-green-600 to-teal-600'
   },
   {
-    name: 'JWT Authentication',
+    name: 'JWT & bcryptjs',
     icon: SiJsonwebtokens,
-    version: '9.0.0',
-    description: 'JSON Web Tokens for secure authentication and authorization',
-    whyChosen: 'JWT provides stateless authentication, works well with microservices, and offers excellent security for banking applications.',
-    benefits: ['Stateless authentication', 'Secure token-based auth', 'Cross-platform compatibility', 'Scalable solution'],
+    version: '9.0.2',
+    description: 'JSON Web Tokens for authentication with bcrypt for secure password hashing',
+    whyChosen: 'JWT provides stateless authentication, works well with microservices. bcryptjs ensures secure password storage with salt hashing.',
+    benefits: ['Stateless authentication', 'Secure password hashing', 'Cross-platform compatibility', 'Industry standard'],
     color: 'from-purple-600 to-pink-600'
   },
   {
-    name: 'Razorpay Integration',
+    name: 'Razorpay SDK',
     icon: SiRazorpay,
-    version: '2.9.0',
-    description: 'Complete payment gateway solution for seamless transactions',
+    version: '2.9.6',
+    description: 'Complete payment gateway SDK for seamless transaction processing',
     whyChosen: 'Razorpay is India\'s leading payment gateway with comprehensive APIs, excellent documentation, and strong security.',
     benefits: ['Multiple payment methods', 'Instant settlements', 'Robust APIs', 'Excellent documentation'],
     color: 'from-blue-600 to-indigo-600'
   },
   {
-    name: 'OpenAI Integration',
+    name: 'OpenAI API',
     icon: SiOpenai,
-    version: '4.0.0',
-    description: 'AI-powered chatbot and intelligent customer service',
+    version: '4.21.0',
+    description: 'AI-powered chatbot integration for intelligent customer service',
     whyChosen: 'OpenAI provides advanced NLP capabilities for intelligent customer support, reducing operational costs and improving user experience.',
     benefits: ['Natural language processing', '24/7 availability', 'Intelligent responses', 'Cost-effective support'],
     color: 'from-emerald-500 to-teal-500'
+  },
+  {
+    name: 'Express Validator',
+    icon: FaShieldAlt,
+    version: '7.2.1',
+    description: 'Server-side validation middleware for Express.js applications',
+    whyChosen: 'Express Validator provides comprehensive validation and sanitization for API inputs, ensuring data integrity and security.',
+    benefits: ['Input validation', 'Data sanitization', 'Error handling', 'Security enhancement'],
+    color: 'from-red-500 to-orange-500'
+  },
+  {
+    name: 'Cloudinary',
+    icon: MdCloud,
+    version: '2.6.1',
+    description: 'Cloud-based image and video management service with automatic optimization',
+    whyChosen: 'Cloudinary provides automatic image optimization, transformation, and CDN delivery for profile pictures and documents.',
+    benefits: ['Automatic optimization', 'Image transformations', 'CDN delivery', 'Secure storage'],
+    color: 'from-yellow-500 to-orange-500'
+  },
+  {
+    name: 'QR Code Generator',
+    icon: MdQrCode,
+    version: '1.5.3',
+    description: 'QR code generation library for UPI payments and transaction processing',
+    whyChosen: 'QR Code library enables seamless UPI payment integration, allowing users to make payments via QR code scanning.',
+    benefits: ['UPI payment integration', 'Customizable QR codes', 'High reliability', 'Fast generation'],
+    color: 'from-indigo-500 to-purple-500'
+  },
+  {
+    name: 'Nodemailer',
+    icon: MdEmail,
+    version: '7.0.3',
+    description: 'Email sending library for notifications, OTP, and account verification',
+    whyChosen: 'Nodemailer provides reliable email delivery for transaction notifications, OTP verification, and account communications.',
+    benefits: ['Reliable email delivery', 'Multiple transport options', 'HTML email support', 'Attachment handling'],
+    color: 'from-blue-500 to-cyan-500'
   }
 ];
 
