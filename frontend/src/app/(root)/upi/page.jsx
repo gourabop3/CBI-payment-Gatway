@@ -37,6 +37,12 @@ const UPIPage = () => {
     pin: '',
     confirm_pin: ''
   });
+
+  // Local form validation state
+  const [formValidation, setFormValidation] = useState({ upi_id: null, pin: null, confirm_pin: null });
+
+  // Payment confirmation modal
+  const [showConfirm, setShowConfirm] = useState(false);
   const [registrationError, setRegistrationError] = useState(null);
   const [registrationSuccess, setRegistrationSuccess] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState({ success: null, error: null });
@@ -112,9 +118,37 @@ const UPIPage = () => {
     }
   };
 
+  const validateRegistrationInputs = () => {
+    // Reset validation
+    setFormValidation({ upi_id: null, pin: null, confirm_pin: null });
+
+    const errors = { upi_id: null, pin: null, confirm_pin: null };
+
+    // UPI ID must end with @cbibank and have at least 2 chars before @
+    const upiRegex = /^[a-zA-Z0-9._-]{2,}@cbibank$/;
+    if (!upiRegex.test(registrationForm.upi_id)) {
+      errors.upi_id = 'UPI ID must end with @cbibank (e.g., yourname@cbibank)';
+    }
+
+    // PIN must be 4 or 6 digits
+    const pinRegex = /^\d{4}$|^\d{6}$/;
+    if (!pinRegex.test(registrationForm.pin)) {
+      errors.pin = 'PIN must be exactly 4 or 6 digits';
+    }
+
+    if (registrationForm.pin !== registrationForm.confirm_pin) {
+      errors.confirm_pin = 'Pins do not match';
+    }
+
+    setFormValidation(errors);
+    return !errors.upi_id && !errors.pin && !errors.confirm_pin;
+  };
+
   const registerUPI = async () => {
-    if (!registrationForm.upi_id || !registrationForm.pin || registrationForm.pin !== registrationForm.confirm_pin) {
-      setRegistrationError('Please enter matching PIN and a valid UPI ID');
+    setRegistrationSuccess(null);
+    setRegistrationError(null);
+
+    if (!validateRegistrationInputs()) {
       return;
     }
     setLoading(true);
@@ -139,7 +173,7 @@ const UPIPage = () => {
       }
     } catch (error) {
       console.error('Error registering UPI:', error);
-      setRegistrationError('Registration failed');
+      setRegistrationError('Network error: Unable to register UPI');
     } finally {
       setLoading(false);
     }
@@ -167,7 +201,7 @@ const UPIPage = () => {
       }
     } catch (error) {
       console.error('Error processing payment:', error);
-      setPaymentStatus({ success: null, error: 'Payment failed' });
+      setPaymentStatus({ success: null, error: 'Network error: payment failed' });
     } finally {
       setLoading(false);
     }
@@ -195,6 +229,32 @@ const UPIPage = () => {
       minute: '2-digit'
     });
   };
+
+  // Poll for transactions every 15 seconds to keep history updated
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchTransactions();
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Auto clear success/error msgs after 3 seconds
+  useEffect(() => {
+    if (registrationSuccess || registrationError) {
+      const t = setTimeout(() => {
+        setRegistrationSuccess(null);
+        setRegistrationError(null);
+      }, 3000);
+      return () => clearTimeout(t);
+    }
+  }, [registrationSuccess, registrationError]);
+
+  useEffect(() => {
+    if (paymentStatus.success || paymentStatus.error) {
+      const t = setTimeout(() => setPaymentStatus({ success: null, error: null }), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [paymentStatus]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
@@ -224,6 +284,9 @@ const UPIPage = () => {
                   value={registrationForm.upi_id}
                   onChange={(e) => setRegistrationForm(prev => ({ ...prev, upi_id: e.target.value }))}
                 />
+                {formValidation.upi_id && (
+                  <p className="text-red-600 text-xs mt-1">{formValidation.upi_id}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Set UPI PIN</label>
@@ -233,6 +296,9 @@ const UPIPage = () => {
                   value={registrationForm.pin}
                   onChange={(e) => setRegistrationForm(prev => ({ ...prev, pin: e.target.value }))}
                 />
+                {formValidation.pin && (
+                  <p className="text-red-600 text-xs mt-1">{formValidation.pin}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Confirm UPI PIN</label>
@@ -242,6 +308,9 @@ const UPIPage = () => {
                   value={registrationForm.confirm_pin}
                   onChange={(e) => setRegistrationForm(prev => ({ ...prev, confirm_pin: e.target.value }))}
                 />
+                {formValidation.confirm_pin && (
+                  <p className="text-red-600 text-xs mt-1">{formValidation.confirm_pin}</p>
+                )}
               </div>
               <button
                 onClick={registerUPI}
@@ -395,7 +464,7 @@ const UPIPage = () => {
                   <p className="text-green-600 text-sm">{paymentStatus.success}</p>
                 )}
                 <button
-                  onClick={processPayment}
+                  onClick={() => setShowConfirm(true)}
                   disabled={loading || !paymentForm.recipient_upi || !paymentForm.amount || !paymentForm.pin}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
@@ -569,6 +638,32 @@ const UPIPage = () => {
             </Card>
           ))}
         </div>
+
+        {/* Confirmation Modal */}
+        {showConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md animate-scaleIn">
+              <h3 className="text-xl font-bold mb-4">Confirm Payment</h3>
+              <p className="mb-2">Recipient: <span className="font-semibold">{paymentForm.recipient_upi}</span></p>
+              <p className="mb-2">Amount: <span className="font-semibold">₹{paymentForm.amount}</span></p>
+              <p className="mb-4">Note: {paymentForm.note || '—'}</p>
+              <div className="flex justify-end gap-3">
+                <button
+                  className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
+                  onClick={() => setShowConfirm(false)}
+                >Cancel</button>
+                <button
+                  disabled={loading}
+                  className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                  onClick={() => {
+                    setShowConfirm(false);
+                    processPayment();
+                  }}
+                >{loading ? 'Processing...' : 'Confirm'}</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
