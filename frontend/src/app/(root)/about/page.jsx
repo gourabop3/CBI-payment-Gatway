@@ -58,7 +58,8 @@ const frontendTechnologies = [
     icon: SiNextdotjs, 
     description: 'React framework with SSR, routing, and performance optimization',
     category: 'Framework',
-    color: 'text-black'
+    color: 'text-black',
+    whyUse: 'Used for building the frontend application with server-side rendering, automatic code splitting, and optimized performance. Provides built-in routing, API routes, and production-ready features for scalable web applications.'
   },
   { 
     name: 'React', 
@@ -66,7 +67,8 @@ const frontendTechnologies = [
     icon: FaReact, 
     description: 'Modern UI library with hooks and functional components',
     category: 'Library',
-    color: 'text-blue-600'
+    color: 'text-blue-600',
+    whyUse: 'Used for building interactive user interfaces with component-based architecture. Enables reusable UI components, efficient state management, and virtual DOM for optimal performance in banking dashboard interfaces.'
   },
   { 
     name: 'Redux Toolkit', 
@@ -74,7 +76,8 @@ const frontendTechnologies = [
     icon: SiRedux, 
     description: 'Predictable state container for JavaScript applications',
     category: 'State Management',
-    color: 'text-purple-600'
+    color: 'text-purple-600',
+    whyUse: 'Used for managing complex application state across components. Essential for banking apps to handle user authentication, account data, transaction history, and real-time balance updates consistently throughout the application.'
   },
   { 
     name: 'TailwindCSS', 
@@ -82,7 +85,8 @@ const frontendTechnologies = [
     icon: SiTailwindcss, 
     description: 'Utility-first CSS framework for rapid UI development',
     category: 'Styling',
-    color: 'text-teal-500'
+    color: 'text-teal-500',
+    whyUse: 'Used for styling the entire application with utility classes. Enables rapid UI development, consistent design system, responsive layouts, and modern banking interface design without writing custom CSS.'
   },
   { 
     name: 'Framer Motion', 
@@ -90,7 +94,8 @@ const frontendTechnologies = [
     icon: TbBrandFramerMotion, 
     description: 'Production-ready motion library for React',
     category: 'Animation',
-    color: 'text-pink-600'
+    color: 'text-pink-600',
+    whyUse: 'Used for creating smooth animations and transitions in the banking interface. Enhances user experience with page transitions, loading animations, and interactive elements to make the banking app feel modern and responsive.'
   },
   { 
     name: 'Axios', 
@@ -98,7 +103,8 @@ const frontendTechnologies = [
     icon: SiAxios, 
     description: 'Promise-based HTTP client for API requests',
     category: 'HTTP Client',
-    color: 'text-blue-500'
+    color: 'text-blue-500',
+    whyUse: 'Used for making HTTP requests to the backend API. Handles all communication between frontend and backend including user authentication, transaction processing, account operations, and real-time data fetching with interceptors for error handling.'
   },
   { 
     name: 'Formik', 
@@ -106,7 +112,8 @@ const frontendTechnologies = [
     icon: SiFormik, 
     description: 'Build forms in React without tears',
     category: 'Form Handling',
-    color: 'text-orange-500'
+    color: 'text-orange-500',
+    whyUse: 'Used for handling complex forms in banking operations. Manages form validation, submission, and error handling for login, registration, money transfer, bill payments, and KYC verification forms with robust validation.'
   },
   { 
     name: 'React Icons', 
@@ -114,7 +121,8 @@ const frontendTechnologies = [
     icon: FaCode, 
     description: 'Popular icon packs as React components',
     category: 'Icons',
-    color: 'text-gray-600'
+    color: 'text-gray-600',
+    whyUse: 'Used for displaying consistent icons throughout the banking interface. Provides banking-specific icons for transactions, payments, security, accounts, and navigation elements to enhance visual communication and user experience.'
   },
   { 
     name: 'React Razorpay', 
@@ -122,7 +130,8 @@ const frontendTechnologies = [
     icon: SiRazorpay, 
     description: 'Razorpay payment gateway integration for React',
     category: 'Payment',
-    color: 'text-blue-700'
+    color: 'text-blue-700',
+    whyUse: 'Used for integrating Razorpay payment gateway in React components. Enables secure payment processing, UPI transactions, card payments, and digital wallet integration directly within the banking application frontend.'
   },
   { 
     name: 'TypeScript Support', 
@@ -130,7 +139,8 @@ const frontendTechnologies = [
     icon: SiTypescript, 
     description: 'Type-safe development with static type checking',
     category: 'Language',
-    color: 'text-blue-700'
+    color: 'text-blue-700',
+    whyUse: 'Used for type-safe development in banking applications. Prevents runtime errors, improves code quality, enables better IDE support, and ensures data integrity in financial transactions and sensitive banking operations.'
   }
 ];
 
@@ -141,7 +151,8 @@ const backendTechnologies = [
     icon: FaNodeJs, 
     description: 'JavaScript runtime built on Chrome\'s V8 JavaScript engine',
     category: 'Runtime',
-    color: 'text-green-600'
+    color: 'text-green-600',
+    whyUse: 'Used for backend development to build the server-side application. Enables JavaScript everywhere (frontend and backend), provides excellent performance for I/O intensive banking operations, and has a rich ecosystem for financial applications.'
   },
   { 
     name: 'Express.js', 
@@ -149,7 +160,8 @@ const backendTechnologies = [
     icon: SiExpress, 
     description: 'Fast, unopinionated, minimalist web framework',
     category: 'Framework',
-    color: 'text-gray-700'
+    color: 'text-gray-700',
+    whyUse: 'Used for building RESTful APIs and handling HTTP requests. Provides routing, middleware support, and flexibility for creating banking APIs, user authentication endpoints, transaction processing, and payment gateway integrations.'
   },
   { 
     name: 'MongoDB', 
@@ -157,7 +169,8 @@ const backendTechnologies = [
     icon: SiMongodb, 
     description: 'Document-based NoSQL database with Mongoose ODM',
     category: 'Database',
-    color: 'text-green-500'
+    color: 'text-green-500',
+    whyUse: 'Used for storing all banking data including user accounts, transaction history, KYC documents, and application settings. Provides flexible schema for complex banking data structures and excellent scalability for growing user base.'
   },
   { 
     name: 'JWT', 
@@ -165,7 +178,8 @@ const backendTechnologies = [
     icon: SiJsonwebtokens, 
     description: 'JSON Web Tokens for secure authentication',
     category: 'Authentication',
-    color: 'text-purple-600'
+    color: 'text-purple-600',
+    whyUse: 'Used for secure user authentication and session management. Provides stateless authentication for banking applications, secure token-based login, and protection of sensitive banking operations with role-based access control.'
   },
   { 
     name: 'Cloudinary', 
@@ -173,7 +187,8 @@ const backendTechnologies = [
     icon: SiCloudinary, 
     description: 'Cloud-based image and video management platform',
     category: 'Cloud Storage',
-    color: 'text-blue-500'
+    color: 'text-blue-500',
+    whyUse: 'Used for storing and managing user documents, profile pictures, KYC verification documents, and transaction receipts. Provides secure cloud storage with automatic optimization and CDN delivery for banking document management.'
   },
   { 
     name: 'Razorpay', 
@@ -181,7 +196,8 @@ const backendTechnologies = [
     icon: SiRazorpay, 
     description: 'Complete payment solution with instant activation',
     category: 'Payment Gateway',
-    color: 'text-blue-700'
+    color: 'text-blue-700',
+    whyUse: 'Used for processing payments, UPI transactions, and money transfers. Integrates with Indian banking system, supports multiple payment methods, provides secure payment processing, and handles transaction webhooks for real-time updates.'
   },
   { 
     name: 'OpenAI', 
@@ -189,7 +205,8 @@ const backendTechnologies = [
     icon: SiOpenai, 
     description: 'AI-powered chatbot and intelligent customer service',
     category: 'AI Integration',
-    color: 'text-green-700'
+    color: 'text-green-700',
+    whyUse: 'Used for building intelligent customer service chatbot. Provides 24/7 customer support, answers banking queries, helps with transactions, and offers personalized assistance using natural language processing for enhanced user experience.'
   },
   { 
     name: 'Nodemailer', 
@@ -197,7 +214,8 @@ const backendTechnologies = [
     icon: MdEmail, 
     description: 'Send emails from Node.js applications',
     category: 'Email Service',
-    color: 'text-red-600'
+    color: 'text-red-600',
+    whyUse: 'Used for sending automated emails to users including transaction confirmations, account alerts, security notifications, password reset emails, and KYC verification updates. Essential for banking communication and user notifications.'
   },
   { 
     name: 'QR Code', 
@@ -205,7 +223,8 @@ const backendTechnologies = [
     icon: MdQrCode, 
     description: 'QR code generation for payments and transfers',
     category: 'Utility',
-    color: 'text-gray-800'
+    color: 'text-gray-800',
+    whyUse: 'Used for generating QR codes for UPI payments and money transfers. Enables quick payment processing, contactless transactions, and seamless integration with UPI ecosystem for modern banking payment solutions.'
   },
   { 
     name: 'bcryptjs', 
@@ -213,16 +232,47 @@ const backendTechnologies = [
     icon: FaShieldAlt, 
     description: 'Password hashing library for secure authentication',
     category: 'Security',
-    color: 'text-red-500'
+    color: 'text-red-500',
+    whyUse: 'Used for securely hashing user passwords and sensitive data. Implements industry-standard encryption for banking security, protects user credentials, and ensures data security compliance in financial applications.'
   }
 ];
 
 const developmentTools = [
-  { name: 'ESLint', version: '9.0', icon: SiEslint, description: 'Code quality and consistency checker' },
-  { name: 'PostCSS', version: '4.0', icon: SiPostcss, description: 'CSS processing and optimization' },
-  { name: 'Nodemon', version: '3.1.9', icon: SiNodemon, description: 'Auto-restart development server' },
-  { name: 'Turbopack', version: 'Next.js', icon: FaCog, description: 'Ultra-fast bundler for Next.js' },
-  { name: 'npm Workspaces', version: 'Latest', icon: BiPackage, description: 'Monorepo package management' }
+  { 
+    name: 'ESLint', 
+    version: '9.0', 
+    icon: SiEslint, 
+    description: 'Code quality and consistency checker',
+    whyUse: 'Used for maintaining code quality and enforcing coding standards across the banking application. Catches potential bugs, ensures consistent code style, and improves maintainability of the financial software codebase.'
+  },
+  { 
+    name: 'PostCSS', 
+    version: '4.0', 
+    icon: SiPostcss, 
+    description: 'CSS processing and optimization',
+    whyUse: 'Used for processing and optimizing CSS in the banking application. Provides autoprefixing, CSS optimization, and modern CSS features to ensure cross-browser compatibility and optimal performance.'
+  },
+  { 
+    name: 'Nodemon', 
+    version: '3.1.9', 
+    icon: SiNodemon, 
+    description: 'Auto-restart development server',
+    whyUse: 'Used during development to automatically restart the backend server when files change. Improves developer productivity by eliminating manual server restarts during banking API development and testing.'
+  },
+  { 
+    name: 'Turbopack', 
+    version: 'Next.js', 
+    icon: FaCog, 
+    description: 'Ultra-fast bundler for Next.js',
+    whyUse: 'Used for extremely fast development builds and hot module replacement. Significantly reduces build times during development of the banking frontend, enabling rapid iteration and improved developer experience.'
+  },
+  { 
+    name: 'npm Workspaces', 
+    version: 'Latest', 
+    icon: BiPackage, 
+    description: 'Monorepo package management',
+    whyUse: 'Used for managing the monorepo structure with frontend and backend packages. Simplifies dependency management, enables shared utilities between frontend and backend, and provides efficient workspace organization for the banking project.'
+  }
 ];
 
 const projectFeatures = [
