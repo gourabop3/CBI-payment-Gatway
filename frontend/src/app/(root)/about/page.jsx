@@ -1,7 +1,7 @@
 "use client";
 import { AiOutlineGithub, AiOutlineInstagram, AiOutlineMail } from 'react-icons/ai';
-import { FaReact, FaNodeJs, FaServer, FaDesktop, FaTelegram, FaShieldAlt } from 'react-icons/fa';
-import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiRedux, SiFramer, SiAxios, SiCloudinary, SiRazorpay, SiOpenai, SiJsonwebtokens } from 'react-icons/si';
+import { FaReact, FaNodeJs, FaServer, FaDesktop, FaTelegram, FaShieldAlt, FaHtml5, FaCss3Alt } from 'react-icons/fa';
+import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiRedux, SiFramer, SiAxios, SiCloudinary, SiRazorpay, SiOpenai, SiJsonwebtokens, SiJavascript, SiVercel } from 'react-icons/si';
 import { MdPayment, MdAccountBalance, MdSecurity, MdBolt, MdDeveloperMode, MdChat, MdPhoneAndroid, MdReceipt } from 'react-icons/md';
 import { BiTransfer } from 'react-icons/bi';
 import { RiBankCardLine } from 'react-icons/ri';
@@ -167,75 +167,23 @@ export default function AboutPage() {
           </ul>
         </div>
 
-        {/* Developer Section */}
+        {/* Developer Section (Simplified) */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
-          <div className="text-center mb-12">
-            <h2 className="text-5xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-3">
-              <MdDeveloperMode className="text-indigo-600" />
-              Developer
-            </h2>
-            <p className="text-xl text-gray-600">Meet the creator behind this project</p>
+          <div className="text-center mb-8">
+            <h2 className="text-5xl font-bold text-gray-900 mb-2">Gourab Mullick</h2>
+            <p className="text-lg text-gray-600">West Bengal, India</p>
           </div>
-          
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <div className="w-32 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center shadow-2xl">
-                <span className="text-4xl font-bold text-white">GM</span>
-              </div>
-              <h3 className="text-4xl font-bold text-gray-900 mb-2">Gourab Mullick</h3>
-              <p className="text-xl text-indigo-700 font-semibold mb-2">Full-Stack Developer (MERN Stack)</p>
-              <p className="text-gray-600 font-medium">West Bengal, India</p>
-            </div>
 
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-8 rounded-2xl border border-indigo-200 mb-8">
-              <p className="text-lg text-gray-700 leading-relaxed text-center mb-6">
-                Passionate full-stack developer specializing in modern web technologies with expertise in building 
-                secure, scalable banking and financial applications. Committed to delivering high-quality, 
-                production-ready solutions with focus on user experience and performance optimization.
-              </p>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm">
-                    <span className="w-3 h-3 bg-indigo-500 rounded-full"></span>
-                    <span className="text-gray-700 font-medium">5+ Years Development Experience</span>
-                  </div>
-                  <div className="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm">
-                    <span className="w-3 h-3 bg-indigo-500 rounded-full"></span>
-                    <span className="text-gray-700 font-medium">Banking & Financial Apps Expert</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm">
-                    <span className="w-3 h-3 bg-indigo-500 rounded-full"></span>
-                    <span className="text-gray-700 font-medium">Security Implementation Specialist</span>
-                  </div>
-                  <div className="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm">
-                    <span className="w-3 h-3 bg-indigo-500 rounded-full"></span>
-                    <span className="text-gray-700 font-medium">API Development & Integration</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div>
-              <h4 className="text-2xl font-bold text-gray-900 mb-6 text-center">Connect with the Developer</h4>
-              <div className="flex justify-center items-center gap-8 flex-wrap">
-                {socialLinks.map(({ href, label, Icon }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center gap-3 px-6 py-3 bg-gray-50 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:bg-gray-100 transform hover:-translate-y-1 hover:scale-105"
-                  >
-                    <Icon className="text-2xl text-gray-600 group-hover:text-gray-800 transition-colors duration-300 group-hover:scale-110" />
-                    <span className="font-semibold text-gray-700 group-hover:text-gray-900 transition-colors duration-300">{label}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
+          {/* Skills */}
+          <div className="flex justify-center items-center gap-6 flex-wrap text-4xl text-blue-600">
+            <FaReact title="React" />
+            <FaNodeJs title="Node.js" />
+            <FaHtml5 title="HTML" className="text-orange-600" />
+            <FaCss3Alt title="CSS" className="text-blue-500" />
+            <SiJavascript title="JavaScript" className="text-yellow-500" />
+            <SiExpress title="Express.js" className="text-gray-800" />
+            <SiTailwindcss title="Tailwind CSS" className="text-teal-500" />
+            <SiVercel title="Vercel" className="text-black" />
           </div>
         </div>
       </div>
