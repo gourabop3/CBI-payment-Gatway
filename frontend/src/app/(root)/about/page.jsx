@@ -1,11 +1,12 @@
 "use client";
 import { AiOutlineGithub, AiOutlineInstagram, AiOutlineMail } from 'react-icons/ai';
 import { FaReact, FaNodeJs, FaServer, FaDesktop, FaTelegram, FaShieldAlt, FaHtml5, FaCss3Alt } from 'react-icons/fa';
-import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiRedux, SiFramer, SiAxios, SiCloudinary, SiRazorpay, SiOpenai, SiJsonwebtokens, SiJavascript, SiVercel } from 'react-icons/si';
+import { SiNextdotjs, SiTailwindcss, SiMongodb, SiExpress, SiRedux, SiFramer, SiAxios, SiCloudinary, SiRazorpay, SiOpenai, SiJsonwebtokens, SiJavascript, SiVercel, SiVite } from 'react-icons/si';
 import { MdPayment, MdAccountBalance, MdSecurity, MdBolt, MdDeveloperMode, MdChat, MdPhoneAndroid, MdReceipt } from 'react-icons/md';
 import { BiTransfer } from 'react-icons/bi';
 import { RiBankCardLine } from 'react-icons/ri';
 import HeaderName from '@/components/HeaderName';
+import React from 'react';
 
 const socialLinks = [
   { 
@@ -171,16 +172,45 @@ export default function AboutPage() {
           </div>
 
           {/* Skills */}
-          <div className="flex justify-center items-center gap-6 flex-wrap text-4xl text-blue-600">
-            <FaReact title="React" />
-            <FaNodeJs title="Node.js" />
-            <FaHtml5 title="HTML" className="text-orange-600" />
-            <FaCss3Alt title="CSS" className="text-blue-500" />
-            <SiJavascript title="JavaScript" className="text-yellow-500" />
-            <SiExpress title="Express.js" className="text-gray-800" />
-            <SiTailwindcss title="Tailwind CSS" className="text-teal-500" />
-            <SiVercel title="Vercel" className="text-black" />
-          </div>
+          {(() => {
+            const skills = [
+              { label: 'React', Icon: FaReact, className: 'text-blue-600' },
+              { label: 'Node.js', Icon: FaNodeJs, className: 'text-green-600' },
+              { label: 'HTML', Icon: FaHtml5, className: 'text-orange-600' },
+              { label: 'CSS', Icon: FaCss3Alt, className: 'text-blue-500' },
+              { label: 'JavaScript', Icon: SiJavascript, className: 'text-yellow-500' },
+              { label: 'Express.js', Icon: SiExpress, className: 'text-gray-800' },
+              { label: 'MongoDB', Icon: SiMongodb, className: 'text-green-700' },
+              { label: 'Next.js', Icon: SiNextdotjs, className: 'text-black' },
+              { label: 'Vite', Icon: SiVite, className: 'text-purple-600' },
+              { label: 'Tailwind CSS', Icon: SiTailwindcss, className: 'text-teal-500' },
+              { label: 'Vercel', Icon: SiVercel, className: 'text-black' },
+            ];
+
+            const [selectedSkill, setSelectedSkill] = React.useState('');
+
+            return (
+              <>
+                <div className="flex justify-center items-center gap-6 flex-wrap text-4xl">
+                  {skills.map(({ label, Icon, className }) => (
+                    <button
+                      key={label}
+                      onClick={() => setSelectedSkill(label)}
+                      className={`focus:outline-none ${className}`}
+                      title={label}
+                    >
+                      <Icon />
+                    </button>
+                  ))}
+                </div>
+                {selectedSkill && (
+                  <p className="mt-4 text-xl font-semibold text-gray-700 text-center">
+                    {selectedSkill}
+                  </p>
+                )}
+              </>
+            );
+          })()}
 
           {/* Social Links */}
           <div className="flex justify-center items-center gap-8 mt-10 text-3xl">
