@@ -6,16 +6,16 @@ const Account_LIMIT = {
 
 const CARD_TYPE = {
     basic: {
-        max: 10,
-        min: 0,
+        max: 10000,
+        min: 1,
     },
     classic: {
-        max: 100,
-        min: 0,
+        max: 50000,
+        min: 1,
     },
     platinum: {
-        max: 1000,
-        min: 0,
+        max: 100000,
+        min: 1,
     },
 };
 
