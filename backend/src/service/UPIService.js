@@ -42,6 +42,8 @@ class UPIService {
      * Register a new UPI handle and PIN for the authenticated user
      */
     static async createUPI(userId, { upi_id, pin }) {
+        console.log('Creating UPI for user:', userId, 'with UPI ID:', upi_id);
+        
         // Validate required params
         if (!upi_id || !pin) {
             throw new ApiError(400, 'UPI ID and PIN are required');
@@ -78,6 +80,7 @@ class UPIService {
             throw new ApiError(404, 'User not found');
         }
 
+        console.log('UPI created successfully for user:', userId);
         return {
             upi_id: updatedUser.upi_id
         };

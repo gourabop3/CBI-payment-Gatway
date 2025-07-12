@@ -44,20 +44,20 @@ export const ruppes_symbol =`₹`
 
 export const CARD_TYPE={
     'basic':{
-        max:10,
-        min:0,
-        message:"You Can only Withdrawal 10 RS at a Time"
+        max:10000,
+        min:1,
+        message:"You Can only Withdrawal 10,000 RS at a Time"
     },
     'classic':{
-        max:100,
-        min:0,
-        message:"You Can only Withdrawal 100 RS at a Time"
+        max:50000,
+        min:1,
+        message:"You Can only Withdrawal 50,000 RS at a Time"
 
     },
     'platinum':{
-        max:1000,
-        min:0,
-        message:"You Can only Withdrawal 1000 RS at a Time"
+        max:100000,
+        min:1,
+        message:"You Can only Withdrawal 1,00,000 RS at a Time"
         
     }
 }

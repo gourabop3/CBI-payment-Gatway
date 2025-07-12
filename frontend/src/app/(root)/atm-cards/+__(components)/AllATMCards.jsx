@@ -10,20 +10,12 @@ import { generateAccountNumber, formatAccountNumber } from '@/utils/accountUtils
 const AllATMCards = () => {
   const { user } = useMainContext();
   const [visibleCVVs, setVisibleCVVs] = useState({});
-  const [visibleNumbers, setVisibleNumbers] = useState({});
 
   const atms = Array.isArray(user?.atms) ? user.atms : [];
   const accountNos = Array.isArray(user?.account_no) ? user.account_no : [];
 
   const toggleCVV = (cardId) => {
     setVisibleCVVs(prev => ({
-      ...prev,
-      [cardId]: !prev[cardId]
-    }));
-  };
-
-  const toggleNumber = (cardId) => {
-    setVisibleNumbers(prev => ({
       ...prev,
       [cardId]: !prev[cardId]
     }));
@@ -67,6 +59,19 @@ const AllATMCards = () => {
         return 'PLATINUM';
       default:
         return type.toUpperCase();
+    }
+  };
+
+  const getCardGradient = (type) => {
+    switch (type.toLowerCase()) {
+      case 'basic':
+        return 'from-blue-500 to-purple-600';
+      case 'classic':
+        return 'from-pink-500 to-rose-600';
+      case 'platinum':
+        return 'from-gray-600 to-gray-800';
+      default:
+        return 'from-blue-500 to-purple-600';
     }
   };
 
@@ -119,12 +124,11 @@ const AllATMCards = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {validAtms.map((atm) => {
         const isShowCVV = visibleCVVs[atm._id] || false;
-        const isShowNumber = visibleNumbers[atm._id] || false;
 
         return (
           <div key={atm._id} className="flex flex-col items-center group">
             {/* Account Info */}
-            <div className="mb-6 text-center">
+            <div className="mb-4 text-center">
               <h4 className="text-xl font-bold text-gray-800 capitalize mb-2">
                 {atm.card_type} Card
               </h4>
@@ -133,94 +137,83 @@ const AllATMCards = () => {
               </p>
             </div>
 
-            {/* Professional Card UI */}
+            {/* Professional ATM Card UI */}
             <div 
-              className={`atm-card atm-card-${atm.card_type.toLowerCase()} card-entrance relative w-full max-w-sm rounded-2xl p-6 mb-6 overflow-hidden text-white min-h-[200px] shadow-lg`}
+              className={`relative w-full max-w-sm h-56 rounded-2xl p-6 mb-6 overflow-hidden text-white shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-3xl bg-gradient-to-r ${getCardGradient(atm.card_type)}`}
             >
               {/* Card Background Pattern */}
-              <div className="card-pattern">
-                <div className="card-pattern-circle-1"></div>
-                <div className="card-pattern-circle-2"></div>
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full transform translate-x-16 -translate-y-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full transform -translate-x-12 translate-y-12"></div>
               </div>
 
-              {/* Card Content Container */}
-              <div className="relative flex flex-col h-full">
+              {/* Card Content */}
+              <div className="relative h-full flex flex-col">
                 {/* Card Header */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="text-3xl">{getCardIcon(atm.card_type)}</div>
-                    <div className="text-left leading-tight">
-                      <div className="text-xs font-semibold tracking-widest uppercase">CBI BANK</div>
-                      <div className="card-title mt-0.5">DEBIT CARD</div>
+                    <div className="text-2xl">{getCardIcon(atm.card_type)}</div>
+                    <div>
+                      <div className="text-xs font-semibold tracking-widest uppercase opacity-90">CBI BANK</div>
+                      <div className="text-sm font-bold tracking-wide">DEBIT CARD</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="card-label">Card Type</div>
-                    <div className="card-type-badge">{getCardTitle(atm.card_type)}</div>
+                    <div className="text-xs opacity-75 mb-1">Type</div>
+                    <div className="bg-white bg-opacity-20 px-2 py-1 rounded-lg text-xs font-bold">
+                      {getCardTitle(atm.card_type)}
+                    </div>
                   </div>
                 </div>
 
                 {/* Chip and Contactless */}
                 <div className="flex items-center justify-between mb-6">
-                  <div className="card-chip"></div>
-                  <MdContactless className="text-3xl text-white/90" />
+                  <div className="w-12 h-9 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-6 bg-gradient-to-r from-yellow-500 to-yellow-700 rounded"></div>
+                  </div>
+                  <MdContactless className="text-3xl opacity-90" />
                 </div>
 
                 {/* Card Number */}
                 <div className="mb-6">
-                  <div className="card-label">Card Number</div>
-                  <div className="flex items-center gap-3">
-                    <div className="card-number text-xl">
-                      {isShowNumber ? (
-                        <>
-                          {atm.card_no.slice(0, 4)} {atm.card_no.slice(4, 8)} {atm.card_no.slice(8, 12)} {atm.card_no.slice(12, 16)}
-                        </>
-                      ) : (
-                        <>**** **** **** {atm.card_no.slice(12, 16)}</>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => toggleNumber(atm._id)}
-                      aria-label="Toggle card number visibility"
-                      className="card-toggle-btn text-white/80 hover:text-white"
-                    >
-                      {isShowNumber ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
-                    </button>
+                  <div className="text-xs opacity-75 mb-1">Card Number</div>
+                  <div className="text-lg font-mono font-bold tracking-wider">
+                    {`${atm.card_no.slice(0, 4)} ${atm.card_no.slice(4, 8)} ${atm.card_no.slice(8, 12)} ${atm.card_no.slice(12, 16)}`}
                   </div>
                 </div>
 
-                {/* Spacer to push footer to bottom */}
-                <div className="flex-1"></div>
-
-                {/* Card Footer - CVV and Expiry */}
-                <div className="flex items-center justify-between">
+                {/* Card Footer */}
+                <div className="flex-1 flex items-end justify-between">
                   <div>
-                    <div className="card-label">Cardholder</div>
-                    <div className="card-value">{user?.name || 'CARDHOLDER'}</div>
+                    <div className="text-xs opacity-75 mb-1">Cardholder</div>
+                    <div className="text-sm font-semibold uppercase">{user?.name || 'CARDHOLDER'}</div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div>
-                      <div className="card-label">CVV</div>
+                      <div className="text-xs opacity-75 mb-1">CVV</div>
                       <div className="flex items-center gap-2">
-                        <span className="card-value font-mono bg-white/10 px-2 py-1 rounded">{isShowCVV ? atm.cvv : '***'}</span>
+                        <div className="bg-white bg-opacity-20 px-2 py-1 rounded text-sm font-mono">
+                          {isShowCVV ? atm.cvv : '***'}
+                        </div>
                         <button
                           onClick={() => toggleCVV(atm._id)}
-                          aria-label="Toggle CVV visibility"
-                          className="card-toggle-btn text-white/80 hover:text-white"
+                          className="text-white opacity-75 hover:opacity-100 transition-opacity"
                         >
-                          {isShowCVV ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                          {isShowCVV ? <FaEyeSlash size={12} /> : <FaEye size={12} />}
                         </button>
                       </div>
                     </div>
                     <div>
-                      <div className="card-label">Expires</div>
-                      <div className="card-value font-mono bg-white/10 px-2 py-1 rounded">{formatExpiry(atm.expiry)}</div>
+                      <div className="text-xs opacity-75 mb-1">Expires</div>
+                      <div className="bg-white bg-opacity-20 px-2 py-1 rounded text-sm font-mono">
+                        {formatExpiry(atm.expiry)}
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Security Badge */}
-                <div className="card-security-badge">
+                <div className="absolute bottom-4 right-4 opacity-60">
                   <FaShieldAlt className="text-lg" />
                 </div>
               </div>
@@ -228,7 +221,7 @@ const AllATMCards = () => {
 
             {/* Use Card Button */}
             <div className="flex justify-center">
-              <UseCardModel type={atm.card_type} />
+              <UseCardModel type={atm.card_type} atmCard={atm} />
             </div>
           </div>
         );

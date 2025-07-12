@@ -9,7 +9,6 @@ import { axiosClient } from '@/utils/AxiosClient';
 
 const UPIPage = () => {
   const { user } = useMainContext();
-  const token = (user && user.token) || '';
   const [activeTab, setActiveTab] = useState('pay');
   const [upiInfo, setUpiInfo] = useState(null);
   const [qrCode, setQrCode] = useState(null);
@@ -55,9 +54,12 @@ const UPIPage = () => {
 
   const fetchUPIInfo = async () => {
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) return;
+      
       const response = await axiosClient.get('/upi/info', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         }
       });
       const data = response.data;
@@ -71,9 +73,12 @@ const UPIPage = () => {
 
   const fetchTransactions = async () => {
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) return;
+      
       const response = await axiosClient.get('/upi/transactions?page=1&limit=10', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         }
       });
       const data = response.data;
@@ -88,9 +93,12 @@ const UPIPage = () => {
   const generateQR = async () => {
     setLoading(true);
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) return;
+      
       const response = await axiosClient.get(`/upi/qr?amount=${qrForm.amount}&note=${qrForm.note}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         }
       });
       const data = response.data;
@@ -107,9 +115,12 @@ const UPIPage = () => {
   const validateUPI = async (upi_id) => {
     if (!upi_id) return;
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) return;
+      
       const response = await axiosClient.get(`/upi/validate/${upi_id}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${currentToken}`
         }
       });
       const data = response.data;
@@ -125,20 +136,33 @@ const UPIPage = () => {
 
     const errors = { upi_id: null, pin: null, confirm_pin: null };
 
-    // UPI ID must end with @cbibank and have at least 2 chars before @
-    const upiRegex = /^[a-zA-Z0-9._-]{2,}@cbibank$/;
-    if (!upiRegex.test(registrationForm.upi_id)) {
-      errors.upi_id = 'UPI ID must end with @cbibank (e.g., yourname@cbibank)';
+    // Check if UPI ID is provided
+    if (!registrationForm.upi_id.trim()) {
+      errors.upi_id = 'UPI ID is required';
+    } else {
+      // UPI ID must end with @cbibank and have at least 2 chars before @
+      const upiRegex = /^[a-zA-Z0-9._-]{2,}@cbibank$/;
+      if (!upiRegex.test(registrationForm.upi_id)) {
+        errors.upi_id = 'UPI ID must end with @cbibank (e.g., yourname@cbibank)';
+      }
     }
 
-    // PIN must be 4 or 6 digits
-    const pinRegex = /^\d{4}$|^\d{6}$/;
-    if (!pinRegex.test(registrationForm.pin)) {
-      errors.pin = 'PIN must be exactly 4 or 6 digits';
+    // Check if PIN is provided
+    if (!registrationForm.pin.trim()) {
+      errors.pin = 'PIN is required';
+    } else {
+      // PIN must be 4 or 6 digits
+      const pinRegex = /^\d{4}$|^\d{6}$/;
+      if (!pinRegex.test(registrationForm.pin)) {
+        errors.pin = 'PIN must be exactly 4 or 6 digits';
+      }
     }
 
-    if (registrationForm.pin !== registrationForm.confirm_pin) {
-      errors.confirm_pin = 'Pins do not match';
+    // Check if confirm PIN is provided
+    if (!registrationForm.confirm_pin.trim()) {
+      errors.confirm_pin = 'Please confirm your PIN';
+    } else if (registrationForm.pin !== registrationForm.confirm_pin) {
+      errors.confirm_pin = 'PINs do not match';
     }
 
     setFormValidation(errors);
@@ -152,11 +176,29 @@ const UPIPage = () => {
     if (!validateRegistrationInputs()) {
       return;
     }
+    
+    const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+    if (!currentToken) {
+      setRegistrationError('Please log in to create UPI ID');
+      return;
+    }
+    
+    console.log('Attempting UPI registration with:', {
+      upi_id: registrationForm.upi_id,
+      pin: registrationForm.pin.replace(/./g, '*'),
+      token: currentToken ? 'Token present' : 'No token'
+    });
+    
     setLoading(true);
     try {
-      const { data } = await axiosClient.post('/upi/register', { upi_id: registrationForm.upi_id, pin: registrationForm.pin }, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axiosClient.post('/upi/register', { 
+        upi_id: registrationForm.upi_id, 
+        pin: registrationForm.pin 
+      }, {
+        headers: { Authorization: `Bearer ${currentToken}` }
       });
+      
+      const data = response.data;
       if (data && data.upi_id) {
         setRegistrationSuccess('UPI ID created successfully!');
         setRegistrationError(null);
@@ -168,7 +210,40 @@ const UPIPage = () => {
       }
     } catch (error) {
       console.error('Error registering UPI:', error);
-      setRegistrationError('Network error: Unable to register UPI');
+      console.error('Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+        config: error.config
+      });
+      
+      let errorMessage = 'Network error: Unable to register UPI';
+      
+      if (error.response) {
+        // Server responded with error status
+        if (error.response.status === 401) {
+          errorMessage = 'Please log in again to create UPI ID';
+        } else if (error.response.status === 400) {
+          errorMessage = error.response.data?.msg || 
+                        error.response.data?.message || 
+                        'Invalid UPI ID or PIN format';
+        } else if (error.response.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = error.response.data?.msg || 
+                        error.response.data?.message || 
+                        `Server error (${error.response.status})`;
+        }
+      } else if (error.request) {
+        // Network error - no response received
+        errorMessage = 'Network error: Unable to connect to server. Please check your internet connection.';
+      } else {
+        // Other error
+        errorMessage = error.message || 'An unexpected error occurred';
+      }
+      
+      setRegistrationError(errorMessage);
+      setRegistrationSuccess(null);
     } finally {
       setLoading(false);
     }
@@ -177,8 +252,14 @@ const UPIPage = () => {
   const processPayment = async () => {
     setLoading(true);
     try {
+      const currentToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+      if (!currentToken) {
+        setPaymentStatus({ success: null, error: 'Please log in to make payment' });
+        return;
+      }
+      
       const { data } = await axiosClient.post('/upi/pay', paymentForm, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${currentToken}` }
       });
       if (data && data.status === 'success') {
         setPaymentStatus({ success: 'Payment successful!', error: null });
@@ -190,7 +271,11 @@ const UPIPage = () => {
       }
     } catch (error) {
       console.error('Error processing payment:', error);
-      setPaymentStatus({ success: null, error: 'Network error: payment failed' });
+      const errorMessage = error.response?.data?.msg || 
+                          error.response?.data?.message || 
+                          error.message || 
+                          'Network error: payment failed';
+      setPaymentStatus({ success: null, error: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -269,9 +354,20 @@ const UPIPage = () => {
                 <input
                   type="text"
                   placeholder="yourname@cbibank"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    formValidation.upi_id ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   value={registrationForm.upi_id}
-                  onChange={(e) => setRegistrationForm(prev => ({ ...prev, upi_id: e.target.value }))}
+                  disabled={loading}
+                  onChange={(e) => {
+                    const value = e.target.value.toLowerCase();
+                    setRegistrationForm(prev => ({ ...prev, upi_id: value }));
+                  }}
+                  onBlur={() => {
+                    if (registrationForm.upi_id && !registrationForm.upi_id.includes('@')) {
+                      setRegistrationForm(prev => ({ ...prev, upi_id: prev.upi_id + '@cbibank' }));
+                    }
+                  }}
                 />
                 {formValidation.upi_id && (
                   <p className="text-red-600 text-xs mt-1">{formValidation.upi_id}</p>
@@ -281,9 +377,17 @@ const UPIPage = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Set UPI PIN</label>
                 <input
                   type="password"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    formValidation.pin ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   value={registrationForm.pin}
-                  onChange={(e) => setRegistrationForm(prev => ({ ...prev, pin: e.target.value }))}
+                  maxLength="6"
+                  placeholder="Enter 4 or 6 digit PIN"
+                  disabled={loading}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    setRegistrationForm(prev => ({ ...prev, pin: value }));
+                  }}
                 />
                 {formValidation.pin && (
                   <p className="text-red-600 text-xs mt-1">{formValidation.pin}</p>
@@ -293,9 +397,17 @@ const UPIPage = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Confirm UPI PIN</label>
                 <input
                   type="password"
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    formValidation.confirm_pin ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   value={registrationForm.confirm_pin}
-                  onChange={(e) => setRegistrationForm(prev => ({ ...prev, confirm_pin: e.target.value }))}
+                  maxLength="6"
+                  placeholder="Confirm your PIN"
+                  disabled={loading}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    setRegistrationForm(prev => ({ ...prev, confirm_pin: value }));
+                  }}
                 />
                 {formValidation.confirm_pin && (
                   <p className="text-red-600 text-xs mt-1">{formValidation.confirm_pin}</p>
